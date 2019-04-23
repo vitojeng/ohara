@@ -102,10 +102,11 @@ object DataStore {
       store.add(data.id, data).map(_.asInstanceOf[T])
 
     override def exist[T <: Data: ClassTag](id: String)(implicit executor: ExecutionContext): Future[Boolean] =
-      if (classTag[T].isInstanceOf[T]) {
-        store.exist(id)
-      } else {
-        Future.successful(false)
+      store.exist(id).flatMap { isExist =>
+        if (isExist)
+          store.value(id).map(classTag[T].runtimeClass.isInstance)
+        else
+          Future.successful(false)
       }
 
     override def nonExist[T <: Data: ClassTag](id: String)(implicit executor: ExecutionContext): Future[Boolean] =
