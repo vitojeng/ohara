@@ -29,21 +29,14 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
 
-private[store] final case class TestData(id: String, name: String, lastModified: Long, kind: String) extends Data
+private[store] final case class SimpleData(id: String, name: String, lastModified: Long, kind: String) extends Data
 
 class TestDataStore extends MediumTest with Matchers {
-
-  private[configurator] val DATA_SERIALIZER: Serializer[Data] = new Serializer[Data] {
-    override def to(obj: Data): Array[Byte] = Serializer.OBJECT.to(obj)
-
-    override def from(bytes: Array[Byte]): Data =
-      Serializer.OBJECT.from(bytes).asInstanceOf[Data]
-  }
 
   private[this] val timeout = 10 seconds
   private[this] val store = DataStore(Store.inMemory(Serializer.STRING, Configurator.DATA_SERIALIZER))
 
-  private def newTestData(id: String) = TestData(
+  private def newTestData(id: String) = SimpleData(
     id = id,
     name = "name1",
     lastModified = CommonUtils.current(),
@@ -58,10 +51,10 @@ class TestDataStore extends MediumTest with Matchers {
     val data = newTestData("abcd")
     Await.result(store.add(data), timeout)
 
-    Await.result(store.exist[TestData](data.id), timeout) shouldBe true
-    Await.result(store.exist[TestData]("12345"), timeout) shouldBe false
-    Await.result(store.nonExist[TestData](data.id), timeout) shouldBe false
-    Await.result(store.nonExist[TestData]("12345"), timeout) shouldBe true
+    Await.result(store.exist[SimpleData](data.id), timeout) shouldBe true
+    Await.result(store.exist[SimpleData]("12345"), timeout) shouldBe false
+    Await.result(store.nonExist[SimpleData](data.id), timeout) shouldBe false
+    Await.result(store.nonExist[SimpleData]("12345"), timeout) shouldBe true
   }
 
   @Test
@@ -69,7 +62,7 @@ class TestDataStore extends MediumTest with Matchers {
     val data = newTestData("abcd")
     Await.result(store.add(data), timeout)
 
-    val data2 = (data: TestData) => Future.successful(data.copy(name = "name2"))
+    val data2 = (data: SimpleData) => Future.successful(data.copy(name = "name2"))
 
     Await.result(store.update(data.id, data2), timeout) should equal(data.copy(name = "name2"))
     an[NoSuchElementException] should be thrownBy Await.result(store.update("123", data2), timeout)
@@ -93,10 +86,10 @@ class TestDataStore extends MediumTest with Matchers {
     store.size shouldBe 2
 
     an[NoSuchElementException] should be thrownBy Await.result(store.remove("1234"), 50 seconds)
-    an[NoSuchElementException] should be thrownBy Await.result(store.remove[TestData]("1234"), 50 seconds)
+    an[NoSuchElementException] should be thrownBy Await.result(store.remove[SimpleData]("1234"), 50 seconds)
     an[NoSuchElementException] should be thrownBy Await.result(store.remove[ConnectorDescription]("abcd"), 50 seconds)
 
-    Await.result(store.remove[TestData]("abcd"), 50 seconds) shouldBe data1
+    Await.result(store.remove[SimpleData]("abcd"), 50 seconds) shouldBe data1
     store.size shouldBe 1
   }
 
@@ -108,11 +101,11 @@ class TestDataStore extends MediumTest with Matchers {
     store.size shouldBe 1
 
     an[NoSuchElementException] should be thrownBy Await.result(store.remove("1234"), 50 seconds)
-    an[NoSuchElementException] should be thrownBy Await.result(store.remove[TestData]("1234"), 50 seconds)
+    an[NoSuchElementException] should be thrownBy Await.result(store.remove[SimpleData]("1234"), 50 seconds)
     an[NoSuchElementException] should be thrownBy Await.result(store.remove[ConnectorDescription]("abcd"), 50 seconds)
 
-    Await.result(store.raw(), timeout).head.asInstanceOf[TestData] shouldBe data1
-    Await.result(store.raw("abcd"), timeout).asInstanceOf[TestData] shouldBe data1
+    Await.result(store.raw(), timeout).head.asInstanceOf[SimpleData] shouldBe data1
+    Await.result(store.raw("abcd"), timeout).asInstanceOf[SimpleData] shouldBe data1
   }
 
 }
