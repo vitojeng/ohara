@@ -21,14 +21,18 @@ import akka.http.scaladsl.Http
 import akka.stream.ActorMaterializer
 import akka.http.scaladsl.model._
 import akka.http.scaladsl.server.Directives._
+import com.typesafe.scalalogging.Logger
 
-import scala.concurrent.ExecutionContextExecutor
+import scala.concurrent.duration.Duration
+import scala.concurrent.{Await, ExecutionContextExecutor}
 import scala.io.StdIn
 
 object WebServer {
 
+  private[this] val log = Logger(WebServer.getClass)
+
   def main(args: Array[String]): Unit = {
-    implicit val system: ActorSystem = ActorSystem("ohara-http-connector")
+    implicit val system: ActorSystem = ActorSystem("ohara-shabondi")
     implicit val materializer: ActorMaterializer = ActorMaterializer()
     implicit val executionContext: ExecutionContextExecutor = system.dispatcher
 
@@ -44,14 +48,16 @@ object WebServer {
 
     val interface = "0.0.0.0"
     val bindingFuture = Http().bindAndHandle(route, interface, 8080)
-    println(s"Ohara http connector at http://$interface:8080/")
-    println("Press RETURN to stop...")
+    log.info(s"OharaStream Shabondi at http://$interface:8080/")
 
-    // Use following code if await infinite:
-    //    Await.result(system.whenTerminated, Duration.Inf)   // await infinite
+    if (args.size > 0 && args(0) == "--return-stop") {
+      println("Press RETURN to stop...")
+      StdIn.readLine()
+      bindingFuture.flatMap(_.unbind()).onComplete(_ => system.terminate())
+    } else {
+      Await.result(system.whenTerminated, Duration.Inf) // await infinite
+    }
 
-    StdIn.readLine()
-    bindingFuture.flatMap(_.unbind()).onComplete(_ => system.terminate())
   }
 
 }
