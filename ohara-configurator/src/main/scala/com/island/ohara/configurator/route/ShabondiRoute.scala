@@ -54,8 +54,8 @@ object ShabondiRoute {
     }
   }
 
-  private def updateProperty(id: String, property: ShabondiProperty, store: DataStore)
-          (implicit executionContext: ExecutionContext) = {
+  private def updateProperty(id: String, property: ShabondiProperty, store: DataStore)(
+    implicit executionContext: ExecutionContext) = {
     LOG.info(s"update shabondi: $id")
     val updateValue = (data: ShabondiDescription) =>
       Future.successful(
@@ -64,8 +64,8 @@ object ShabondiRoute {
     store.update[ShabondiDescription](id, updateValue)
   }
 
-  private def updateShabondiState(id: String, state: String, store: DataStore)
-          (implicit executionContext: ExecutionContext) = {
+  private def updateShabondiState(id: String, state: String, store: DataStore)(
+    implicit executionContext: ExecutionContext) = {
     LOG.info(s"update shabondi: $id")
     val updateValue = (data: ShabondiDescription) =>
       Future.successful(
@@ -74,8 +74,10 @@ object ShabondiRoute {
     store.update[ShabondiDescription](id, updateValue)
   }
 
-  private def startShabondi(id: String, k8sClient: K8SClient, nodeApi: Access[NodeCreationRequest, Node], store: DataStore)
-          (implicit executionContext: ExecutionContext) = {
+  private def startShabondi(id: String,
+                            k8sClient: K8SClient,
+                            nodeApi: Access[NodeCreationRequest, Node],
+                            store: DataStore)(implicit executionContext: ExecutionContext) = {
 
     val nodes = awaitResult(nodeApi.list)
     if (nodes.isEmpty) throw new RuntimeException("Cannot find any ohara node.")
@@ -90,8 +92,10 @@ object ShabondiRoute {
     }
   }
 
-  private def stopShabondi(id: String, k8sClient: K8SClient, nodeApi: Access[NodeCreationRequest, Node], store: DataStore)
-          (implicit executionContext: ExecutionContext) = {
+  private def stopShabondi(id: String,
+                           k8sClient: K8SClient,
+                           nodeApi: Access[NodeCreationRequest, Node],
+                           store: DataStore)(implicit executionContext: ExecutionContext) = {
     LOG.info(s"shabondi stop: $id")
     val podName = POD_NAME_PREFIX + id
     k8sClient.remove(podName).flatMap { container =>
@@ -145,8 +149,8 @@ object ShabondiRoute {
   private val POD_NAME_PREFIX = "shabondi-"
   private val POD_NAME = "shabondi-host"
 
-  private def createContainer(k8sClient: K8SClient, slaveNode: String, podHostname: String)
-          (implicit executionContext: ExecutionContext) = {
+  private def createContainer(k8sClient: K8SClient, slaveNode: String, podHostname: String)(
+    implicit executionContext: ExecutionContext) = {
     val creator: K8SClient.ContainerCreator = awaitResult(k8sClient.containerCreator())
     creator
       .imageName(IMAGE_NAME_DEFAULT)

@@ -63,7 +63,8 @@ final object ShabondiApi {
       exec.get[ShabondiDescription, ErrorApi.Error](url)
     }
 
-    def updateProperty(id: String, property: ShabondiProperty)(implicit executionContext: ExecutionContext): Future[ShabondiDescription] = {
+    def updateProperty(id: String, property: ShabondiProperty)(
+      implicit executionContext: ExecutionContext): Future[ShabondiDescription] = {
       val url = basicUrl(id)
       exec.put[ShabondiProperty, ShabondiDescription, ErrorApi.Error](url, property)
     }
