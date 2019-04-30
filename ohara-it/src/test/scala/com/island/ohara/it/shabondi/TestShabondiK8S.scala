@@ -28,7 +28,6 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{Await, Future}
 import scala.concurrent.duration._
 
-
 class TestShabondiK8S extends IntegrationTest with Matchers with Inside {
 
   private val K8S_API_SERVER_URL_KEY: String = "ohara.it.k8s"
@@ -51,8 +50,8 @@ class TestShabondiK8S extends IntegrationTest with Matchers with Inside {
   private def k8sNodeName(): Option[String] = {
     val nodeNames: Array[String] = sys.env(K8S_API_NODE_NAME_KEY).split(',')
     nodeNames.size match {
-      case s if s>0 => Some(nodeNames(random.nextInt(s)))
-      case _ => None
+      case s if s > 0 => Some(nodeNames(random.nextInt(s)))
+      case _          => None
     }
   }
 
