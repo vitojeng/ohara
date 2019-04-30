@@ -28,6 +28,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{Await, Future}
 import scala.concurrent.duration._
 
+
 class TestShabondiK8S extends IntegrationTest with Matchers with Inside {
 
   private val K8S_API_SERVER_URL_KEY: String = "ohara.it.k8s"
@@ -37,18 +38,28 @@ class TestShabondiK8S extends IntegrationTest with Matchers with Inside {
   assert(sys.env.contains(K8S_API_NODE_NAME_KEY), s"\nCannot find sys.env: $K8S_API_NODE_NAME_KEY")
 
   private val k8sApiServerUrl = sys.env(K8S_API_SERVER_URL_KEY)
-  private val k8sNodeServerName = sys.env(K8S_API_NODE_NAME_KEY)
   private val k8sClient = K8SClient(k8sApiServerUrl)
 
   private val podLabelName = "shabondi"
   private val domainName = "default"
   private val hostname = "shabondi-host"
   private val podHostname = CommonUtils.uuid()
+  private val random = new scala.util.Random
 
   private def awaitResult[T](f: Future[T]): T = Await.result(f, 20 seconds)
 
+  private def k8sNodeName(): Option[String] = {
+    val nodeNames: Array[String] = sys.env(K8S_API_NODE_NAME_KEY).split(',')
+    nodeNames.size match {
+      case s if s>0 => Some(nodeNames(random.nextInt(s)))
+      case _ => None
+    }
+  }
+
   @Test
   def testCreatAndRemovePod(): Unit = {
+    val nodeName = k8sNodeName()
+    assert(nodeName.isDefined, "Cannot find any k8s node name.")
 
     // create pod
     val containerCreator = awaitResult(k8sClient.containerCreator())
@@ -58,7 +69,7 @@ class TestShabondiK8S extends IntegrationTest with Matchers with Inside {
         .portMappings(Map(
           9090 -> 8080
         ))
-        .nodename(k8sNodeServerName)
+        .nodename(nodeName.get)
         .hostname(podHostname)
         .labelName(podLabelName)
         .domainName(domainName)
