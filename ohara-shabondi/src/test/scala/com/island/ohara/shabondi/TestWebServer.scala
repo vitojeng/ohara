@@ -30,7 +30,7 @@ class TestWebServer extends SmallTest with Matchers with Suite with ScalaFutures
     val request = HttpRequest(uri = "/hello")
 
     request ~> WebServer.route ~> check {
-      entityAs[String] should ===("<h2>Hello akka-http</h1>")
+      entityAs[String] should ===("<h1>Hello akka-http</h1>")
     }
 
   }
