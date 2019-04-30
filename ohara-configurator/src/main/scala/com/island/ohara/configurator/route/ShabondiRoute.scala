@@ -73,7 +73,6 @@ object ShabondiRoute {
     store.update[ShabondiDescription](id, updateValue)
   }
 
-
   private def randomPickNode(store: DataStore)(implicit executionContext: ExecutionContext): Node = {
     val random = new scala.util.Random
     val nodes = awaitResult(store.values[Node])
@@ -82,9 +81,8 @@ object ShabondiRoute {
     nodes(random.nextInt(nodes.length))
   }
 
-  private def startShabondi(id: String,
-                            k8sClient: K8SClient,
-                            store: DataStore)(implicit executionContext: ExecutionContext) = {
+  private def startShabondi(id: String, k8sClient: K8SClient, store: DataStore)(
+    implicit executionContext: ExecutionContext) = {
     val nodeName = randomPickNode(store).name
     val podName = POD_NAME_PREFIX + id
     createContainer(k8sClient, nodeName, podName).flatMap {
@@ -96,9 +94,8 @@ object ShabondiRoute {
     }
   }
 
-  private def stopShabondi(id: String,
-                           k8sClient: K8SClient,
-                           store: DataStore)(implicit executionContext: ExecutionContext) = {
+  private def stopShabondi(id: String, k8sClient: K8SClient, store: DataStore)(
+    implicit executionContext: ExecutionContext) = {
     LOG.info(s"shabondi stop: $id")
     val podName = POD_NAME_PREFIX + id
     k8sClient.remove(podName).flatMap { container =>
@@ -107,9 +104,8 @@ object ShabondiRoute {
     }
   }
 
-  def apply(k8sClientOpt: Option[K8SClient])(
-    implicit store: DataStore,
-    executionContext: ExecutionContext): server.Route =
+  def apply(k8sClientOpt: Option[K8SClient])(implicit store: DataStore,
+                                             executionContext: ExecutionContext): server.Route =
     pathPrefix(PATH_PREFIX) {
       pathEnd {
         post { complete { addShabondi(store) } }
