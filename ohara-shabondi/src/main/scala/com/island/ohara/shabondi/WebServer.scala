@@ -31,21 +31,21 @@ object WebServer {
 
   private[this] val log = Logger(WebServer.getClass)
 
-  def main(args: Array[String]): Unit = {
-    implicit val system: ActorSystem = ActorSystem("ohara-shabondi")
-    implicit val materializer: ActorMaterializer = ActorMaterializer()
-    implicit val executionContext: ExecutionContextExecutor = system.dispatcher
+  implicit val system: ActorSystem = ActorSystem("ohara-shabondi")
+  implicit val materializer: ActorMaterializer = ActorMaterializer()
+  implicit val executionContext: ExecutionContextExecutor = system.dispatcher
 
-    val route =
-      path("hello") {
-        get {
-          val entity = { title: String =>
-            HttpEntity(ContentTypes.`text/html(UTF-8)`, s"<h1>$title</h1>")
-          }
-          complete(entity("Hello akka-http"))
+  private[shabondi] val route =
+    path("hello") {
+      get {
+        val entity = { title: String =>
+          HttpEntity(ContentTypes.`text/html(UTF-8)`, s"<h1>$title</h1>")
         }
+        complete(entity("Hello akka-http"))
       }
+    }
 
+  def main(args: Array[String]): Unit = {
     val interface = "0.0.0.0"
     val bindingFuture = Http().bindAndHandle(route, interface, 8080)
     log.info(s"OharaStream Shabondi at http://$interface:8080/")
