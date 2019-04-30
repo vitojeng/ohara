@@ -21,8 +21,7 @@ import akka.http.scaladsl.model.StatusCodes
 import akka.http.scaladsl.server
 import akka.http.scaladsl.server.Directives._
 import com.island.ohara.agent.k8s.K8SClient
-import com.island.ohara.client.configurator.v0.Access
-import com.island.ohara.client.configurator.v0.NodeApi.{Node, NodeCreationRequest}
+import com.island.ohara.client.configurator.v0.NodeApi.Node
 import com.island.ohara.client.configurator.v0.ShabondiApi._
 import com.island.ohara.common.util.CommonUtils
 import com.island.ohara.configurator.store.DataStore
@@ -74,14 +73,19 @@ object ShabondiRoute {
     store.update[ShabondiDescription](id, updateValue)
   }
 
+
+  private def randomPickNode(store: DataStore)(implicit executionContext: ExecutionContext): Node = {
+    val random = new scala.util.Random
+    val nodes = awaitResult(store.values[Node])
+    if (nodes.isEmpty)
+      throw new RuntimeException("Cannot find any ohara node.")
+    nodes(random.nextInt(nodes.length))
+  }
+
   private def startShabondi(id: String,
                             k8sClient: K8SClient,
-                            nodeApi: Access[NodeCreationRequest, Node],
                             store: DataStore)(implicit executionContext: ExecutionContext) = {
-
-    val nodes = awaitResult(nodeApi.list)
-    if (nodes.isEmpty) throw new RuntimeException("Cannot find any ohara node.")
-    val nodeName: String = nodes.head.name
+    val nodeName = randomPickNode(store).name
     val podName = POD_NAME_PREFIX + id
     createContainer(k8sClient, nodeName, podName).flatMap {
       case Some(container) =>
@@ -94,7 +98,6 @@ object ShabondiRoute {
 
   private def stopShabondi(id: String,
                            k8sClient: K8SClient,
-                           nodeApi: Access[NodeCreationRequest, Node],
                            store: DataStore)(implicit executionContext: ExecutionContext) = {
     LOG.info(s"shabondi stop: $id")
     val podName = POD_NAME_PREFIX + id
@@ -104,7 +107,7 @@ object ShabondiRoute {
     }
   }
 
-  def apply(k8sClientOpt: Option[K8SClient], nodeApi: Access[NodeCreationRequest, Node])(
+  def apply(k8sClientOpt: Option[K8SClient])(
     implicit store: DataStore,
     executionContext: ExecutionContext): server.Route =
     pathPrefix(PATH_PREFIX) {
@@ -126,7 +129,7 @@ object ShabondiRoute {
             // TODO: need integrate with Crane
             k8sClientOpt match {
               case Some(k8sClient) =>
-                put { complete { startShabondi(id, k8sClient, nodeApi, store) } }
+                put { complete { startShabondi(id, k8sClient, store) } }
               case None =>
                 complete(StatusCodes.ServiceUnavailable -> "Shabondi need K8SClient...")
             }
@@ -135,7 +138,7 @@ object ShabondiRoute {
             // TODO: need integrate with Crane
             k8sClientOpt match {
               case Some(k8sClient) =>
-                put { complete { stopShabondi(id, k8sClient, nodeApi, store) } }
+                put { complete { stopShabondi(id, k8sClient, store) } }
               case None =>
                 complete(StatusCodes.ServiceUnavailable -> "Shabondi need K8SClient...")
             }
