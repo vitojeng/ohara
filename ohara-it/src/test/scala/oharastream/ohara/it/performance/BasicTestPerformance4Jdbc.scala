@@ -35,7 +35,7 @@ import org.junit.AssumptionViolatedException
 import scala.concurrent.duration.Duration
 import scala.jdk.CollectionConverters._
 
-abstract class BasicTestPerformance4Jdbc extends BasicTestPerformance {
+private[performance] abstract class BasicTestPerformance4Jdbc extends BasicTestPerformance {
   protected[this] val url: String =
     sys.env.getOrElse(
       PerformanceTestingUtils.DB_URL_KEY,

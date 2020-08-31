@@ -19,14 +19,17 @@ package oharastream.ohara.it.performance
 import oharastream.ohara.agent.container.ContainerClient
 import oharastream.ohara.client.configurator.NodeApi.Node
 import oharastream.ohara.common.util.Releasable
+import oharastream.ohara.it.category.PerformanceGroup
 import oharastream.ohara.it.{ContainerPlatform, IntegrationTest, ServiceKeyHolder}
 import org.junit.After
+import org.junit.experimental.categories.Category
 
 /**
   * a basic setup offering a configurator running on remote node.
   * this stuff is also in charge of releasing the configurator after testing.
   */
-abstract class WithPerformanceRemoteConfigurator extends IntegrationTest {
+@Category(Array(classOf[PerformanceGroup]))
+private[performance] abstract class WithPerformanceRemoteConfigurator extends IntegrationTest {
   private[this] val platform                           = ContainerPlatform.default
   private[this] val resourceRef                        = platform.setup()
   protected val containerClient: ContainerClient       = resourceRef.containerClient

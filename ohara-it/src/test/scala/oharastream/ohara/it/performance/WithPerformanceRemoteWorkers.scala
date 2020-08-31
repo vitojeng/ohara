@@ -26,7 +26,7 @@ import org.junit.{After, Before}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
-abstract class WithPerformanceRemoteWorkers extends WithPerformanceRemoteConfigurator {
+private[performance] abstract class WithPerformanceRemoteWorkers extends WithPerformanceRemoteConfigurator {
   private[this] val zkInitHeap                         = sys.env.get("ohara.it.zk.xms").map(_.toInt).getOrElse(1024)
   private[this] val zkMaxHeap                          = sys.env.get("ohara.it.zk.xmx").map(_.toInt).getOrElse(1024)
   private[this] val bkInitHeap                         = sys.env.get("ohara.it.bk.xms").map(_.toInt).getOrElse(1024)

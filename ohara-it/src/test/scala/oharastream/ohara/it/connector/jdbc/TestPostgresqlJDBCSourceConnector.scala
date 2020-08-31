@@ -18,11 +18,8 @@ package oharastream.ohara.it.connector.jdbc
 
 import oharastream.ohara.common.util.CommonUtils
 import oharastream.ohara.it.ContainerPlatform
-import org.junit.experimental.categories.Category
-import oharastream.ohara.it.category.ConnectorGroup
 import org.junit.AssumptionViolatedException
 
-@Category(Array(classOf[ConnectorGroup]))
 class TestPostgresqlJDBCSourceConnector(platform: ContainerPlatform)
     extends BasicTestConnectorCollie(platform: ContainerPlatform) {
   private[this] val DB_URL_KEY: String       = "ohara.it.postgresql.db.url"

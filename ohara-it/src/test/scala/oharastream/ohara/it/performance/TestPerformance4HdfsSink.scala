@@ -22,13 +22,10 @@ import oharastream.ohara.client.filesystem.FileSystem
 import oharastream.ohara.common.setting.ConnectorKey
 import oharastream.ohara.common.util.{CommonUtils, Releasable}
 import oharastream.ohara.connector.hdfs.sink.HDFSSink
-import oharastream.ohara.it.category.PerformanceGroup
 import oharastream.ohara.kafka.connector.csv.CsvConnectorDefinitions
-import org.junit.experimental.categories.Category
-import spray.json.{JsNumber, JsString}
 import org.junit.Test
+import spray.json.{JsNumber, JsString}
 
-@Category(Array(classOf[PerformanceGroup]))
 class TestPerformance4HdfsSink extends BasicTestPerformance {
   private[this] val NEED_DELETE_DATA_KEY: String = PerformanceTestingUtils.DATA_CLEANUP_KEY
   private[this] val needDeleteData: Boolean      = sys.env.getOrElse(NEED_DELETE_DATA_KEY, "true").toBoolean

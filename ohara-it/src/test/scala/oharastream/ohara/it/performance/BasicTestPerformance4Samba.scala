@@ -28,7 +28,7 @@ import spray.json.{JsNumber, JsString, JsValue}
 import scala.concurrent.duration.Duration
 import scala.jdk.CollectionConverters._
 
-abstract class BasicTestPerformance4Samba extends BasicTestPerformance {
+private[performance] abstract class BasicTestPerformance4Samba extends BasicTestPerformance {
   private[this] val sambaHostname: String = sys.env.getOrElse(
     PerformanceTestingUtils.SAMBA_HOSTNAME_KEY,
     throw new AssumptionViolatedException(s"${PerformanceTestingUtils.SAMBA_HOSTNAME_KEY} does not exists!!!")

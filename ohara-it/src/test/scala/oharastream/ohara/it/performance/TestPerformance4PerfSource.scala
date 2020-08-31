@@ -20,11 +20,8 @@ import oharastream.ohara.client.configurator.{ConnectorApi, TopicApi}
 import oharastream.ohara.common.setting.ConnectorKey
 import oharastream.ohara.common.util.CommonUtils
 import oharastream.ohara.connector.perf.PerfSource
-import oharastream.ohara.it.category.PerformanceGroup
 import org.junit.Test
-import org.junit.experimental.categories.Category
 
-@Category(Array(classOf[PerformanceGroup]))
 class TestPerformance4PerfSource extends BasicTestPerformance {
   @Test
   def test(): Unit = {

@@ -21,13 +21,10 @@ import oharastream.ohara.client.configurator.TopicApi.TopicInfo
 import oharastream.ohara.common.setting.ConnectorKey
 import oharastream.ohara.common.util.{CommonUtils, Releasable}
 import oharastream.ohara.connector.smb.SmbSink
-import oharastream.ohara.it.category.PerformanceGroup
 import oharastream.ohara.kafka.connector.csv.CsvConnectorDefinitions
 import org.junit.Test
-import org.junit.experimental.categories.Category
 import spray.json.{JsNumber, JsString}
 
-@Category(Array(classOf[PerformanceGroup]))
 class TestPerformance4SambaSink extends BasicTestPerformance4Samba {
   private[this] val outputDir: String = "output"
 

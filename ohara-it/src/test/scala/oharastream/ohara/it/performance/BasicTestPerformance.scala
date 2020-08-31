@@ -47,7 +47,7 @@ import scala.concurrent.duration.Duration
   * 3) the reports are located at /tmp/performance/$className/$testName/$random.csv by default. Of course, this is related to jenkins
   *    so please don't change it.
   */
-abstract class BasicTestPerformance extends WithPerformanceRemoteWorkers {
+private[performance] abstract class BasicTestPerformance extends WithPerformanceRemoteWorkers {
   protected val log: Logger       = Logger(classOf[BasicTestPerformance])
   protected val groupName: String = "benchmark"
 

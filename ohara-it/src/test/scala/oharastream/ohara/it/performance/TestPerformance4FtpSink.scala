@@ -21,13 +21,10 @@ import oharastream.ohara.client.configurator.TopicApi.TopicInfo
 import oharastream.ohara.common.setting.ConnectorKey
 import oharastream.ohara.common.util.{CommonUtils, Releasable}
 import oharastream.ohara.connector.ftp.FtpSink
-import oharastream.ohara.it.category.PerformanceGroup
 import oharastream.ohara.kafka.connector.csv.CsvConnectorDefinitions
-import spray.json.{JsNumber, JsString}
 import org.junit.Test
-import org.junit.experimental.categories.Category
+import spray.json.{JsNumber, JsString}
 
-@Category(Array(classOf[PerformanceGroup]))
 class TestPerformance4FtpSink extends BasicTestPerformance4Ftp {
   private[this] val dataDir: String = "/tmp"
 

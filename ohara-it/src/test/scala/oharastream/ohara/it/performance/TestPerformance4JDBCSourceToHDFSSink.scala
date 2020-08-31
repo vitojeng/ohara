@@ -23,12 +23,9 @@ import oharastream.ohara.common.setting.ConnectorKey
 import oharastream.ohara.common.util.{CommonUtils, Releasable}
 import oharastream.ohara.connector.hdfs.sink.HDFSSink
 import oharastream.ohara.connector.jdbc.source.JDBCSourceConnector
-import oharastream.ohara.it.category.PerformanceGroup
-import org.junit.experimental.categories.Category
 import org.junit.Test
 import spray.json.{JsNumber, JsString}
 
-@Category(Array(classOf[PerformanceGroup]))
 class TestPerformance4JDBCSourceToHDFSSink extends BasicTestPerformance4Jdbc {
   override protected val tableName: String = s"TABLE${CommonUtils.randomString().toUpperCase()}"
 

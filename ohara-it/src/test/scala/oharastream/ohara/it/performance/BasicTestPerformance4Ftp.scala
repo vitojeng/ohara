@@ -29,7 +29,7 @@ import oharastream.ohara.client.filesystem.FileSystem
 
 import scala.concurrent.duration.Duration
 
-abstract class BasicTestPerformance4Ftp extends BasicTestPerformance {
+private[performance] abstract class BasicTestPerformance4Ftp extends BasicTestPerformance {
   private[this] val ftpHostname = value(PerformanceTestingUtils.FTP_HOSTNAME_KEY)
     .getOrElse(throw new AssumptionViolatedException(s"${PerformanceTestingUtils.FTP_HOSTNAME_KEY} is required"))
 

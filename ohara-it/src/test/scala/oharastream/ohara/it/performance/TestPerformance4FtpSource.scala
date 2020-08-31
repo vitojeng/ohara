@@ -20,13 +20,10 @@ import oharastream.ohara.client.configurator.{ConnectorApi, TopicApi}
 import oharastream.ohara.common.setting.ConnectorKey
 import oharastream.ohara.common.util.{CommonUtils, Releasable}
 import oharastream.ohara.connector.ftp.FtpSource
-import oharastream.ohara.it.category.PerformanceGroup
 import oharastream.ohara.kafka.connector.csv.CsvConnectorDefinitions
 import org.junit.Test
-import org.junit.experimental.categories.Category
 import spray.json.{JsNumber, JsString}
 
-@Category(Array(classOf[PerformanceGroup]))
 class TestPerformance4FtpSource extends BasicTestPerformance4Ftp {
   @Test
   def test(): Unit = {

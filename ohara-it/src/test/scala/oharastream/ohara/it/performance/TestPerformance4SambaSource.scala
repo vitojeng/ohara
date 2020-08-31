@@ -20,13 +20,10 @@ import oharastream.ohara.client.configurator.{ConnectorApi, TopicApi}
 import oharastream.ohara.common.setting.ConnectorKey
 import oharastream.ohara.common.util.CommonUtils
 import oharastream.ohara.connector.smb.SmbSource
-import oharastream.ohara.it.category.PerformanceGroup
 import oharastream.ohara.kafka.connector.csv.CsvConnectorDefinitions
 import org.junit.Test
-import org.junit.experimental.categories.Category
 import spray.json.{JsNumber, JsString}
 
-@Category(Array(classOf[PerformanceGroup]))
 class TestPerformance4SambaSource extends BasicTestPerformance4Samba {
   @Test
   def test(): Unit = {

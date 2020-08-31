@@ -33,9 +33,11 @@ import oharastream.ohara.common.data.Serializer
 import oharastream.ohara.common.setting.{ConnectorKey, ObjectKey, TopicKey}
 import oharastream.ohara.common.util.{CommonUtils, Releasable}
 import oharastream.ohara.connector.jdbc.source.{JDBCSourceConnector, JDBCSourceConnectorConfig}
+import oharastream.ohara.it.category.ConnectorGroup
 import oharastream.ohara.it.{ContainerPlatform, WithRemoteConfigurator}
 import oharastream.ohara.kafka.Consumer
 import oharastream.ohara.kafka.connector.TaskSetting
+import org.junit.experimental.categories.Category
 import org.junit.{After, AssumptionViolatedException, Test}
 import org.scalatest.matchers.should.Matchers._
 
@@ -43,7 +45,8 @@ import scala.jdk.CollectionConverters._
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-abstract class BasicTestConnectorCollie(platform: ContainerPlatform)
+@Category(Array(classOf[ConnectorGroup]))
+private[jdbc] abstract class BasicTestConnectorCollie(platform: ContainerPlatform)
     extends WithRemoteConfigurator(platform: ContainerPlatform) {
   private[this] val log                    = Logger(classOf[BasicTestConnectorCollie])
   private[this] val JAR_FOLDER_KEY: String = "ohara.it.jar.folder"

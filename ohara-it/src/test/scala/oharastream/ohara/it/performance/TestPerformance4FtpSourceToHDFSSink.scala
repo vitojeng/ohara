@@ -23,13 +23,10 @@ import oharastream.ohara.common.setting.ConnectorKey
 import oharastream.ohara.common.util.{CommonUtils, Releasable}
 import oharastream.ohara.connector.ftp.FtpSource
 import oharastream.ohara.connector.hdfs.sink.HDFSSink
-import oharastream.ohara.it.category.PerformanceGroup
 import oharastream.ohara.kafka.connector.csv.CsvConnectorDefinitions
 import org.junit.Test
-import org.junit.experimental.categories.Category
 import spray.json.{JsNumber, JsString}
 
-@Category(Array(classOf[PerformanceGroup]))
 class TestPerformance4FtpSourceToHDFSSink extends BasicTestPerformance4Ftp {
   private[this] val ftpCompletedPath = "/completed"
   private[this] val ftpErrorPath     = "/error"
