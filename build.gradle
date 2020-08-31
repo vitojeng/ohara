@@ -181,6 +181,7 @@ subprojects {
           tasks.create(name: taskName, type: Test) {
             useJUnit {
               includeCategories entry.value
+              excludeCategories = Set.of()
             }
           }
       }
