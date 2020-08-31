@@ -18,24 +18,14 @@ package oharastream.ohara.it.connector.smb
 
 import oharastream.ohara.client.filesystem.{FileSystem, FileSystemTestBase}
 import oharastream.ohara.common.util.CommonUtils
-import oharastream.ohara.it.category.ConnectorGroup
-import org.junit.AssumptionViolatedException
-import org.junit.experimental.categories.Category
 
-@Category(Array(classOf[ConnectorGroup]))
-class TestSmbFileSystem extends FileSystemTestBase {
-  private[this] val itProps: ITSmbProps = try ITSmbProps(sys.env)
-  catch {
-    case e: IllegalArgumentException =>
-      throw new AssumptionViolatedException(s"skip TestSmbFileSystem test, ${e.getMessage}")
-  }
-
+class TestSmbFileSystem extends FileSystemTestBase with SmbEnv {
   override protected val fileSystem: FileSystem = FileSystem.smbBuilder
-    .hostname(itProps.hostname)
-    .port(itProps.port)
-    .user(itProps.username)
-    .password(itProps.password)
-    .shareName(itProps.shareName)
+    .hostname(hostname)
+    .port(port)
+    .user(username)
+    .password(password)
+    .shareName(shareName)
     .build()
 
   override protected val rootDir: String = CommonUtils.randomString(10)
