@@ -190,6 +190,15 @@ subprojects {
           excludeCategories = groups.values().toSet()
         }
       }
+
+      // exclude all tests depending on specify env so user can run ```gradle clean test``` to execute all normal tests
+      // If users want to run true IT, they have to call specify test task with required env settings. That is what our
+      // QA (jenkins) is doing.
+      test {
+        useJUnit {
+          excludeCategories = groups.values().toSet()
+        }
+      }
     }
 
     tasks.withType(Test) {

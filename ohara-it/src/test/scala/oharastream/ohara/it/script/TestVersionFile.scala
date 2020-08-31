@@ -17,7 +17,9 @@
 package oharastream.ohara.it.script
 
 import oharastream.ohara.common.util.{Releasable, VersionUtils}
+import oharastream.ohara.it.category.ClientGroup
 import oharastream.ohara.it.{ContainerPlatform, IntegrationTest, ServiceKeyHolder}
+import org.junit.experimental.categories.Category
 import org.junit.{After, Test}
 import org.scalatest.matchers.should.Matchers._
 
@@ -27,6 +29,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
   * test command "-v" for all ohara images.
   * Noted: the "version" may be changed at runtime by jenkins so we check only revision.
   */
+@Category(Array(classOf[ClientGroup]))
 class TestVersionFile extends IntegrationTest {
   private[this] val platform                       = ContainerPlatform.dockerMode
   private[this] val resourceRef                    = platform.setup()

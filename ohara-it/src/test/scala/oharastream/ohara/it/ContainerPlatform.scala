@@ -226,28 +226,12 @@ object ContainerPlatform {
     * 2) docker setting - PlatformModeInfo.DOCKER_NODES_KEY
     * @return one of k8s or docker. If they are nonexistent, a AssumptionViolatedException is thrown
     */
-  def default: ContainerPlatform =
-    _k8sMode.orElse(_dockerMode).getOrElse(throw new AssumptionViolatedException(ERROR_MESSAGE))
+  def default: ContainerPlatform = _k8sMode.orElse(_dockerMode).getOrElse(throw new RuntimeException(ERROR_MESSAGE))
 
   /**
     * @return k8s + docker. Or empty collection
     */
   def all: Seq[ContainerPlatform] = (_dockerMode ++ _k8sMode ++ customMode).toSeq
-
-  /**
-    * @return a empty platform that all methods throw AssumptionViolatedException
-    */
-  def empty: ContainerPlatform = new ContainerPlatform {
-    private[this] val exception = new AssumptionViolatedException(ERROR_MESSAGE)
-
-    override def nodeNames: Set[String] = throw exception
-
-    override def toString: String = "EMPTY"
-
-    override def setup(): ResourceRef = throw exception
-
-    override def setupContainerClient(): ContainerClient = throw exception
-  }
 
   def builder = new Builder
 

@@ -18,8 +18,11 @@ package oharastream.ohara.it.connector.smb
 
 import oharastream.ohara.client.filesystem.{FileSystem, FileSystemTestBase}
 import oharastream.ohara.common.util.CommonUtils
+import oharastream.ohara.it.category.ConnectorGroup
 import org.junit.AssumptionViolatedException
+import org.junit.experimental.categories.Category
 
+@Category(Array(classOf[ConnectorGroup]))
 class TestSmbFileSystem extends FileSystemTestBase {
   private[this] val itProps: ITSmbProps = try ITSmbProps(sys.env)
   catch {

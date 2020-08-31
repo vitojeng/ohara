@@ -222,9 +222,5 @@ class TestMountVolume(platform: ContainerPlatform) extends IntegrationTest {
 
 object TestMountVolume {
   @Parameters(name = "{index} mode = {0}")
-  def parameters: java.util.Collection[ContainerPlatform] = {
-    val modes = ContainerPlatform.all
-    if (modes.isEmpty) java.util.List.of(ContainerPlatform.empty)
-    else modes.asJava
-  }
+  def parameters: java.util.Collection[ContainerPlatform] = ContainerPlatform.all.asJava
 }
