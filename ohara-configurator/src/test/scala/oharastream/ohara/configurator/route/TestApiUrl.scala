@@ -18,7 +18,7 @@ package oharastream.ohara.configurator.route
 
 import oharastream.ohara.common.rule.OharaTest
 import com.typesafe.scalalogging.Logger
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import org.scalatest.matchers.should.Matchers._
 
 import sys.process._

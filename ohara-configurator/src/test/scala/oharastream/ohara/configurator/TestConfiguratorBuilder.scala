@@ -27,7 +27,7 @@ import oharastream.ohara.client.configurator.NodeApi.Node
 import oharastream.ohara.common.rule.OharaTest
 import oharastream.ohara.common.util.{CommonUtils, Releasable, VersionUtils}
 import oharastream.ohara.configurator.Configurator.Mode
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import org.mockito.Mockito
 import org.scalatest.matchers.should.Matchers._
 

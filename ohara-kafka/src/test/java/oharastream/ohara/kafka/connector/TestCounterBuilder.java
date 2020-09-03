@@ -20,44 +20,44 @@ import oharastream.ohara.common.rule.OharaTest;
 import oharastream.ohara.common.setting.ObjectKey;
 import oharastream.ohara.common.util.CommonUtils;
 import oharastream.ohara.metrics.basic.Counter;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class TestCounterBuilder extends OharaTest {
 
-  @Test(expected = NullPointerException.class)
+  @Test
   public void testNullGroup() {
-    CounterBuilder.of().key(null);
+    Assertions.assertThrows(NullPointerException.class, () -> CounterBuilder.of().key(null));
   }
 
-  @Test(expected = NullPointerException.class)
+  @Test
   public void testNullName() {
-    CounterBuilder.of().name(null);
+    Assertions.assertThrows(NullPointerException.class, () -> CounterBuilder.of().name(null));
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   public void testEmptyName() {
-    CounterBuilder.of().name("");
+    Assertions.assertThrows(IllegalArgumentException.class, () -> CounterBuilder.of().name(""));
   }
 
-  @Test(expected = NullPointerException.class)
+  @Test
   public void testNullUnit() {
-    CounterBuilder.of().unit(null);
+    Assertions.assertThrows(NullPointerException.class, () -> CounterBuilder.of().unit(null));
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   public void testEmptyUnit() {
-    CounterBuilder.of().unit("");
+    Assertions.assertThrows(IllegalArgumentException.class, () -> CounterBuilder.of().unit(""));
   }
 
-  @Test(expected = NullPointerException.class)
+  @Test
   public void testNullDocument() {
-    CounterBuilder.of().document(null);
+    Assertions.assertThrows(NullPointerException.class, () -> CounterBuilder.of().document(null));
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   public void testEmptyDocument() {
-    CounterBuilder.of().document("");
+    Assertions.assertThrows(IllegalArgumentException.class, () -> CounterBuilder.of().document(""));
   }
 
   @Test
@@ -67,9 +67,9 @@ public class TestCounterBuilder extends OharaTest {
     String unit = CommonUtils.randomString();
     String document = CommonUtils.randomString();
     Counter counter = CounterBuilder.of().key(key).name(name).unit(unit).document(document).build();
-    Assert.assertEquals(key, counter.key());
-    Assert.assertEquals(name, counter.item());
-    Assert.assertEquals(unit, counter.getUnit());
-    Assert.assertEquals(document, counter.getDocument());
+    Assertions.assertEquals(key, counter.key());
+    Assertions.assertEquals(name, counter.item());
+    Assertions.assertEquals(unit, counter.getUnit());
+    Assertions.assertEquals(document, counter.getDocument());
   }
 }

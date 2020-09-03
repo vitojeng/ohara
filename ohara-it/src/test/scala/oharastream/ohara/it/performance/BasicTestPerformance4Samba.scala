@@ -22,39 +22,28 @@ import java.util.concurrent.atomic.LongAdder
 import oharastream.ohara.client.filesystem.FileSystem
 import oharastream.ohara.common.data.Row
 import oharastream.ohara.common.util.{CommonUtils, Releasable}
-import org.junit.AssumptionViolatedException
+import org.junit.jupiter.api.condition.EnabledIfEnvironmentVariable
 import spray.json.{JsNumber, JsString, JsValue}
 
 import scala.concurrent.duration.Duration
 import scala.jdk.CollectionConverters._
 
+@EnabledIfEnvironmentVariable(named = "ohara.it.performance.samba.hostname", matches = ".*")
+@EnabledIfEnvironmentVariable(named = "ohara.it.performance.samba.user", matches = ".*")
+@EnabledIfEnvironmentVariable(named = "ohara.it.performance.samba.password", matches = ".*")
+@EnabledIfEnvironmentVariable(named = "ohara.it.performance.samba.port", matches = ".*")
+@EnabledIfEnvironmentVariable(named = "ohara.it.performance.samba.sharename", matches = ".*")
 private[performance] abstract class BasicTestPerformance4Samba extends BasicTestPerformance {
-  private[this] val sambaHostname: String = sys.env.getOrElse(
-    PerformanceTestingUtils.SAMBA_HOSTNAME_KEY,
-    throw new AssumptionViolatedException(s"${PerformanceTestingUtils.SAMBA_HOSTNAME_KEY} does not exists!!!")
-  )
-
-  private[this] val sambaUsername: String = sys.env.getOrElse(
-    PerformanceTestingUtils.SAMBA_USER_KEY,
-    throw new AssumptionViolatedException(s"${PerformanceTestingUtils.SAMBA_USER_KEY} does not exists!!!")
-  )
-
-  private[this] val sambaPassword: String = sys.env.getOrElse(
-    PerformanceTestingUtils.SAMBA_PASSWORD_KEY,
-    throw new AssumptionViolatedException(s"${PerformanceTestingUtils.SAMBA_PASSWORD_KEY} does not exists!!!")
-  )
-
-  private[this] val sambaPort: Int = sys.env
-    .getOrElse(
-      PerformanceTestingUtils.SAMBA_PORT_KEY,
-      throw new AssumptionViolatedException(s"${PerformanceTestingUtils.SAMBA_PORT_KEY} does not exists!!!")
-    )
-    .toInt
-
-  private[this] val sambaShare: String = sys.env.getOrElse(
-    PerformanceTestingUtils.SAMBA_SHARE_KEY,
-    throw new AssumptionViolatedException(s"${PerformanceTestingUtils.SAMBA_SHARE_KEY} does not exists!!!")
-  )
+  private[this] val SAMBA_HOSTNAME_KEY: String = "ohara.it.performance.samba.hostname"
+  private[this] val SAMBA_USER_KEY: String     = "ohara.it.performance.samba.user"
+  private[this] val SAMBA_PASSWORD_KEY: String = "ohara.it.performance.samba.password"
+  private[this] val SAMBA_PORT_KEY: String     = "ohara.it.performance.samba.port"
+  private[this] val SAMBA_SHARE_KEY: String    = "ohara.it.performance.samba.sharename"
+  private[this] val sambaHostname: String      = sys.env(SAMBA_HOSTNAME_KEY)
+  private[this] val sambaUsername: String      = sys.env(SAMBA_USER_KEY)
+  private[this] val sambaPassword: String      = sys.env(SAMBA_PASSWORD_KEY)
+  private[this] val sambaPort: Int             = sys.env(SAMBA_PORT_KEY).toInt
+  private[this] val sambaShare: String         = sys.env(SAMBA_SHARE_KEY)
 
   private[this] val csvInputFolderKey       = PerformanceTestingUtils.CSV_INPUT_KEY
   private[this] val csvOutputFolder: String = value(csvInputFolderKey).getOrElse("input")

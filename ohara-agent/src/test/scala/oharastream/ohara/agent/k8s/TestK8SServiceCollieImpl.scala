@@ -23,7 +23,7 @@ import oharastream.ohara.agent.fake.FakeK8SClient
 import oharastream.ohara.client.configurator.NodeApi
 import oharastream.ohara.client.configurator.NodeApi.{Node, Resource}
 import oharastream.ohara.common.rule.OharaTest
-import org.junit.Test
+import org.junit.jupiter.api.Test
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{Await, ExecutionContext, Future}

@@ -20,7 +20,7 @@ import oharastream.ohara.client.kafka.WorkerJson._
 import oharastream.ohara.common.rule.OharaTest
 import oharastream.ohara.common.util.CommonUtils
 import oharastream.ohara.kafka.connector.json.{Creation, Validation}
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import org.scalatest.matchers.should.Matchers._
 import spray.json._
 class TestWorkerJson extends OharaTest {

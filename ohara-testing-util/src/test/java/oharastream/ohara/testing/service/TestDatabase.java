@@ -16,69 +16,74 @@
 
 package oharastream.ohara.testing.service;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
-
 import oharastream.ohara.common.rule.OharaTest;
 import oharastream.ohara.common.util.CommonUtils;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class TestDatabase extends OharaTest {
 
-  @Test(expected = NullPointerException.class)
+  @Test
   public void nullUser() {
-    Database.builder().user(null).build();
+    Assertions.assertThrows(
+        NullPointerException.class, () -> Database.builder().user(null).build());
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   public void emptyUser() {
-    Database.builder().user("").build();
+    Assertions.assertThrows(
+        IllegalArgumentException.class, () -> Database.builder().user("").build());
   }
 
-  @Test(expected = NullPointerException.class)
+  @Test
   public void nullPassword() {
-    Database.builder().password(null).build();
+    Assertions.assertThrows(
+        NullPointerException.class, () -> Database.builder().password(null).build());
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   public void emptyPassword() {
-    Database.builder().password("").build();
+    Assertions.assertThrows(
+        IllegalArgumentException.class, () -> Database.builder().password("").build());
   }
 
-  @Test(expected = NullPointerException.class)
+  @Test
   public void nullDatabaseName() {
-    Database.builder().databaseName(null).build();
+    Assertions.assertThrows(
+        NullPointerException.class, () -> Database.builder().databaseName(null).build());
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   public void emptyDatabase() {
-    Database.builder().databaseName("").build();
+    Assertions.assertThrows(
+        IllegalArgumentException.class, () -> Database.builder().databaseName("").build());
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   public void negativeControlPort() {
-    Database.builder().port(-1).build();
+    Assertions.assertThrows(
+        IllegalArgumentException.class, () -> Database.builder().port(-1).build());
   }
 
   @Test
   public void testSpecificPort() {
     int port = CommonUtils.availablePort();
     try (Database db = Database.builder().port(port).build()) {
-      assertEquals(port, db.port());
+      Assertions.assertEquals(port, db.port());
     }
   }
 
   @Test
   public void testRandomPort() {
     try (Database db = Database.builder().build()) {
-      assertNotEquals(0, db.port());
+      Assertions.assertNotEquals(0, db.port());
     }
   }
 
   @Test
   public void testPortOfLocal() {
     try (Database db = Database.local()) {
-      assertNotEquals(0, db.port());
+      Assertions.assertNotEquals(0, db.port());
     }
   }
 }

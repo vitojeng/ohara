@@ -17,54 +17,54 @@
 package oharastream.ohara.common.data;
 
 import oharastream.ohara.common.rule.OharaTest;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class TestCell extends OharaTest {
 
   @Test
   public void testEquals() {
     Cell<String> cell = Cell.of("abc", "abc");
-    Assert.assertEquals(cell, cell);
-    Assert.assertEquals(cell, Cell.of("abc", "abc"));
-    Assert.assertEquals(Cell.of("abc", "abc"), cell);
+    Assertions.assertEquals(cell, cell);
+    Assertions.assertEquals(cell, Cell.of("abc", "abc"));
+    Assertions.assertEquals(Cell.of("abc", "abc"), cell);
 
     Cell<Integer> cell2 = Cell.of("abc", 123);
-    Assert.assertEquals(cell2, cell2);
-    Assert.assertNotEquals(cell, cell2);
-    Assert.assertNotEquals(cell2, cell);
+    Assertions.assertEquals(cell2, cell2);
+    Assertions.assertNotEquals(cell, cell2);
+    Assertions.assertNotEquals(cell2, cell);
 
     Cell<byte[]> cell3 = Cell.of("abc", "Adasd".getBytes());
-    Assert.assertEquals(cell3, cell3);
-    Assert.assertEquals(cell3, Cell.of("abc", "Adasd".getBytes()));
-    Assert.assertEquals(Cell.of("abc", "Adasd".getBytes()), cell3);
+    Assertions.assertEquals(cell3, cell3);
+    Assertions.assertEquals(cell3, Cell.of("abc", "Adasd".getBytes()));
+    Assertions.assertEquals(Cell.of("abc", "Adasd".getBytes()), cell3);
   }
 
-  @Test(expected = NullPointerException.class)
+  @Test
   public void testNullName() {
-    Cell.of(null, "abc");
+    Assertions.assertThrows(NullPointerException.class, () -> Cell.of(null, "abc"));
   }
 
-  @Test(expected = NullPointerException.class)
+  @Test
   public void testNullValue() {
-    Cell.of("abc", null);
+    Assertions.assertThrows(NullPointerException.class, () -> Cell.of("abc", null));
   }
 
   @Test
   public void testHashCode() {
     Cell<String> cell = Cell.of("abc", "abc");
-    Assert.assertEquals(cell.hashCode(), cell.hashCode());
-    Assert.assertEquals(cell.hashCode(), Cell.of("abc", "abc").hashCode());
+    Assertions.assertEquals(cell.hashCode(), cell.hashCode());
+    Assertions.assertEquals(cell.hashCode(), Cell.of("abc", "abc").hashCode());
 
     Cell<byte[]> cell2 = Cell.of("abc", "abc".getBytes());
-    Assert.assertEquals(cell2.hashCode(), cell2.hashCode());
-    Assert.assertEquals(cell2.hashCode(), Cell.of("abc", "abc".getBytes()).hashCode());
+    Assertions.assertEquals(cell2.hashCode(), cell2.hashCode());
+    Assertions.assertEquals(cell2.hashCode(), Cell.of("abc", "abc".getBytes()).hashCode());
   }
 
   @Test
   public void cellComposeRow() {
     Cell<Row> c = Cell.of("abc", Row.of(Cell.of("abc", "aaa")));
-    Assert.assertEquals(c.name(), "abc");
-    Assert.assertEquals(c.value(), Row.of(Cell.of("abc", "aaa")));
+    Assertions.assertEquals(c.name(), "abc");
+    Assertions.assertEquals(c.value(), Row.of(Cell.of("abc", "aaa")));
   }
 }

@@ -34,9 +34,9 @@ import oharastream.ohara.stream.config.StreamDefUtils;
 import oharastream.ohara.stream.config.StreamSetting;
 import oharastream.ohara.stream.metric.MetricFactory;
 import oharastream.ohara.testing.WithBroker;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 // TODO: the stream requires many arguments from env variables.
 // This tests do not care the rules required by stream.
@@ -63,7 +63,7 @@ public class TestSimpleStreamCounter extends WithBroker {
           .valueSerializer(Serializer.BYTES)
           .build();
 
-  @Before
+  @BeforeEach
   public void setup() {
     int partitions = 1;
     short replications = 1;
@@ -90,7 +90,7 @@ public class TestSimpleStreamCounter extends WithBroker {
           .send()
           .get();
     } catch (Exception e) {
-      Assert.fail();
+      Assertions.fail();
     }
   }
 
@@ -111,7 +111,7 @@ public class TestSimpleStreamCounter extends WithBroker {
     CommonUtils.await(() -> consumer.poll(timeout).size() > 0, Duration.ofSeconds(30));
 
     // there should be two counter bean (in_topic, to_topic)
-    Assert.assertEquals(2, BeanChannel.local().counterMBeans().size());
+    Assertions.assertEquals(2, BeanChannel.local().counterMBeans().size());
 
     BeanChannel.local()
         .counterMBeans()
@@ -119,10 +119,10 @@ public class TestSimpleStreamCounter extends WithBroker {
             bean -> {
               if (bean.item().equals(MetricFactory.IOType.TOPIC_IN.name()))
                 // input counter bean should have exactly two record size
-                Assert.assertEquals(2, Math.toIntExact(bean.getValue()));
+                Assertions.assertEquals(2, Math.toIntExact(bean.getValue()));
               else
                 // output counter bean should have exactly one record size (after filter)
-                Assert.assertEquals(1, Math.toIntExact(bean.getValue()));
+                Assertions.assertEquals(1, Math.toIntExact(bean.getValue()));
             });
   }
 

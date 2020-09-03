@@ -28,8 +28,7 @@ import oharastream.ohara.common.setting.{ConnectorKey, TopicKey}
 import oharastream.ohara.common.util.{CommonUtils, Releasable}
 import oharastream.ohara.kafka.Producer
 import oharastream.ohara.kafka.connector.csv.CsvConnectorDefinitions
-import org.junit.rules.Timeout
-import org.junit.{After, Rule}
+import org.junit.jupiter.api.{AfterEach, Timeout}
 import spray.json.JsValue
 
 import scala.collection.mutable
@@ -46,7 +45,10 @@ import scala.concurrent.duration.Duration
   *    and topics for sub implementation
   * 3) the reports are located at /tmp/performance/$className/$testName/$random.csv by default. Of course, this is related to jenkins
   *    so please don't change it.
+  *
+  * Junit 5 can't generate timeout dynamically so we give a higher timeout instead.
   */
+@Timeout(value = 30, unit = TimeUnit.DAYS)
 private[performance] abstract class BasicTestPerformance extends WithPerformanceRemoteWorkers {
   protected val log: Logger       = Logger(classOf[BasicTestPerformance])
   protected val groupName: String = "benchmark"
@@ -85,11 +87,6 @@ private[performance] abstract class BasicTestPerformance extends WithPerformance
   private[this] val numberOfCsvFileToFlushDefault: Int = 10000
   protected val numberOfCsvFileToFlush: Int =
     value(numberOfCsvFileToFlushKey).map(_.toInt).getOrElse(numberOfCsvFileToFlushDefault)
-
-  private[this] val wholeTimeout = (durationOfPerformance.toSeconds + timeoutOfInputData.toSeconds) * 2
-
-  @Rule
-  override def timeout: Timeout = Timeout.seconds(wholeTimeout)
 
   private[this] val logMetersFrequencyKey               = PerformanceTestingUtils.LOG_METERS_FREQUENCY_KEY
   private[this] val logMetersFrequencyDefault: Duration = Duration(5, TimeUnit.SECONDS)
@@ -344,7 +341,7 @@ private[performance] abstract class BasicTestPerformance extends WithPerformance
     */
   protected def afterStoppingConnectors(connectorInfos: Seq[ConnectorInfo], topicInfos: Seq[TopicInfo]): Unit
 
-  @After
+  @AfterEach
   def record(): Unit = {
     // Have setup connector on the worker.
     // Need to stop the connector on the worker.

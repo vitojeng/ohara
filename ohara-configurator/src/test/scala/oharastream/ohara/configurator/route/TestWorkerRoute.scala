@@ -32,7 +32,7 @@ import oharastream.ohara.common.setting.ObjectKey
 import oharastream.ohara.common.util.{CommonUtils, Releasable}
 import oharastream.ohara.configurator.Configurator
 import oharastream.ohara.configurator.fake.FakeWorkerCollie
-import org.junit.{After, Before, Test}
+import org.junit.jupiter.api.{AfterEach, BeforeEach, Test}
 import org.scalatest.matchers.should.Matchers._
 import spray.json.{DeserializationException, JsArray, JsNumber, JsObject, JsString, JsTrue}
 
@@ -65,7 +65,7 @@ class TestWorkerRoute extends OharaTest {
 
   private[this] def result[T](f: Future[T]): T = Await.result(f, Duration(30, TimeUnit.SECONDS))
 
-  @Before
+  @BeforeEach
   def setup(): Unit = {
     val nodeAccess = NodeApi.access.hostname(configurator.hostname).port(configurator.port)
 
@@ -671,6 +671,6 @@ class TestWorkerRoute extends OharaTest {
       ).compressionType shouldBe compressionType
     }
 
-  @After
+  @AfterEach
   def tearDown(): Unit = Releasable.close(configurator)
 }

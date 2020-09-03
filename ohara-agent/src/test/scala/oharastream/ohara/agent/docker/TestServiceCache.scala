@@ -26,7 +26,7 @@ import oharastream.ohara.client.configurator.ContainerApi.ContainerInfo
 import oharastream.ohara.common.rule.OharaTest
 import oharastream.ohara.common.setting.ObjectKey
 import oharastream.ohara.common.util.CommonUtils
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import org.scalatest.matchers.should.Matchers._
 
 import scala.concurrent.duration.Duration

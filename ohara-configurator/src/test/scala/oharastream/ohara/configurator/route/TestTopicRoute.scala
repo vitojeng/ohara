@@ -24,7 +24,7 @@ import oharastream.ohara.common.setting.{ObjectKey, TopicKey}
 import oharastream.ohara.common.util.{CommonUtils, Releasable}
 import oharastream.ohara.configurator.Configurator
 import oharastream.ohara.configurator.fake.FakeBrokerCollie
-import org.junit.{After, Test}
+import org.junit.jupiter.api.{AfterEach, Test}
 import org.scalatest.matchers.should.Matchers._
 import spray.json.{DeserializationException, JsArray, JsNumber, JsObject, JsString, JsTrue}
 
@@ -609,6 +609,6 @@ class TestTopicRoute extends OharaTest {
     topicInfo.minCleanableDirtyRatio shouldBe ratio
   }
 
-  @After
+  @AfterEach
   def tearDown(): Unit = Releasable.close(configurator)
 }

@@ -29,7 +29,7 @@ import oharastream.ohara.kafka.Consumer.Record
 import oharastream.ohara.kafka.connector.csv.CsvConnectorDefinitions._
 import oharastream.ohara.kafka.connector.csv.{CsvConnectorDefinitions, CsvSourceConnector}
 import oharastream.ohara.testing.With3Brokers3Workers
-import org.junit.{After, Before, Test}
+import org.junit.jupiter.api.{AfterEach, BeforeEach, Test}
 import org.scalatest.matchers.should.Matchers._
 
 import scala.jdk.CollectionConverters._
@@ -158,7 +158,7 @@ abstract class CsvSourceTestBase extends With3Brokers3Workers {
     )
   }
 
-  @Before
+  @BeforeEach
   def setup(): Unit = {
     // cleanup all files in order to avoid corrupted files
     fileSystem.reMkdirs(inputDir)
@@ -430,6 +430,6 @@ abstract class CsvSourceTestBase extends With3Brokers3Workers {
   def testFileToCompleteFolder(): Unit =
     ConnectorTestUtils.fileShouldFail(fileSystem, connectorClass, props, props(COMPLETED_FOLDER_KEY))
 
-  @After
+  @AfterEach
   def tearDown(): Unit = Releasable.close(fileSystem)
 }

@@ -22,7 +22,7 @@ import oharastream.ohara.client.configurator.NodeApi
 import oharastream.ohara.common.rule.OharaTest
 import oharastream.ohara.common.util.{CommonUtils, Releasable}
 import oharastream.ohara.configurator.Configurator
-import org.junit.{After, Test}
+import org.junit.jupiter.api.{AfterEach, Test}
 import org.scalatest.matchers.should.Matchers._
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -60,6 +60,6 @@ class TestNodeNameUpperCaseRoute extends OharaTest {
     result(nodeApi.request.nodeName(name).port(22).user("b").password("c").create())
   }
 
-  @After
+  @AfterEach
   def tearDown(): Unit = Releasable.close(configurator)
 }

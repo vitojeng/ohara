@@ -29,7 +29,7 @@ import oharastream.ohara.kafka.Consumer
 import oharastream.ohara.kafka.connector.TaskSetting
 import oharastream.ohara.testing.With3Brokers3Workers
 import oharastream.ohara.testing.service.Database
-import org.junit.{After, Before, Test}
+import org.junit.jupiter.api.{AfterEach, BeforeEach, Test}
 import org.scalatest.matchers.should.Matchers._
 
 import scala.concurrent.{Await, Future}
@@ -46,7 +46,7 @@ class TestMultipleJDBCSourceConnector extends With3Brokers3Workers {
   private[this] val connectorKey1       = ConnectorKey.of(CommonUtils.randomString(5), "JDBC-Source-Connector-Test")
   private[this] val connectorKey2       = ConnectorKey.of(CommonUtils.randomString(5), "JDBC-Source-Connector-Test")
 
-  @Before
+  @BeforeEach
   def setup(): Unit = {
     val column1 = RdbColumn("column1", "TIMESTAMP(6)", true)
     val column2 = RdbColumn("column2", "varchar(45)", false)
@@ -158,7 +158,7 @@ class TestMultipleJDBCSourceConnector extends With3Brokers3Workers {
 
   private[this] def result[T](future: Future[T]): T = Await.result(future, Duration(20, TimeUnit.SECONDS))
 
-  @After
+  @AfterEach
   def tearDown(): Unit = {
     result(connectorAdmin.delete(connectorKey2))
     result(connectorAdmin.delete(connectorKey1))

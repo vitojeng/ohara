@@ -25,7 +25,7 @@ import oharastream.ohara.common.util.{CommonUtils, Releasable}
 import oharastream.ohara.kafka.Producer
 import oharastream.ohara.shabondi.common.JsonSupport
 import oharastream.ohara.testing.WithBrokerWorker
-import org.junit.{After, Test}
+import org.junit.jupiter.api.{AfterEach, Test}
 import org.scalatest.matchers.should.Matchers._
 import spray.json._
 
@@ -190,6 +190,6 @@ class TestInspectTopic extends WithBrokerWorker {
         |""".stripMargin.parseJson
   }
 
-  @After
+  @AfterEach
   def tearDown(): Unit = Releasable.close(configurator)
 }

@@ -17,7 +17,7 @@
 package oharastream.ohara.client.configurator
 
 import oharastream.ohara.common.rule.OharaTest
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import org.scalatest.matchers.should.Matchers._
 class TestValidationApi extends OharaTest {
   @Test

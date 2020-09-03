@@ -22,7 +22,7 @@ import java.util.concurrent.{Executors, TimeUnit}
 import oharastream.ohara.client.configurator.NodeApi
 import oharastream.ohara.common.rule.OharaTest
 import oharastream.ohara.common.util.{CommonUtils, Releasable}
-import org.junit.{After, Test}
+import org.junit.jupiter.api.{AfterEach, Test}
 import org.scalatest.matchers.should.Matchers._
 
 import scala.concurrent.duration.Duration
@@ -64,6 +64,6 @@ class TestConcurrentAccess extends OharaTest {
     unmatchedCount.get() shouldBe 0
   }
 
-  @After
+  @AfterEach
   def tearDown(): Unit = Releasable.close(configurator)
 }

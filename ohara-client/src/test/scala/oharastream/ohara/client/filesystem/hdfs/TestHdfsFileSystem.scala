@@ -22,7 +22,7 @@ import java.nio.charset.StandardCharsets
 import oharastream.ohara.client.filesystem.{FileFilter, FileSystem, FileSystemTestBase}
 import oharastream.ohara.common.exception.FileSystemException
 import oharastream.ohara.common.util.CommonUtils
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import org.scalatest.matchers.should.Matchers._
 
 class TestHdfsFileSystem extends FileSystemTestBase {

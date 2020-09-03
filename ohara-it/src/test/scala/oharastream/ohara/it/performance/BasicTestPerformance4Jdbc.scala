@@ -20,41 +20,30 @@ import java.io.File
 import java.sql.Timestamp
 import java.util.concurrent.atomic.LongAdder
 
-import oharastream.ohara.common.util.Releasable
-import org.junit.{After, Before}
 import oharastream.ohara.client.configurator.FileInfoApi
 import oharastream.ohara.client.configurator.InspectApi.RdbColumn
 import oharastream.ohara.client.database.DatabaseClient
 import oharastream.ohara.common.data.Row
 import oharastream.ohara.common.setting.ObjectKey
-import oharastream.ohara.common.util.CommonUtils
+import oharastream.ohara.common.util.{CommonUtils, Releasable}
+import org.junit.jupiter.api.condition.EnabledIfEnvironmentVariable
+import org.junit.jupiter.api.{AfterEach, BeforeEach}
 
 import scala.concurrent.ExecutionContext.Implicits.global
-import org.junit.AssumptionViolatedException
-
 import scala.concurrent.duration.Duration
 import scala.jdk.CollectionConverters._
 
+@EnabledIfEnvironmentVariable(named = "ohara.it.performance.jdbc.url", matches = ".*")
+@EnabledIfEnvironmentVariable(named = "ohara.it.performance.jdbc.username", matches = ".*")
+@EnabledIfEnvironmentVariable(named = "ohara.it.performance.jdbc.password", matches = ".*")
 private[performance] abstract class BasicTestPerformance4Jdbc extends BasicTestPerformance {
-  protected[this] val url: String =
-    sys.env.getOrElse(
-      PerformanceTestingUtils.DB_URL_KEY,
-      throw new AssumptionViolatedException(s"${PerformanceTestingUtils.DB_URL_KEY} does not exists!!!")
-    )
-
-  protected[this] val user: String =
-    sys.env.getOrElse(
-      PerformanceTestingUtils.DB_USER_NAME_KEY,
-      throw new AssumptionViolatedException(s"${PerformanceTestingUtils.DB_USER_NAME_KEY} does not exists!!!")
-    )
-
-  protected[this] val password: String =
-    sys.env.getOrElse(
-      PerformanceTestingUtils.DB_PASSWORD_KEY,
-      throw new AssumptionViolatedException(s"${PerformanceTestingUtils.DB_PASSWORD_KEY} does not exists!!!")
-    )
-
-  private[this] val jarFolderPath: String = sys.env.getOrElse(PerformanceTestingUtils.JAR_FOLDER_KEY, "/jar")
+  private[this] val DB_URL_KEY: String       = "ohara.it.performance.jdbc.url"
+  private[this] val DB_USER_NAME_KEY: String = "ohara.it.performance.jdbc.username"
+  private[this] val DB_PASSWORD_KEY: String  = "ohara.it.performance.jdbc.password"
+  protected[this] val url: String            = sys.env(DB_URL_KEY)
+  protected[this] val user: String           = sys.env(DB_USER_NAME_KEY)
+  protected[this] val password: String       = sys.env(DB_PASSWORD_KEY)
+  private[this] val jarFolderPath: String    = sys.env.getOrElse("ohara.it.jar.folder", "/jar")
 
   private[this] val NEED_DELETE_DATA_KEY: String  = PerformanceTestingUtils.DATA_CLEANUP_KEY
   protected[this] val needDeleteData: Boolean     = sys.env.getOrElse(NEED_DELETE_DATA_KEY, "false").toBoolean
@@ -75,7 +64,7 @@ private[performance] abstract class BasicTestPerformance4Jdbc extends BasicTestP
         else RdbColumn(columnName, "VARCHAR(45)", false)
     }
 
-  @Before
+  @BeforeEach
   final def setup(): Unit = {
     client = DatabaseClient.builder.url(url).user(user).password(password).build
   }
@@ -135,8 +124,6 @@ private[performance] abstract class BasicTestPerformance4Jdbc extends BasicTestP
     } finally Releasable.close(client)
   }
 
-  @After
-  def close(): Unit = {
-    Releasable.close(client)
-  }
+  @AfterEach
+  def close(): Unit = Releasable.close(client)
 }

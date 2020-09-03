@@ -19,14 +19,14 @@ package oharastream.ohara.kafka.connector;
 import oharastream.ohara.common.rule.OharaTest;
 import oharastream.ohara.common.setting.TopicKey;
 import oharastream.ohara.common.util.CommonUtils;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class TestTopicPartition extends OharaTest {
 
-  @Test(expected = NullPointerException.class)
+  @Test
   public void nullTopic() {
-    new TopicPartition(null, 1);
+    Assertions.assertThrows(NullPointerException.class, () -> new TopicPartition(null, 1));
   }
 
   @Test
@@ -34,16 +34,16 @@ public class TestTopicPartition extends OharaTest {
     TopicKey topicKey = TopicKey.of("g", "n");
     int partition = (int) CommonUtils.current();
     TopicPartition topicPartition = new TopicPartition(topicKey, partition);
-    Assert.assertEquals(topicKey, topicPartition.topicKey());
-    Assert.assertEquals(partition, topicPartition.partition());
+    Assertions.assertEquals(topicKey, topicPartition.topicKey());
+    Assertions.assertEquals(partition, topicPartition.partition());
   }
 
   @Test
   public void testEquals() {
     TopicPartition topicPartition =
         new TopicPartition(TopicKey.of("g", "n"), (int) CommonUtils.current());
-    Assert.assertEquals(topicPartition, topicPartition);
-    Assert.assertEquals(
+    Assertions.assertEquals(topicPartition, topicPartition);
+    Assertions.assertEquals(
         topicPartition, new TopicPartition(topicPartition.topicKey(), topicPartition.partition()));
   }
 
@@ -51,8 +51,8 @@ public class TestTopicPartition extends OharaTest {
   public void testHashCode() {
     TopicPartition topicPartition =
         new TopicPartition(TopicKey.of("g", "n"), (int) CommonUtils.current());
-    Assert.assertEquals(topicPartition.hashCode(), topicPartition.hashCode());
-    Assert.assertEquals(
+    Assertions.assertEquals(topicPartition.hashCode(), topicPartition.hashCode());
+    Assertions.assertEquals(
         topicPartition.hashCode(),
         new TopicPartition(topicPartition.topicKey(), topicPartition.partition()).hashCode());
   }

@@ -52,25 +52,15 @@ trait ServiceKeyHolder extends Releasable {
     * Noted: the group of key is always "default".
     * @return a random key
     */
-  def generateClusterKey(): ObjectKey = {
+  def generateObjectKey(): ObjectKey = {
     val key = ObjectKey.of(oharastream.ohara.client.configurator.GROUP_DEFAULT, prefix + CommonUtils.randomString(7))
     usedClusterKeys += key
     key
   }
 
-  /**
-    * Add a cluster name to this ClusterNameHolder for managing.
-    *
-    * @param clusterKey cluster key
-    */
-  def addClusterKey(clusterKey: ObjectKey): Unit = {
-    usedClusterKeys += clusterKey
-  }
-
   override def close(): Unit = release(
     clusterKeys = usedClusterKeys.toSet,
-    excludedNodes = Set.empty,
-    finalClose = true
+    excludedNodes = Set.empty
   )
 
   /**
@@ -79,17 +69,7 @@ trait ServiceKeyHolder extends Releasable {
     * @param clusterKeys clusters to remove
     * @param excludedNodes nodes to keep the containers
     */
-  def release(clusterKeys: Set[ObjectKey], excludedNodes: Set[String]): Unit =
-    release(clusterKeys = clusterKeys, excludedNodes = excludedNodes, finalClose = false)
-
-  /**
-    * remove all containers belonging to input clusters. The argument "excludedNodes" enable you to remove a part of
-    * containers from input clusters.
-    * @param clusterKeys clusters to remove
-    * @param excludedNodes nodes to keep the containers
-    * @param finalClose true if this name holder should be closed as well
-    */
-  protected def release(clusterKeys: Set[ObjectKey], excludedNodes: Set[String], finalClose: Boolean): Unit
+  protected def release(clusterKeys: Set[ObjectKey], excludedNodes: Set[String]): Unit
 }
 
 object ServiceKeyHolder {
@@ -107,13 +87,13 @@ object ServiceKeyHolder {
     * @return name holder
     */
   def apply(client: ContainerClient): ServiceKeyHolder =
-    (clusterKey: Set[ObjectKey], excludedNodes: Set[String], finalClose: Boolean) =>
+    (clusterKey: Set[ObjectKey], excludedNodes: Set[String]) =>
       try
       /**
         * Some IT need to close containers so we don't obstruct them form "releasing".
         * However, the final close is still controlled by the global flag.
         */
-      if (!finalClose || !KEEP_CONTAINERS)
+      if (!KEEP_CONTAINERS)
         result(client.containers())
           .filter(
             container =>

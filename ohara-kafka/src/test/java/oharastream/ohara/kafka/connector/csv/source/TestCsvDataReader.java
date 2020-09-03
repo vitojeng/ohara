@@ -23,8 +23,8 @@ import oharastream.ohara.common.data.Column;
 import oharastream.ohara.common.data.DataType;
 import oharastream.ohara.kafka.connector.RowSourceRecord;
 import oharastream.ohara.kafka.connector.TaskSetting;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class TestCsvDataReader extends WithFakeStorage {
 
@@ -51,7 +51,7 @@ public class TestCsvDataReader extends WithFakeStorage {
 
     verifyRecords(records);
     // read again and no data is return. Also, the input file is moved to completed.folder
-    Assert.assertEquals(0, dataReader.read(INPUT_FILE.toString()).size());
+    Assertions.assertEquals(0, dataReader.read(INPUT_FILE.toString()).size());
     verifyFileSize(0, 1, 0);
   }
 
@@ -69,7 +69,7 @@ public class TestCsvDataReader extends WithFakeStorage {
     DataReader dataReader = createDataReader(newSchema);
     List<RowSourceRecord> records = dataReader.read(INPUT_FILE.toString());
 
-    Assert.assertEquals(0, records.size());
+    Assertions.assertEquals(0, records.size());
     verifyFileSize(0, 0, 1);
   }
 

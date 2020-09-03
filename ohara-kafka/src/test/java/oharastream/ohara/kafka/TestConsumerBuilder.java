@@ -20,64 +20,74 @@ import java.util.Set;
 import oharastream.ohara.common.rule.OharaTest;
 import oharastream.ohara.common.setting.TopicKey;
 import oharastream.ohara.kafka.connector.TopicPartition;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class TestConsumerBuilder extends OharaTest {
 
-  @Test(expected = NullPointerException.class)
+  @Test
   public void nullGroupId() {
-    Consumer.builder().groupId(null);
+    Assertions.assertThrows(NullPointerException.class, () -> Consumer.builder().groupId(null));
   }
 
-  @Test(expected = NullPointerException.class)
+  @Test
   public void nullTopicKey() {
-    Consumer.builder().topicKey(null);
+    Assertions.assertThrows(NullPointerException.class, () -> Consumer.builder().topicKey(null));
   }
 
-  @Test(expected = NullPointerException.class)
+  @Test
   public void nullTopicKeys() {
-    Consumer.builder().topicKeys(null);
+    Assertions.assertThrows(NullPointerException.class, () -> Consumer.builder().topicKeys(null));
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   public void emptyTopicKeys() {
-    Consumer.builder().topicKeys(Set.of());
+    Assertions.assertThrows(
+        IllegalArgumentException.class, () -> Consumer.builder().topicKeys(Set.of()));
   }
 
-  @Test(expected = NullPointerException.class)
+  @Test
   public void nullConnectionProps() {
-    Consumer.builder().connectionProps(null);
+    Assertions.assertThrows(
+        NullPointerException.class, () -> Consumer.builder().connectionProps(null));
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   public void emptyConnectionProps() {
-    Consumer.builder().connectionProps("");
+    Assertions.assertThrows(
+        IllegalArgumentException.class, () -> Consumer.builder().connectionProps(""));
   }
 
-  @Test(expected = NullPointerException.class)
+  @Test
   public void nullKeySerializer() {
-    Consumer.builder().keySerializer(null);
+    Assertions.assertThrows(
+        NullPointerException.class, () -> Consumer.builder().keySerializer(null));
   }
 
-  @Test(expected = NullPointerException.class)
+  @Test
   public void nullValueSerializer() {
-    Consumer.builder().valueSerializer(null);
+    Assertions.assertThrows(
+        NullPointerException.class, () -> Consumer.builder().valueSerializer(null));
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   public void emptyAssignments() {
-    Consumer.builder().assignments(Set.of());
+    Assertions.assertThrows(
+        IllegalArgumentException.class, () -> Consumer.builder().assignments(Set.of()));
   }
 
-  @Test(expected = NullPointerException.class)
+  @Test
   public void nullAssignments() {
-    Consumer.builder().assignments(null);
+    Assertions.assertThrows(NullPointerException.class, () -> Consumer.builder().assignments(null));
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   public void assignBothTopicAndAssignments() {
-    Consumer.builder()
-        .assignments(Set.of(new TopicPartition(TopicKey.of("g", "n"), 1)))
-        .topicKey(TopicKey.of("a", "b"));
+    Assertions.assertThrows(
+        IllegalArgumentException.class,
+        () ->
+            Consumer.builder()
+                .assignments(Set.of(new TopicPartition(TopicKey.of("g", "n"), 1)))
+                .topicKey(TopicKey.of("a", "b")));
   }
 }

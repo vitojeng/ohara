@@ -18,7 +18,7 @@ package oharastream.ohara.shabondi.source
 
 import oharastream.ohara.common.rule.OharaTest
 import oharastream.ohara.common.setting.TopicKey
-import org.junit.Test
+import org.junit.jupiter.api.Test
 
 import scala.jdk.CollectionConverters._
 import org.scalatest.matchers.should.Matchers._

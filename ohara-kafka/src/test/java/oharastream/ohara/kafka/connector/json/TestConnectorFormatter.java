@@ -25,24 +25,26 @@ import oharastream.ohara.common.rule.OharaTest;
 import oharastream.ohara.common.setting.ConnectorKey;
 import oharastream.ohara.common.setting.TopicKey;
 import oharastream.ohara.common.util.CommonUtils;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class TestConnectorFormatter extends OharaTest {
 
-  @Test(expected = NullPointerException.class)
+  @Test
   public void nullColumn() {
-    ConnectorFormatter.of().column(null);
+    Assertions.assertThrows(NullPointerException.class, () -> ConnectorFormatter.of().column(null));
   }
 
-  @Test(expected = NullPointerException.class)
+  @Test
   public void nullColumns() {
-    ConnectorFormatter.of().columns(null);
+    Assertions.assertThrows(
+        NullPointerException.class, () -> ConnectorFormatter.of().columns(null));
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   public void emptyColumns() {
-    ConnectorFormatter.of().columns(List.of());
+    Assertions.assertThrows(
+        IllegalArgumentException.class, () -> ConnectorFormatter.of().columns(List.of()));
   }
 
   @Test
@@ -56,12 +58,13 @@ public class TestConnectorFormatter extends OharaTest {
             .connectorKey(ConnectorKey.of(CommonUtils.randomString(5), CommonUtils.randomString(5)))
             .topicKeys(topicKeys)
             .requestOfCreation();
-    Assert.assertNotNull(creation.configs().get(ConnectorDefUtils.TOPIC_NAMES_DEFINITION.key()));
-    Assert.assertEquals(
+    Assertions.assertNotNull(
+        creation.configs().get(ConnectorDefUtils.TOPIC_NAMES_DEFINITION.key()));
+    Assertions.assertEquals(
         StringList.toKafkaString(topicNames),
         creation.configs().get(ConnectorDefUtils.TOPIC_NAMES_DEFINITION.key()));
-    Assert.assertNotNull(creation.configs().get(ConnectorDefUtils.TOPIC_KEYS_DEFINITION.key()));
-    Assert.assertEquals(
+    Assertions.assertNotNull(creation.configs().get(ConnectorDefUtils.TOPIC_KEYS_DEFINITION.key()));
+    Assertions.assertEquals(
         JsonUtils.toString(topicKeys),
         creation.configs().get(ConnectorDefUtils.TOPIC_KEYS_DEFINITION.key()));
   }
@@ -73,17 +76,21 @@ public class TestConnectorFormatter extends OharaTest {
             .connectorKey(ConnectorKey.of(CommonUtils.randomString(5), CommonUtils.randomString(5)))
             .topicKey(TopicKey.of(CommonUtils.randomString(), CommonUtils.randomString()))
             .requestOfCreation();
-    Assert.assertNull(creation.configs().get(ConnectorDefUtils.CONNECTOR_NAME_DEFINITION.key()));
+    Assertions.assertNull(
+        creation.configs().get(ConnectorDefUtils.CONNECTOR_NAME_DEFINITION.key()));
   }
 
-  @Test(expected = NullPointerException.class)
+  @Test
   public void ignoreName() {
-    ConnectorFormatter.of().requestOfCreation();
+    Assertions.assertThrows(
+        NullPointerException.class, () -> ConnectorFormatter.of().requestOfCreation());
   }
 
-  @Test(expected = NullPointerException.class)
+  @Test
   public void nullConnectorKey() {
-    ConnectorFormatter.of().connectorKey(null).requestOfCreation();
+    Assertions.assertThrows(
+        NullPointerException.class,
+        () -> ConnectorFormatter.of().connectorKey(null).requestOfCreation());
   }
 
   @Test
@@ -91,6 +98,6 @@ public class TestConnectorFormatter extends OharaTest {
     ConnectorFormatter format = ConnectorFormatter.of();
     int initialSize = format.settings.size();
     format.setting("a", "[]");
-    Assert.assertEquals(initialSize, format.settings.size());
+    Assertions.assertEquals(initialSize, format.settings.size());
   }
 }

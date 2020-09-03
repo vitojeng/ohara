@@ -16,92 +16,110 @@
 
 package oharastream.ohara.kafka.connector;
 
-import static org.junit.Assert.assertEquals;
-
 import oharastream.ohara.common.data.Cell;
 import oharastream.ohara.common.data.Row;
 import oharastream.ohara.common.rule.OharaTest;
 import oharastream.ohara.common.setting.TopicKey;
 import oharastream.ohara.common.util.CommonUtils;
 import oharastream.ohara.kafka.TimestampType;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class TestRowSinkRecord extends OharaTest {
 
-  @Test(expected = NullPointerException.class)
+  @Test
   public void nullTopic() {
-    RowSinkRecord.builder().topicKey(null);
+    Assertions.assertThrows(
+        NullPointerException.class, () -> RowSinkRecord.builder().topicKey(null));
   }
 
-  @Test(expected = NullPointerException.class)
+  @Test
   public void nullRow() {
-    RowSinkRecord.builder().row(null);
+    Assertions.assertThrows(NullPointerException.class, () -> RowSinkRecord.builder().row(null));
   }
 
-  @Test(expected = NullPointerException.class)
+  @Test
   public void requireTopic() {
-    RowSinkRecord.builder()
-        .row(Row.of(Cell.of(CommonUtils.randomString(10), 123)))
-        .timestamp(CommonUtils.current())
-        .partition(123)
-        .timestampType(TimestampType.NO_TIMESTAMP_TYPE)
-        .offset(123)
-        .build();
+    Assertions.assertThrows(
+        NullPointerException.class,
+        () ->
+            RowSinkRecord.builder()
+                .row(Row.of(Cell.of(CommonUtils.randomString(10), 123)))
+                .timestamp(CommonUtils.current())
+                .partition(123)
+                .timestampType(TimestampType.NO_TIMESTAMP_TYPE)
+                .offset(123)
+                .build());
   }
 
-  @Test(expected = NullPointerException.class)
+  @Test
   public void requireRow() {
-    RowSinkRecord.builder()
-        .topicKey(TopicKey.of("g", "n"))
-        .timestamp(CommonUtils.current())
-        .partition(123)
-        .timestampType(TimestampType.NO_TIMESTAMP_TYPE)
-        .offset(123)
-        .build();
+    Assertions.assertThrows(
+        NullPointerException.class,
+        () ->
+            RowSinkRecord.builder()
+                .topicKey(TopicKey.of("g", "n"))
+                .timestamp(CommonUtils.current())
+                .partition(123)
+                .timestampType(TimestampType.NO_TIMESTAMP_TYPE)
+                .offset(123)
+                .build());
   }
 
-  @Test(expected = NullPointerException.class)
+  @Test
   public void requireTimestamp() {
-    RowSinkRecord.builder()
-        .topicKey(TopicKey.of("g", "n"))
-        .row(Row.of(Cell.of(CommonUtils.randomString(10), 123)))
-        .partition(123)
-        .timestampType(TimestampType.NO_TIMESTAMP_TYPE)
-        .offset(123)
-        .build();
+    Assertions.assertThrows(
+        NullPointerException.class,
+        () ->
+            RowSinkRecord.builder()
+                .topicKey(TopicKey.of("g", "n"))
+                .row(Row.of(Cell.of(CommonUtils.randomString(10), 123)))
+                .partition(123)
+                .timestampType(TimestampType.NO_TIMESTAMP_TYPE)
+                .offset(123)
+                .build());
   }
 
-  @Test(expected = NullPointerException.class)
+  @Test
   public void requirePartition() {
-    RowSinkRecord.builder()
-        .topicKey(TopicKey.of("g", "n"))
-        .row(Row.of(Cell.of(CommonUtils.randomString(10), 123)))
-        .timestamp(CommonUtils.current())
-        .timestampType(TimestampType.NO_TIMESTAMP_TYPE)
-        .offset(123)
-        .build();
+    Assertions.assertThrows(
+        NullPointerException.class,
+        () ->
+            RowSinkRecord.builder()
+                .topicKey(TopicKey.of("g", "n"))
+                .row(Row.of(Cell.of(CommonUtils.randomString(10), 123)))
+                .timestamp(CommonUtils.current())
+                .timestampType(TimestampType.NO_TIMESTAMP_TYPE)
+                .offset(123)
+                .build());
   }
 
-  @Test(expected = NullPointerException.class)
+  @Test
   public void requireTimestampType() {
-    RowSinkRecord.builder()
-        .topicKey(TopicKey.of("g", "n"))
-        .row(Row.of(Cell.of(CommonUtils.randomString(10), 123)))
-        .timestamp(CommonUtils.current())
-        .partition(123)
-        .offset(123)
-        .build();
+    Assertions.assertThrows(
+        NullPointerException.class,
+        () ->
+            RowSinkRecord.builder()
+                .topicKey(TopicKey.of("g", "n"))
+                .row(Row.of(Cell.of(CommonUtils.randomString(10), 123)))
+                .timestamp(CommonUtils.current())
+                .partition(123)
+                .offset(123)
+                .build());
   }
 
-  @Test(expected = NullPointerException.class)
+  @Test
   public void requireOffset() {
-    RowSinkRecord.builder()
-        .topicKey(TopicKey.of("g", "n"))
-        .row(Row.of(Cell.of(CommonUtils.randomString(10), 123)))
-        .timestamp(CommonUtils.current())
-        .partition(123)
-        .timestampType(TimestampType.NO_TIMESTAMP_TYPE)
-        .build();
+    Assertions.assertThrows(
+        NullPointerException.class,
+        () ->
+            RowSinkRecord.builder()
+                .topicKey(TopicKey.of("g", "n"))
+                .row(Row.of(Cell.of(CommonUtils.randomString(10), 123)))
+                .timestamp(CommonUtils.current())
+                .partition(123)
+                .timestampType(TimestampType.NO_TIMESTAMP_TYPE)
+                .build());
   }
 
   @Test
@@ -122,11 +140,11 @@ public class TestRowSinkRecord extends OharaTest {
             .timestampType(tsType)
             .offset(offset)
             .build();
-    assertEquals(topic, r.topicKey());
-    assertEquals(row, r.row());
-    assertEquals(ts, r.timestamp());
-    assertEquals(partition, r.partition());
-    assertEquals(tsType, r.timestampType());
-    assertEquals(offset, r.offset());
+    Assertions.assertEquals(topic, r.topicKey());
+    Assertions.assertEquals(row, r.row());
+    Assertions.assertEquals(ts, r.timestamp());
+    Assertions.assertEquals(partition, r.partition());
+    Assertions.assertEquals(tsType, r.timestampType());
+    Assertions.assertEquals(offset, r.offset());
   }
 }

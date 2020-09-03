@@ -16,9 +16,6 @@
 
 package oharastream.ohara.kafka;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-
 import java.time.Duration;
 import java.util.Map;
 import java.util.NoSuchElementException;
@@ -30,9 +27,9 @@ import oharastream.ohara.common.util.CommonUtils;
 import oharastream.ohara.common.util.Releasable;
 import oharastream.ohara.testing.With3Brokers;
 import org.apache.kafka.common.config.TopicConfig;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class TestTopicAdmin extends With3Brokers {
   private final TopicAdmin client = TopicAdmin.of(testUtil().brokersConnProps());
@@ -68,21 +65,21 @@ public class TestTopicAdmin extends With3Brokers {
         .toCompletableFuture()
         .get();
     waitPartitions(topicKey, numberOfPartitions);
-    assertEquals(
+    Assertions.assertEquals(
         numberOfPartitions,
         client.topicDescription(topicKey).toCompletableFuture().get().numberOfPartitions());
 
     numberOfPartitions = 2;
     client.createPartitions(topicKey, numberOfPartitions).toCompletableFuture().get();
     waitPartitions(topicKey, numberOfPartitions);
-    assertEquals(
+    Assertions.assertEquals(
         numberOfPartitions,
         client.topicDescription(topicKey).toCompletableFuture().get().numberOfPartitions());
     // decrease the number
-    Assert.assertThrows(
+    Assertions.assertThrows(
         Exception.class, () -> client.createPartitions(topicKey, 1).toCompletableFuture().get());
     // alter an nonexistent topic
-    Assert.assertThrows(
+    Assertions.assertThrows(
         NoSuchElementException.class,
         () -> {
           try {
@@ -111,15 +108,16 @@ public class TestTopicAdmin extends With3Brokers {
     waitPartitions(topicKey, numberOfPartitions);
     TopicDescription topicInfo = client.topicDescription(topicKey).toCompletableFuture().get();
 
-    assertEquals(topicKey, topicInfo.topicKey());
+    Assertions.assertEquals(topicKey, topicInfo.topicKey());
 
-    assertEquals(numberOfPartitions, topicInfo.numberOfPartitions());
-    assertEquals(numberOfReplications, topicInfo.numberOfReplications());
+    Assertions.assertEquals(numberOfPartitions, topicInfo.numberOfPartitions());
+    Assertions.assertEquals(numberOfReplications, topicInfo.numberOfReplications());
 
-    assertEquals(topicInfo, client.topicDescription(topicKey).toCompletableFuture().get());
+    Assertions.assertEquals(
+        topicInfo, client.topicDescription(topicKey).toCompletableFuture().get());
 
     client.deleteTopic(topicKey).toCompletableFuture().get();
-    assertFalse(client.exist(topicKey).toCompletableFuture().get());
+    Assertions.assertFalse(client.exist(topicKey).toCompletableFuture().get());
   }
 
   @Test
@@ -141,12 +139,12 @@ public class TestTopicAdmin extends With3Brokers {
 
     TopicDescription topicInfo = client.topicDescription(topicKey).toCompletableFuture().get();
 
-    assertEquals(topicKey, topicInfo.topicKey());
+    Assertions.assertEquals(topicKey, topicInfo.topicKey());
 
-    assertEquals(numberOfPartitions, topicInfo.numberOfPartitions());
-    assertEquals(numberOfReplications, topicInfo.numberOfReplications());
+    Assertions.assertEquals(numberOfPartitions, topicInfo.numberOfPartitions());
+    Assertions.assertEquals(numberOfReplications, topicInfo.numberOfReplications());
 
-    assertEquals(
+    Assertions.assertEquals(
         TopicConfig.CLEANUP_POLICY_DELETE,
         topicInfo.options().stream()
             .filter(x -> Objects.equals(x.key(), TopicConfig.CLEANUP_POLICY_CONFIG))
@@ -155,7 +153,7 @@ public class TestTopicAdmin extends With3Brokers {
             .value());
   }
 
-  @After
+  @AfterEach
   public void cleanup() throws ExecutionException, InterruptedException {
     client
         .topicKeys()

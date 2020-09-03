@@ -17,8 +17,8 @@
 package oharastream.ohara.common.util;
 
 import oharastream.ohara.common.rule.OharaTest;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class TestReleaseOnce extends OharaTest {
 
@@ -26,16 +26,16 @@ public class TestReleaseOnce extends OharaTest {
   public void testIsClosed() {
     SimpleReleaseOnce c = new SimpleReleaseOnce();
     c.close();
-    Assert.assertTrue(c.isClosed());
+    Assertions.assertTrue(c.isClosed());
   }
 
   @Test
   public void testCloseOnce() {
     SimpleReleaseOnce c = new SimpleReleaseOnce();
     c.close();
-    Assert.assertEquals(1, c.closeCount);
+    Assertions.assertEquals(1, c.closeCount);
     c.close();
-    Assert.assertEquals(1, c.closeCount);
+    Assertions.assertEquals(1, c.closeCount);
   }
 
   @Test
@@ -44,13 +44,16 @@ public class TestReleaseOnce extends OharaTest {
   }
 
   /** NOTED: all exception is converted to RuntimeException */
-  @Test(expected = RuntimeException.class)
+  @Test
   public void testThrowException() {
-    Releasable.close(
-        new TerribleReleaseOnce(),
-        t -> {
-          throw new RuntimeException(t);
-        });
+    Assertions.assertThrows(
+        RuntimeException.class,
+        () ->
+            Releasable.close(
+                new TerribleReleaseOnce(),
+                t -> {
+                  throw new RuntimeException(t);
+                }));
   }
 
   private static class SimpleReleaseOnce extends ReleaseOnce {

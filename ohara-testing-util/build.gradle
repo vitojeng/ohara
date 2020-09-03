@@ -64,7 +64,8 @@ dependencies {
   testImplementation project(':ohara-common').sourceSets.test.output
   testImplementation libs.scalatest
   testImplementation libs.mockitoAll
-  testImplementation libs.junit
+  testImplementation libs.junitApi
+  testRuntimeOnly libs.junitEngine
 }
 
 distributions {

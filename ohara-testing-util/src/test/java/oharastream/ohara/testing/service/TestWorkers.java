@@ -18,8 +18,8 @@ package oharastream.ohara.testing.service;
 
 import oharastream.ohara.common.rule.OharaTest;
 import oharastream.ohara.common.util.CommonUtils;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class TestWorkers extends OharaTest {
 
@@ -31,7 +31,7 @@ public class TestWorkers extends OharaTest {
     try (Zookeepers zk = Zookeepers.local(0);
         Brokers brokers = Brokers.local(zk, brokerPorts);
         Workers workers = Workers.local(brokers, new int[] {workerPort})) {
-      Assert.assertEquals(
+      Assertions.assertEquals(
           workerPort, Integer.parseInt(workers.connectionProps().split(",")[0].split(":")[1]));
     }
   }
@@ -44,7 +44,7 @@ public class TestWorkers extends OharaTest {
     try (Zookeepers zk = Zookeepers.local(0);
         Brokers brokers = Brokers.local(zk, brokerPorts);
         Workers workers = Workers.local(brokers, workerPorts)) {
-      Assert.assertNotEquals(
+      Assertions.assertNotEquals(
           0, Integer.parseInt(workers.connectionProps().split(",")[0].split(":")[1]));
     }
   }

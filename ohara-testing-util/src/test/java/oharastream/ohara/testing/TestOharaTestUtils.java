@@ -16,12 +16,11 @@
 
 package oharastream.ohara.testing;
 
-import static org.junit.Assert.assertEquals;
-
 import oharastream.ohara.common.rule.OharaTest;
 import oharastream.ohara.testing.service.FtpServer;
 import oharastream.ohara.testing.service.Hdfs;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class TestOharaTestUtils extends OharaTest {
 
@@ -31,7 +30,7 @@ public class TestOharaTestUtils extends OharaTest {
       String connectionProps = null;
       for (int i = 0; i != 10; ++i) {
         if (connectionProps == null) connectionProps = util.brokersConnProps();
-        else assertEquals(connectionProps, util.brokersConnProps());
+        else Assertions.assertEquals(connectionProps, util.brokersConnProps());
       }
     }
   }
@@ -42,7 +41,7 @@ public class TestOharaTestUtils extends OharaTest {
       String connectionProps = null;
       for (int i = 0; i != 10; ++i) {
         if (connectionProps == null) connectionProps = util.workersConnProps();
-        else assertEquals(connectionProps, util.workersConnProps());
+        else Assertions.assertEquals(connectionProps, util.workersConnProps());
       }
     }
   }
@@ -53,7 +52,7 @@ public class TestOharaTestUtils extends OharaTest {
       FtpServer fs = null;
       for (int i = 0; i != 10; ++i) {
         if (fs == null) fs = util.ftpServer();
-        else assertEquals(fs, util.ftpServer());
+        else Assertions.assertEquals(fs, util.ftpServer());
       }
     }
   }
@@ -64,7 +63,7 @@ public class TestOharaTestUtils extends OharaTest {
       Hdfs hdfs = null;
       for (int i = 0; i != 10; ++i) {
         if (hdfs == null) hdfs = util.hdfs();
-        else assertEquals(hdfs, util.hdfs());
+        else Assertions.assertEquals(hdfs, util.hdfs());
       }
     }
   }

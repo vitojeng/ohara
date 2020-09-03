@@ -16,10 +16,6 @@
 
 package oharastream.ohara.kafka.connector;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -35,40 +31,50 @@ import oharastream.ohara.kafka.connector.json.ConnectorFormatter;
 import org.apache.kafka.connect.header.Header;
 import org.apache.kafka.connect.header.Headers;
 import org.apache.kafka.connect.source.SourceRecord;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 public class TestRowSourceRecord extends OharaTest {
 
-  @Test(expected = NullPointerException.class)
+  @Test
   public void requireTopic() {
-    RowSourceRecord.builder().row(Row.of(Cell.of(CommonUtils.randomString(10), 123))).build();
+    Assertions.assertThrows(
+        NullPointerException.class,
+        () ->
+            RowSourceRecord.builder()
+                .row(Row.of(Cell.of(CommonUtils.randomString(10), 123)))
+                .build());
   }
 
-  @Test(expected = NullPointerException.class)
+  @Test
   public void requireRow() {
-    RowSourceRecord.builder().topicKey(TopicKey.of("g", "n")).build();
+    Assertions.assertThrows(
+        NullPointerException.class,
+        () -> RowSourceRecord.builder().topicKey(TopicKey.of("g", "n")).build());
   }
 
-  @Test(expected = NullPointerException.class)
+  @Test
   public void nullRow() {
-    RowSourceRecord.builder().row(null);
+    Assertions.assertThrows(NullPointerException.class, () -> RowSourceRecord.builder().row(null));
   }
 
-  @Test(expected = NullPointerException.class)
+  @Test
   public void nullTopicName() {
-    RowSourceRecord.builder().topicKey(null);
+    Assertions.assertThrows(
+        NullPointerException.class, () -> RowSourceRecord.builder().topicKey(null));
   }
 
-  @Test(expected = NullPointerException.class)
+  @Test
   public void nullSourcePartition() {
-    RowSourceRecord.builder().sourcePartition(null);
+    Assertions.assertThrows(
+        NullPointerException.class, () -> RowSourceRecord.builder().sourcePartition(null));
   }
 
-  @Test(expected = NullPointerException.class)
+  @Test
   public void nullSourceOffset() {
-    RowSourceRecord.builder().sourcePartition(null);
+    Assertions.assertThrows(
+        NullPointerException.class, () -> RowSourceRecord.builder().sourcePartition(null));
   }
 
   @Test
@@ -77,12 +83,12 @@ public class TestRowSourceRecord extends OharaTest {
     TopicKey topic = TopicKey.of("g", "n");
 
     RowSourceRecord r = RowSourceRecord.builder().topicKey(topic).row(row).build();
-    assertEquals(topic, r.topicKey());
-    assertEquals(row, r.row());
-    assertFalse(r.partition().isPresent());
-    assertFalse(r.timestamp().isPresent());
-    assertTrue(r.sourceOffset().isEmpty());
-    assertTrue(r.sourcePartition().isEmpty());
+    Assertions.assertEquals(topic, r.topicKey());
+    Assertions.assertEquals(row, r.row());
+    Assertions.assertFalse(r.partition().isPresent());
+    Assertions.assertFalse(r.timestamp().isPresent());
+    Assertions.assertTrue(r.sourceOffset().isEmpty());
+    Assertions.assertTrue(r.sourcePartition().isEmpty());
   }
 
   @Test
@@ -103,32 +109,38 @@ public class TestRowSourceRecord extends OharaTest {
             .sourceOffset(sourceOffset)
             .sourcePartition(sourcePartition)
             .build();
-    assertEquals(topic, r.topicKey());
-    assertEquals(row, r.row());
-    assertEquals(ts, (long) r.timestamp().get());
-    assertEquals(partition, (int) r.partition().get());
-    assertEquals(sourceOffset, r.sourceOffset());
-    assertEquals(sourcePartition, r.sourcePartition());
+    Assertions.assertEquals(topic, r.topicKey());
+    Assertions.assertEquals(row, r.row());
+    Assertions.assertEquals(ts, (long) r.timestamp().get());
+    Assertions.assertEquals(partition, (int) r.partition().get());
+    Assertions.assertEquals(sourceOffset, r.sourceOffset());
+    Assertions.assertEquals(sourcePartition, r.sourcePartition());
   }
 
-  @Test(expected = UnsupportedOperationException.class)
+  @Test
   public void failedToModifySourcePartition() {
-    RowSourceRecord.builder()
-        .topicKey(TopicKey.of("g", "n"))
-        .row(Row.of(Cell.of(CommonUtils.randomString(10), 123)))
-        .build()
-        .sourceOffset()
-        .remove("a");
+    Assertions.assertThrows(
+        UnsupportedOperationException.class,
+        () ->
+            RowSourceRecord.builder()
+                .topicKey(TopicKey.of("g", "n"))
+                .row(Row.of(Cell.of(CommonUtils.randomString(10), 123)))
+                .build()
+                .sourceOffset()
+                .remove("a"));
   }
 
-  @Test(expected = UnsupportedOperationException.class)
+  @Test
   public void failedToModifySourceOffset() {
-    RowSourceRecord.builder()
-        .topicKey(TopicKey.of("g", "n"))
-        .row(Row.of(Cell.of(CommonUtils.randomString(10), 123)))
-        .build()
-        .sourceOffset()
-        .remove("a");
+    Assertions.assertThrows(
+        UnsupportedOperationException.class,
+        () ->
+            RowSourceRecord.builder()
+                .topicKey(TopicKey.of("g", "n"))
+                .row(Row.of(Cell.of(CommonUtils.randomString(10), 123)))
+                .build()
+                .sourceOffset()
+                .remove("a"));
   }
 
   @Test
@@ -150,8 +162,8 @@ public class TestRowSourceRecord extends OharaTest {
             .connectorKey(ConnectorKey.of("a", "b"))
             .checkRule(SettingDef.CheckRule.PERMISSIVE)
             .raw());
-    Assert.assertEquals(1, task.poll().size());
-    Assert.assertEquals(1, task.cachedRecords.size());
+    Assertions.assertEquals(1, task.poll().size());
+    Assertions.assertEquals(1, task.cachedRecords.size());
     org.apache.kafka.clients.producer.RecordMetadata meta =
         new org.apache.kafka.clients.producer.RecordMetadata(
             new org.apache.kafka.common.TopicPartition(TopicKey.of("g", "n").topicNameOnKafka(), 1),
@@ -177,6 +189,6 @@ public class TestRowSourceRecord extends OharaTest {
                 })
             .collect(Collectors.toList());
     kafkaRecords.forEach(r -> task.commitRecord(r, meta));
-    Assert.assertEquals(0, task.cachedRecords.size());
+    Assertions.assertEquals(0, task.cachedRecords.size());
   }
 }

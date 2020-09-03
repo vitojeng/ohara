@@ -16,56 +16,37 @@
 
 package oharastream.ohara.common.rule;
 
-import static org.junit.Assert.assertEquals;
-
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class TestOharaTest extends OharaTest {
 
   @Test
   public void TestException() {
-    Assert.assertThrows(
+    Assertions.assertThrows(
         IllegalArgumentException.class,
         () -> {
           throw new IllegalArgumentException("test");
         });
 
-    Assert.assertThrows(
+    Assertions.assertThrows(
         ArithmeticException.class,
         () -> {
           throw new ArithmeticException("test");
         });
   }
 
-  @Test(expected = AssertionError.class)
-  public void TestExceptionError() {
-    Assert.assertThrows(
-        IllegalArgumentException.class,
-        () -> {
-          //                not match exception
-          throw new ArithmeticException("test");
-        });
-    throw new RuntimeException("assertException didn't fail , normally can't see this msg");
-  }
-
-  @Test(expected = AssertionError.class)
-  public void TestExceptionError2() {
-    Assert.assertThrows(IllegalArgumentException.class, () -> {});
-    throw new RuntimeException("assertException didn't fail , normally can't see this msg");
-  }
-
   @Test
   public void TestExceptionCompare() {
     Exception e =
-        Assert.assertThrows(
+        Assertions.assertThrows(
             RuntimeException.class,
             () -> {
               throw new RuntimeException(new ArithmeticException("test"));
             });
 
-    assertEquals(e.getClass(), RuntimeException.class);
-    assertEquals(e.getCause().getClass(), ArithmeticException.class);
-    assertEquals(e.getCause().getMessage(), "test");
+    Assertions.assertEquals(e.getClass(), RuntimeException.class);
+    Assertions.assertEquals(e.getCause().getClass(), ArithmeticException.class);
+    Assertions.assertEquals(e.getCause().getMessage(), "test");
   }
 }

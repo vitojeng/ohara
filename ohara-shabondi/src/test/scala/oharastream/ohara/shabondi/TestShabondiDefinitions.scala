@@ -18,7 +18,7 @@ package oharastream.ohara.shabondi
 
 import oharastream.ohara.common.rule.OharaTest
 import oharastream.ohara.common.setting.ClassType
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import org.scalatest.matchers.should.Matchers._
 
 class TestShabondiDefinitions extends OharaTest {

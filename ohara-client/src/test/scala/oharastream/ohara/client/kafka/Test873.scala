@@ -27,7 +27,7 @@ import oharastream.ohara.common.rule.OharaTest
 import oharastream.ohara.common.setting.ConnectorKey
 import oharastream.ohara.common.util.CommonUtils
 import oharastream.ohara.kafka.connector.json.Creation
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import org.scalatest.matchers.should.Matchers._
 
 import scala.concurrent.{Await, Future}

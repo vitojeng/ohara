@@ -22,7 +22,7 @@ import oharastream.ohara.common.setting.ConnectorKey
 import oharastream.ohara.common.util.{CommonUtils, Releasable}
 import oharastream.ohara.connector.ftp.FtpSink
 import oharastream.ohara.kafka.connector.csv.CsvConnectorDefinitions
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import spray.json.{JsNumber, JsString}
 
 class TestPerformance4FtpSink extends BasicTestPerformance4Ftp {

@@ -19,45 +19,52 @@ package oharastream.ohara.stream.ostream;
 import oharastream.ohara.common.rule.OharaTest;
 import oharastream.ohara.common.setting.ObjectKey;
 import oharastream.ohara.common.util.CommonUtils;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class TestOStreamBuilder extends OharaTest {
 
   private final ObjectKey key = CommonUtils.randomKey();
 
-  @Test(expected = NullPointerException.class)
+  @Test
   public void nullBootstrapServers() {
-    OStreamBuilder.builder().bootstrapServers(null);
+    Assertions.assertThrows(
+        NullPointerException.class, () -> OStreamBuilder.builder().bootstrapServers(null));
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   public void emptyBootstrapServers() {
-    OStreamBuilder.builder().bootstrapServers("");
+    Assertions.assertThrows(
+        IllegalArgumentException.class, () -> OStreamBuilder.builder().bootstrapServers(""));
   }
 
-  @Test(expected = NullPointerException.class)
+  @Test
   public void nullKey() {
-    OStreamBuilder.builder().key(null);
+    Assertions.assertThrows(NullPointerException.class, () -> OStreamBuilder.builder().key(null));
   }
 
-  @Test(expected = NullPointerException.class)
+  @Test
   public void nullFromTopic() {
-    OStreamBuilder.builder().fromTopic(null);
+    Assertions.assertThrows(
+        NullPointerException.class, () -> OStreamBuilder.builder().fromTopic(null));
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   public void emptyFromTopic() {
-    OStreamBuilder.builder().fromTopic("");
+    Assertions.assertThrows(
+        IllegalArgumentException.class, () -> OStreamBuilder.builder().fromTopic(""));
   }
 
-  @Test(expected = NullPointerException.class)
+  @Test
   public void nullToTopic() {
-    OStreamBuilder.builder().toTopic(null);
+    Assertions.assertThrows(
+        NullPointerException.class, () -> OStreamBuilder.builder().toTopic(null));
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   public void emptyToTopic() {
-    OStreamBuilder.builder().toTopic("");
+    Assertions.assertThrows(
+        IllegalArgumentException.class, () -> OStreamBuilder.builder().toTopic(""));
   }
 
   @Test

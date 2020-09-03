@@ -17,19 +17,22 @@
 package oharastream.ohara.kafka.connector.csv.sink;
 
 import java.io.File;
-import java.util.*;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import oharastream.ohara.common.data.Column;
 import oharastream.ohara.kafka.connector.RowSinkRecord;
 import oharastream.ohara.kafka.connector.TopicPartition;
 import oharastream.ohara.kafka.connector.csv.CsvConnectorDefinitions;
 import oharastream.ohara.kafka.connector.csv.WithMockStorage;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class TestCsvDataWriter extends WithMockStorage {
   private final Map<String, String> localProps = new HashMap<>();
   private final File topicsDir = createTemporaryFolder();
-  private final String extension = ".csv";
 
   private CsvDataWriter dataWriter;
 
@@ -57,8 +60,8 @@ public class TestCsvDataWriter extends WithMockStorage {
 
     dataWriter.write(sinkRecords);
     Map<TopicPartition, Long> committedOffsets = dataWriter.getCommittedOffsetsAndReset();
-    Assert.assertNotNull(committedOffsets.get(TOPIC_PARTITION));
-    Assert.assertEquals(6, committedOffsets.get(TOPIC_PARTITION).intValue());
+    Assertions.assertNotNull(committedOffsets.get(TOPIC_PARTITION));
+    Assertions.assertEquals(6, committedOffsets.get(TOPIC_PARTITION).intValue());
     dataWriter.close();
 
     long[] validOffsets = {0, 3, 6};
@@ -115,18 +118,18 @@ public class TestCsvDataWriter extends WithMockStorage {
   public void testAssignment() {
     setUp();
 
-    Assert.assertEquals(2, dataWriter.getAssignment().size());
-    Assert.assertEquals(2, dataWriter.getTopicPartitionWriters().size());
+    Assertions.assertEquals(2, dataWriter.getAssignment().size());
+    Assertions.assertEquals(2, dataWriter.getTopicPartitionWriters().size());
 
     dataWriter.attach(Set.of(TOPIC_PARTITION3));
-    Assert.assertEquals(3, dataWriter.getAssignment().size());
-    Assert.assertEquals(3, dataWriter.getTopicPartitionWriters().size());
+    Assertions.assertEquals(3, dataWriter.getAssignment().size());
+    Assertions.assertEquals(3, dataWriter.getTopicPartitionWriters().size());
 
     dataWriter.write(List.of());
 
     dataWriter.close();
-    Assert.assertEquals(0, dataWriter.getAssignment().size());
-    Assert.assertEquals(0, dataWriter.getTopicPartitionWriters().size());
+    Assertions.assertEquals(0, dataWriter.getAssignment().size());
+    Assertions.assertEquals(0, dataWriter.getTopicPartitionWriters().size());
   }
 
   protected void verify(List<RowSinkRecord> sinkRecords, long[] validOffsets) {
@@ -140,12 +143,13 @@ public class TestCsvDataWriter extends WithMockStorage {
         long startOffset = validOffsets[i - 1];
         long size = validOffsets[i] - startOffset;
 
+        String extension = ".csv";
         String filePath =
             FileUtils.committedFileName(
                 config.outputFolder(), getDirectory(tp), tp, startOffset, extension);
         Collection<String> data = readData(filePath);
 
-        Assert.assertEquals(size, data.size());
+        Assertions.assertEquals(size, data.size());
         verifyContents(sinkRecords, j, data);
         j += size;
       }
@@ -158,16 +162,16 @@ public class TestCsvDataWriter extends WithMockStorage {
       RowSinkRecord expectedRecord = expectedRecords.get(startIndex++);
       List<Column> expectedSchema = RecordUtils.newSchema(null, expectedRecord);
       String expectedLine = RecordUtils.toLine(expectedSchema, expectedRecord);
-      Assert.assertEquals(expectedLine, line);
+      Assertions.assertEquals(expectedLine, line);
     }
   }
 
   protected void verifyOffset(Map<TopicPartition, Long> actualOffsets, long validOffset) {
     if (validOffset > 0) {
-      Assert.assertNotNull(actualOffsets.get(TOPIC_PARTITION));
-      Assert.assertEquals(validOffset, actualOffsets.get(TOPIC_PARTITION).intValue());
+      Assertions.assertNotNull(actualOffsets.get(TOPIC_PARTITION));
+      Assertions.assertEquals(validOffset, actualOffsets.get(TOPIC_PARTITION).intValue());
     } else {
-      Assert.assertNull(actualOffsets.get(TOPIC_PARTITION));
+      Assertions.assertNull(actualOffsets.get(TOPIC_PARTITION));
     }
   }
 

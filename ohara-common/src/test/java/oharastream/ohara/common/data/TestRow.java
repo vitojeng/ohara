@@ -19,63 +19,65 @@ package oharastream.ohara.common.data;
 import java.util.Arrays;
 import java.util.List;
 import oharastream.ohara.common.rule.OharaTest;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class TestRow extends OharaTest {
 
   @Test
   public void testEmpty() {
-    Assert.assertEquals(Row.EMPTY, Row.EMPTY);
+    Assertions.assertEquals(Row.EMPTY, Row.EMPTY);
   }
 
   @Test
   public void testEquals() {
     Row row = Row.of(Arrays.asList("tag", "tag2"), Cell.of("aa", "aa"), Cell.of("b", 123));
     Row row2 = Row.of(Arrays.asList("tag", "tag2"), Cell.of("aa", "aa"), Cell.of("b", 123));
-    Assert.assertEquals(row, row);
-    Assert.assertEquals(row, row2);
-    Assert.assertEquals(row2, row);
+    Assertions.assertEquals(row, row);
+    Assertions.assertEquals(row, row2);
+    Assertions.assertEquals(row2, row);
   }
 
   @Test
   public void testEqualsWithoutTags() {
     Row row = Row.of(Arrays.asList("tag", "tag2"), Cell.of("aa", "aa"), Cell.of("b", 123));
     Row row2 = Row.of(List.of("tag"), Cell.of("aa", "aa"), Cell.of("b", 123));
-    Assert.assertTrue(row.equals(row, false));
-    Assert.assertTrue(row.equals(row2, false));
-    Assert.assertTrue(row2.equals(row, false));
+    Assertions.assertTrue(row.equals(row, false));
+    Assertions.assertTrue(row.equals(row2, false));
+    Assertions.assertTrue(row2.equals(row, false));
   }
 
   @Test
   public void testCells() {
     Row row = Row.of(Arrays.asList("tag", "tag2"), Cell.of("aa", "aa"), Cell.of("b", 123));
-    Assert.assertEquals(2, row.size());
-    Assert.assertEquals(2, row.cells().size());
-    Assert.assertEquals(Cell.of("aa", "aa"), row.cell(0));
-    Assert.assertEquals(Cell.of("aa", "aa"), row.cell("aa"));
+    Assertions.assertEquals(2, row.size());
+    Assertions.assertEquals(2, row.cells().size());
+    Assertions.assertEquals(Cell.of("aa", "aa"), row.cell(0));
+    Assertions.assertEquals(Cell.of("aa", "aa"), row.cell("aa"));
   }
 
   @Test
   public void testTags() {
     Row row = Row.of(Arrays.asList("tag", "tag2"), Cell.of("aa", "aa"), Cell.of("b", 123));
-    Assert.assertEquals(2, row.tags().size());
-    Assert.assertEquals("tag", row.tags().get(0));
-    Assert.assertEquals("tag2", row.tags().get(1));
+    Assertions.assertEquals(2, row.tags().size());
+    Assertions.assertEquals("tag", row.tags().get(0));
+    Assertions.assertEquals("tag2", row.tags().get(1));
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   public void duplicateNameIsIllegal() {
-    Row.of(Arrays.asList("tag", "tag2"), Cell.of("aa", "aa"), Cell.of("aa", 123));
+    Assertions.assertThrows(
+        IllegalArgumentException.class,
+        () -> Row.of(Arrays.asList("tag", "tag2"), Cell.of("aa", "aa"), Cell.of("aa", 123)));
   }
 
   @Test
   public void composeRow() {
     Row row = Row.of(Cell.of("abc", Row.of(Cell.of("abc", "aaa"))));
     Row row2 = Row.of(Cell.of("abc", Row.of(Cell.of("abc", "aaa"))));
-    Assert.assertEquals(row, row);
-    Assert.assertEquals(row, row2);
-    Assert.assertEquals(row2, row);
+    Assertions.assertEquals(row, row);
+    Assertions.assertEquals(row, row2);
+    Assertions.assertEquals(row2, row);
   }
 
   @Test
@@ -84,8 +86,8 @@ public class TestRow extends OharaTest {
     var cell1 = Cell.of("ranking", 1);
     var cell2 = Cell.of("single", false);
     var row = Row.of(cell0, cell1, cell2);
-    Assert.assertEquals(cell0, row.cell(0));
-    Assert.assertEquals(cell1, row.cell(1));
-    Assert.assertEquals(cell2, row.cell(2));
+    Assertions.assertEquals(cell0, row.cell(0));
+    Assertions.assertEquals(cell1, row.cell(1));
+    Assertions.assertEquals(cell2, row.cell(2));
   }
 }

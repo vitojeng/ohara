@@ -26,34 +26,36 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.IntStream;
 import oharastream.ohara.common.rule.OharaTest;
 import oharastream.ohara.common.util.CommonUtils;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class TestRefreshableCache extends OharaTest {
 
-  @Test(expected = NullPointerException.class)
+  @Test
   public void nullFrequency() {
-    RefreshableCache.<String, String>builder().frequency(null);
+    Assertions.assertThrows(
+        NullPointerException.class,
+        () -> RefreshableCache.<String, String>builder().frequency(null));
   }
 
-  @Test(expected = NullPointerException.class)
+  @Test
   public void nullTimeout() {
-    RefreshableCache.<String, String>builder().timeout(null);
+    Assertions.assertThrows(
+        NullPointerException.class, () -> RefreshableCache.<String, String>builder().timeout(null));
   }
 
-  @Test(expected = NullPointerException.class)
+  @Test
   public void nullRemoveListener() {
-    RefreshableCache.<String, String>builder().preRemoveObserver(null);
+    Assertions.assertThrows(
+        NullPointerException.class,
+        () -> RefreshableCache.<String, String>builder().preRemoveObserver(null));
   }
 
-  @Test(expected = NullPointerException.class)
+  @Test
   public void nullSupplier() {
-    RefreshableCache.<String, String>builder().supplier(null);
-  }
-
-  @Test(expected = NullPointerException.class)
-  public void nullSupplier2() {
-    RefreshableCache.<String, String>builder().build();
+    Assertions.assertThrows(
+        NullPointerException.class,
+        () -> RefreshableCache.<String, String>builder().supplier(null));
   }
 
   @Test
@@ -78,29 +80,31 @@ public class TestRefreshableCache extends OharaTest {
                 })
             .frequency(Duration.ofSeconds(2))
             .build()) {
-      Assert.assertEquals(0, supplierCount.get());
+      Assertions.assertEquals(0, supplierCount.get());
       TimeUnit.SECONDS.sleep(3);
       // ok, the cache is auto-refreshed
-      Assert.assertEquals(1, supplierCount.get());
-      Assert.assertEquals(newValue, cache.get(newKey).get());
-      Assert.assertEquals(1, cache.size());
+      Assertions.assertEquals(1, supplierCount.get());
+      Assertions.assertEquals(newValue, cache.get(newKey).get());
+      Assertions.assertEquals(1, cache.size());
       // insert a key-value
       cache.put(CommonUtils.randomString(), CommonUtils.randomString());
-      Assert.assertEquals(2, cache.size());
+      Assertions.assertEquals(2, cache.size());
       // ok, the cache is auto-refreshed again
       TimeUnit.SECONDS.sleep(2);
-      Assert.assertTrue(supplierCount.get() >= 2);
-      Assert.assertEquals(newValue, cache.get(newKey).get());
+      Assertions.assertTrue(supplierCount.get() >= 2);
+      Assertions.assertEquals(newValue, cache.get(newKey).get());
       // the older keys are removed
-      Assert.assertEquals(1, cache.size());
+      Assertions.assertEquals(1, cache.size());
     }
   }
 
-  @Test(expected = IllegalStateException.class)
+  @Test
   public void testPutsAfterClose() {
     RefreshableCache<String, String> cache = cache();
     cache.close();
-    cache.put(Map.of(CommonUtils.randomString(), CommonUtils.randomString()));
+    Assertions.assertThrows(
+        IllegalStateException.class,
+        () -> cache.put(Map.of(CommonUtils.randomString(), CommonUtils.randomString())));
   }
 
   @Test
@@ -118,12 +122,12 @@ public class TestRefreshableCache extends OharaTest {
             .build();
 
     cache.get(CommonUtils.randomString());
-    Assert.assertEquals(0, count.get());
+    Assertions.assertEquals(0, count.get());
     TimeUnit.SECONDS.sleep(2);
-    Assert.assertEquals(0, count.get());
+    Assertions.assertEquals(0, count.get());
     cache.requestUpdate();
     TimeUnit.SECONDS.sleep(2);
-    Assert.assertEquals(1, count.get());
+    Assertions.assertEquals(1, count.get());
   }
 
   @Test
@@ -136,51 +140,54 @@ public class TestRefreshableCache extends OharaTest {
             .build();
     cache.requestUpdate();
     TimeUnit.SECONDS.sleep(2);
-    Assert.assertEquals(1, cache.size());
+    Assertions.assertEquals(1, cache.size());
     cache.clear();
-    Assert.assertEquals(0, cache.size());
+    Assertions.assertEquals(0, cache.size());
   }
 
-  @Test(expected = IllegalStateException.class)
+  @Test
   public void testSnapshotAfterClose() {
     RefreshableCache<String, String> cache = cache();
     cache.close();
-    cache.snapshot();
+    Assertions.assertThrows(IllegalStateException.class, cache::snapshot);
   }
 
-  @Test(expected = IllegalStateException.class)
+  @Test
   public void testClearAfterClose() {
     RefreshableCache<String, String> cache = cache();
     cache.close();
-    cache.clear();
+    Assertions.assertThrows(IllegalStateException.class, cache::clear);
   }
 
-  @Test(expected = IllegalStateException.class)
+  @Test
   public void testRequestUpdateAfterClose() {
     RefreshableCache<String, String> cache = cache();
     cache.close();
-    cache.requestUpdate();
+    Assertions.assertThrows(IllegalStateException.class, cache::requestUpdate);
   }
 
-  @Test(expected = IllegalStateException.class)
+  @Test
   public void testSizeAfterClose() {
     RefreshableCache<String, String> cache = cache();
     cache.close();
-    cache.size();
+    Assertions.assertThrows(IllegalStateException.class, cache::size);
   }
 
-  @Test(expected = IllegalStateException.class)
+  @Test
   public void testGetAfterClose() {
     RefreshableCache<String, String> cache = cache();
     cache.close();
-    cache.get(CommonUtils.randomString());
+    Assertions.assertThrows(
+        IllegalStateException.class, () -> cache.get(CommonUtils.randomString()));
   }
 
-  @Test(expected = IllegalStateException.class)
+  @Test
   public void testPutAfterClose() {
     RefreshableCache<String, String> cache = cache();
     cache.close();
-    cache.put(CommonUtils.randomString(), CommonUtils.randomString());
+    Assertions.assertThrows(
+        IllegalStateException.class,
+        () -> cache.put(CommonUtils.randomString(), CommonUtils.randomString()));
   }
 
   @Test
@@ -189,9 +196,9 @@ public class TestRefreshableCache extends OharaTest {
     String key = CommonUtils.randomString();
     String value = CommonUtils.randomString();
     cache.put(key, value);
-    Assert.assertEquals(value, cache.get(key).get());
+    Assertions.assertEquals(value, cache.get(key).get());
     cache.remove(key);
-    Assert.assertFalse(cache.get(key).isPresent());
+    Assertions.assertFalse(cache.get(key).isPresent());
   }
 
   @Test
@@ -205,9 +212,9 @@ public class TestRefreshableCache extends OharaTest {
     String key = CommonUtils.randomString();
     String value = CommonUtils.randomString();
     cache.put(key, value);
-    Assert.assertEquals(value, cache.get(key).get());
+    Assertions.assertEquals(value, cache.get(key).get());
     TimeUnit.SECONDS.sleep(3);
-    Assert.assertFalse(cache.get(key).isPresent());
+    Assertions.assertFalse(cache.get(key).isPresent());
   }
 
   @Test
@@ -247,7 +254,7 @@ public class TestRefreshableCache extends OharaTest {
                       () -> {
                         try {
                           while (!closed.get()) {
-                            if (!cache.get(key).isPresent()) missCount.incrementAndGet();
+                            if (cache.get(key).isEmpty()) missCount.incrementAndGet();
                             TimeUnit.MILLISECONDS.sleep(100);
                           }
                         } catch (InterruptedException e) {
@@ -259,9 +266,9 @@ public class TestRefreshableCache extends OharaTest {
       } finally {
         closed.set(true);
         service.shutdownNow();
-        Assert.assertTrue(service.awaitTermination(testTime, TimeUnit.SECONDS));
-        Assert.assertTrue(updateCount.get() > 0);
-        Assert.assertEquals(0, missCount.get());
+        Assertions.assertTrue(service.awaitTermination(testTime, TimeUnit.SECONDS));
+        Assertions.assertTrue(updateCount.get() > 0);
+        Assertions.assertEquals(0, missCount.get());
       }
     }
   }
@@ -283,8 +290,8 @@ public class TestRefreshableCache extends OharaTest {
             .build()) {
       cache.put(key, value);
       TimeUnit.SECONDS.sleep(2);
-      Assert.assertTrue(updateCount.get() > 0);
-      Assert.assertEquals(cache.get(key).get(), value);
+      Assertions.assertTrue(updateCount.get() > 0);
+      Assertions.assertEquals(cache.get(key).get(), value);
     }
   }
 

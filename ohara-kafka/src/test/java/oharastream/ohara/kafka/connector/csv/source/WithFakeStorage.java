@@ -25,16 +25,17 @@ import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.UncheckedIOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Map;
 import java.util.stream.Collectors;
+import oharastream.ohara.common.data.Column;
 import oharastream.ohara.common.exception.Exception;
 import oharastream.ohara.common.util.CommonUtils;
 import oharastream.ohara.kafka.connector.csv.LocalFileSystem;
 import oharastream.ohara.kafka.connector.storage.FileSystem;
-import org.junit.Assert;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.Assertions;
 
 public abstract class WithFakeStorage extends CsvSourceTestBase {
   protected static final Path ROOT_FOLDER = createTemporaryFolder();
@@ -66,16 +67,14 @@ public abstract class WithFakeStorage extends CsvSourceTestBase {
 
   private static Path createTemporaryFolder() {
     try {
-      TemporaryFolder folder = new TemporaryFolder();
-      folder.create();
-      return folder.getRoot().toPath();
+      return Files.createTempDirectory("createTemporaryFolder");
     } catch (IOException e) {
       throw new Exception(e);
     }
   }
 
   protected void verifyFileSizeInFolder(int expected, Path folder) {
-    Assert.assertEquals(expected, Iterators.size(storage.listFileNames(folder.toString())));
+    Assertions.assertEquals(expected, Iterators.size(storage.listFileNames(folder.toString())));
   }
 
   private void cleanFolders() {
@@ -96,7 +95,7 @@ public abstract class WithFakeStorage extends CsvSourceTestBase {
       BufferedWriter writer =
           new BufferedWriter(new OutputStreamWriter(storage.create(INPUT_FILE.toString())));
 
-      String header = SCHEMA.stream().map(column -> column.name()).collect(Collectors.joining(","));
+      String header = SCHEMA.stream().map(Column::name).collect(Collectors.joining(","));
       writer.append(header);
       writer.newLine();
 

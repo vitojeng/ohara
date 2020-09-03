@@ -21,7 +21,7 @@ import java.util.concurrent.TimeUnit
 import oharastream.ohara.client.configurator.{BrokerApi, ConnectorApi, PipelineApi, TopicApi, WorkerApi}
 import oharastream.ohara.common.util.{CommonUtils, Releasable}
 import oharastream.ohara.testing.WithBrokerWorker
-import org.junit.{After, Test}
+import org.junit.jupiter.api.{AfterEach, Test}
 import org.scalatest.matchers.should.Matchers._
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -87,6 +87,6 @@ class TestListManyPipelines extends WithBrokerWorker {
     pipelines.foreach(p => listPipeline.exists(_.name == p.name) shouldBe true)
   }
 
-  @After
+  @AfterEach
   def tearDown(): Unit = Releasable.close(configurator)
 }

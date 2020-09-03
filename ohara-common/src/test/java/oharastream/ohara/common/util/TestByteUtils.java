@@ -21,49 +21,49 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import oharastream.ohara.common.rule.OharaTest;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class TestByteUtils extends OharaTest {
 
   @Test
   public void testBoolean() {
-    Assert.assertTrue(ByteUtils.toBoolean(ByteUtils.toBytes(true)));
-    Assert.assertFalse(ByteUtils.toBoolean(ByteUtils.toBytes(false)));
+    Assertions.assertTrue(ByteUtils.toBoolean(ByteUtils.toBytes(true)));
+    Assertions.assertFalse(ByteUtils.toBoolean(ByteUtils.toBytes(false)));
   }
 
   @Test
   public void testShort() {
     List<Short> data =
         Arrays.asList(Short.MIN_VALUE, (short) -10, (short) 0, (short) 10, Short.MAX_VALUE);
-    data.forEach(v -> Assert.assertEquals((short) v, ByteUtils.toShort(ByteUtils.toBytes(v))));
+    data.forEach(v -> Assertions.assertEquals((short) v, ByteUtils.toShort(ByteUtils.toBytes(v))));
   }
 
   @Test
   public void testInt() {
     List<Integer> data = Arrays.asList(Integer.MIN_VALUE, -10, 0, 10, Integer.MAX_VALUE);
-    data.forEach(v -> Assert.assertEquals((int) v, ByteUtils.toInt(ByteUtils.toBytes(v))));
+    data.forEach(v -> Assertions.assertEquals((int) v, ByteUtils.toInt(ByteUtils.toBytes(v))));
   }
 
   @Test
   public void testLong() {
     List<Long> data =
         Arrays.asList(Long.MIN_VALUE, (long) -10, (long) 0, (long) 10, Long.MAX_VALUE);
-    data.forEach(v -> Assert.assertEquals((long) v, ByteUtils.toLong(ByteUtils.toBytes(v))));
+    data.forEach(v -> Assertions.assertEquals((long) v, ByteUtils.toLong(ByteUtils.toBytes(v))));
   }
 
   @Test
   public void testFloat() {
     List<Float> data =
         Arrays.asList(Float.MIN_VALUE, (float) -10, (float) 0, (float) 10, Float.MAX_VALUE);
-    data.forEach(v -> Assert.assertEquals(v, ByteUtils.toFloat(ByteUtils.toBytes(v)), 0.0));
+    data.forEach(v -> Assertions.assertEquals(v, ByteUtils.toFloat(ByteUtils.toBytes(v)), 0.0));
   }
 
   @Test
   public void testDouble() {
     List<Double> data =
         Arrays.asList(Double.MIN_VALUE, (double) -10, (double) 0, (double) 10, Double.MAX_VALUE);
-    data.forEach(v -> Assert.assertEquals(v, ByteUtils.toDouble(ByteUtils.toBytes(v)), 0.0));
+    data.forEach(v -> Assertions.assertEquals(v, ByteUtils.toDouble(ByteUtils.toBytes(v)), 0.0));
   }
 
   @Test
@@ -75,14 +75,14 @@ public class TestByteUtils extends OharaTest {
             "aaaaa",
             "Ccccc",
             String.valueOf(Double.MAX_VALUE));
-    data.forEach(v -> Assert.assertEquals(v, ByteUtils.toString(ByteUtils.toBytes(v))));
+    data.forEach(v -> Assertions.assertEquals(v, ByteUtils.toString(ByteUtils.toBytes(v))));
   }
 
   @Test
   public void testBooleanComparator() {
     List<byte[]> data = Arrays.asList(ByteUtils.toBytes(true), ByteUtils.toBytes(false));
-    data.forEach(v -> Assert.assertEquals(0, ByteUtils.BYTES_COMPARATOR.compare(v, v)));
-    data.forEach(v -> Assert.assertEquals(0, ByteUtils.compare(v, v)));
+    data.forEach(v -> Assertions.assertEquals(0, ByteUtils.BYTES_COMPARATOR.compare(v, v)));
+    data.forEach(v -> Assertions.assertEquals(0, ByteUtils.compare(v, v)));
   }
 
   @Test
@@ -91,12 +91,12 @@ public class TestByteUtils extends OharaTest {
         Stream.of(Short.MIN_VALUE, (short) -10, (short) 0, (short) 10, Short.MAX_VALUE)
             .map(ByteUtils::toBytes)
             .collect(Collectors.toUnmodifiableList());
-    data.forEach(v -> Assert.assertEquals(0, ByteUtils.BYTES_COMPARATOR.compare(v, v)));
-    data.forEach(v -> Assert.assertEquals(0, ByteUtils.compare(v, v)));
+    data.forEach(v -> Assertions.assertEquals(0, ByteUtils.BYTES_COMPARATOR.compare(v, v)));
+    data.forEach(v -> Assertions.assertEquals(0, ByteUtils.compare(v, v)));
 
     short lhs = ByteUtils.toShort(ByteUtils.toBytes((short) -10));
     short rhs = ByteUtils.toShort(ByteUtils.toBytes((short) 20));
-    Assert.assertTrue(lhs < rhs);
+    Assertions.assertTrue(lhs < rhs);
   }
 
   @Test
@@ -105,12 +105,12 @@ public class TestByteUtils extends OharaTest {
         Stream.of(Integer.MIN_VALUE, -10, 0, 10, Integer.MAX_VALUE)
             .map(ByteUtils::toBytes)
             .collect(Collectors.toUnmodifiableList());
-    data.forEach(v -> Assert.assertEquals(0, ByteUtils.BYTES_COMPARATOR.compare(v, v)));
-    data.forEach(v -> Assert.assertEquals(0, ByteUtils.compare(v, v)));
+    data.forEach(v -> Assertions.assertEquals(0, ByteUtils.BYTES_COMPARATOR.compare(v, v)));
+    data.forEach(v -> Assertions.assertEquals(0, ByteUtils.compare(v, v)));
 
     int lhs = ByteUtils.toInt(ByteUtils.toBytes(-10));
     int rhs = ByteUtils.toInt(ByteUtils.toBytes(20));
-    Assert.assertTrue(lhs < rhs);
+    Assertions.assertTrue(lhs < rhs);
   }
 
   @Test
@@ -119,12 +119,12 @@ public class TestByteUtils extends OharaTest {
         Stream.of(Long.MIN_VALUE, (long) -10, (long) 0, (long) 10, Long.MAX_VALUE)
             .map(ByteUtils::toBytes)
             .collect(Collectors.toUnmodifiableList());
-    data.forEach(v -> Assert.assertEquals(0, ByteUtils.BYTES_COMPARATOR.compare(v, v)));
-    data.forEach(v -> Assert.assertEquals(0, ByteUtils.compare(v, v)));
+    data.forEach(v -> Assertions.assertEquals(0, ByteUtils.BYTES_COMPARATOR.compare(v, v)));
+    data.forEach(v -> Assertions.assertEquals(0, ByteUtils.compare(v, v)));
 
     long lhs = ByteUtils.toLong(ByteUtils.toBytes((long) -10));
     long rhs = ByteUtils.toLong(ByteUtils.toBytes((long) 20));
-    Assert.assertTrue(lhs < rhs);
+    Assertions.assertTrue(lhs < rhs);
   }
 
   @Test
@@ -133,12 +133,12 @@ public class TestByteUtils extends OharaTest {
         Stream.of(Float.MIN_VALUE, (float) -10, (float) 0, (float) 10, Float.MAX_VALUE)
             .map(ByteUtils::toBytes)
             .collect(Collectors.toUnmodifiableList());
-    data.forEach(v -> Assert.assertEquals(0, ByteUtils.BYTES_COMPARATOR.compare(v, v)));
-    data.forEach(v -> Assert.assertEquals(0, ByteUtils.compare(v, v)));
+    data.forEach(v -> Assertions.assertEquals(0, ByteUtils.BYTES_COMPARATOR.compare(v, v)));
+    data.forEach(v -> Assertions.assertEquals(0, ByteUtils.compare(v, v)));
 
     float lhs = ByteUtils.toFloat(ByteUtils.toBytes((float) -10));
     float rhs = ByteUtils.toFloat(ByteUtils.toBytes((float) 20));
-    Assert.assertTrue(lhs < rhs);
+    Assertions.assertTrue(lhs < rhs);
   }
 
   @Test
@@ -147,12 +147,12 @@ public class TestByteUtils extends OharaTest {
         Stream.of(Double.MIN_VALUE, (double) -10, (double) 0, (double) 10, Double.MAX_VALUE)
             .map(ByteUtils::toBytes)
             .collect(Collectors.toUnmodifiableList());
-    data.forEach(v -> Assert.assertEquals(0, ByteUtils.BYTES_COMPARATOR.compare(v, v)));
-    data.forEach(v -> Assert.assertEquals(0, ByteUtils.compare(v, v)));
+    data.forEach(v -> Assertions.assertEquals(0, ByteUtils.BYTES_COMPARATOR.compare(v, v)));
+    data.forEach(v -> Assertions.assertEquals(0, ByteUtils.compare(v, v)));
 
     double lhs = ByteUtils.toDouble(ByteUtils.toBytes((double) -10));
     double rhs = ByteUtils.toDouble(ByteUtils.toBytes((double) 20));
-    Assert.assertTrue(lhs < rhs);
+    Assertions.assertTrue(lhs < rhs);
   }
 
   @Test
@@ -166,12 +166,12 @@ public class TestByteUtils extends OharaTest {
                 String.valueOf(Double.MAX_VALUE))
             .map(ByteUtils::toBytes)
             .collect(Collectors.toUnmodifiableList());
-    data.forEach(v -> Assert.assertEquals(0, ByteUtils.BYTES_COMPARATOR.compare(v, v)));
-    data.forEach(v -> Assert.assertEquals(0, ByteUtils.compare(v, v)));
+    data.forEach(v -> Assertions.assertEquals(0, ByteUtils.BYTES_COMPARATOR.compare(v, v)));
+    data.forEach(v -> Assertions.assertEquals(0, ByteUtils.compare(v, v)));
 
     byte[] lhs = ByteUtils.toBytes("abc");
     byte[] rhs = ByteUtils.toBytes("bc");
-    Assert.assertTrue(ByteUtils.compare(lhs, rhs) < 0);
-    Assert.assertTrue(ByteUtils.BYTES_COMPARATOR.compare(lhs, rhs) < 0);
+    Assertions.assertTrue(ByteUtils.compare(lhs, rhs) < 0);
+    Assertions.assertTrue(ByteUtils.BYTES_COMPARATOR.compare(lhs, rhs) < 0);
   }
 }

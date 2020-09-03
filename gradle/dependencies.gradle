@@ -29,7 +29,7 @@ if (!versions["scala"].startsWith(defaultScalaMinor)) throw new GradleException(
   versions["akka"] = project.hasProperty('akka.version') ? project.properties['akka.version'] : "2.6.4"
 versions["akkaHttp"] = project.hasProperty('akka.http.version') ? project.properties['akka.http.version'] : "10.1.11"
 versions["scalatest"] = project.hasProperty('scalatest.version') ? project.properties['scalatest.version'] : "3.1.1"
-versions["junit"] = project.hasProperty('junit.version') ? project.properties['junit.version'] : "4.13"
+versions["junit"] = project.hasProperty('junit.version') ? project.properties['junit.version'] : "5.6.2"
 versions["javassist"] = project.hasProperty('javassist.version') ? project.properties['javassist.version'] : "3.27.0-GA"
 versions["slf4j"] = project.hasProperty('slf4j.version') ? project.properties['slf4j.version'] : "1.7.30"
 versions["scalaLogging"] = project.hasProperty('scalaLogging.version') ? project.properties['scalaLogging.version'] : "3.9.2"
@@ -69,7 +69,9 @@ libs += [
   scalatest          : "org.scalatest:scalatest_$defaultScalaMinor:$versions.scalatest",
   scalaLogging       : "com.typesafe.scala-logging:scala-logging_$defaultScalaMinor:$versions.scalaLogging",
   mockitoAll         : "org.mockito:mockito-all:$versions.mockito",
-  junit              : "junit:junit:$versions.junit",
+  junitApi           : "org.junit.jupiter:junit-jupiter-api:$versions.junit",
+  junitEngine        : "org.junit.jupiter:junit-jupiter-engine:$versions.junit",
+  junitParams        : "org.junit.jupiter:junit-jupiter-params:$versions.junit",
   javassist          : "org.javassist:javassist:$versions.javassist",
   commonsLang        : "org.apache.commons:commons-lang3:$versions.commonLang",
   embeddedsql        : "com.wix:wix-embedded-mysql:$versions.embeddedsql",

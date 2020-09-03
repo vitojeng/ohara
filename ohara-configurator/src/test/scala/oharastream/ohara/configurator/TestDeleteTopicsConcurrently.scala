@@ -23,7 +23,7 @@ import oharastream.ohara.client.configurator.{BrokerApi, TopicApi}
 import oharastream.ohara.common.setting.TopicKey
 import oharastream.ohara.common.util.Releasable
 import oharastream.ohara.testing.WithBrokerWorker
-import org.junit.{After, Test}
+import org.junit.jupiter.api.{AfterEach, Test}
 import org.scalatest.matchers.should.Matchers._
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -90,6 +90,6 @@ class TestDeleteTopicsConcurrently extends WithBrokerWorker {
     }
     withClue(s"exceptions: $exceptionQueue")(exceptionQueue.size() shouldBe 0)
   }
-  @After
+  @AfterEach
   def tearDown(): Unit = Releasable.close(configurator)
 }

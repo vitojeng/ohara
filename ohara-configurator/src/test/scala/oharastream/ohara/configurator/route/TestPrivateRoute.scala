@@ -22,7 +22,7 @@ import oharastream.ohara.client.configurator.PrivateApi.Deletion
 import oharastream.ohara.client.configurator.{PrivateApi, WorkerApi}
 import oharastream.ohara.common.rule.OharaTest
 import oharastream.ohara.configurator.Configurator
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import org.scalatest.matchers.should.Matchers._
 
 import scala.concurrent.ExecutionContext.Implicits.global

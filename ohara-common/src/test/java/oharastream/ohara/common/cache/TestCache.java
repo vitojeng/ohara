@@ -26,32 +26,38 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import oharastream.ohara.common.rule.OharaTest;
 import oharastream.ohara.common.util.CommonUtils;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class TestCache extends OharaTest {
-  @Test(expected = NullPointerException.class)
+  @Test
   public void nullTimeout() {
-    Cache.<String, String>builder().timeout(null);
+    Assertions.assertThrows(
+        NullPointerException.class, () -> Cache.<String, String>builder().timeout(null));
   }
 
-  @Test(expected = NullPointerException.class)
+  @Test
   public void nullFetcher() {
-    Cache.<String, String>builder().fetcher(null);
+    Assertions.assertThrows(
+        NullPointerException.class, () -> Cache.<String, String>builder().fetcher(null));
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   public void negativeSize() {
-    Cache.<String, String>builder().maxSize(-1);
+    Assertions.assertThrows(
+        IllegalArgumentException.class, () -> Cache.<String, String>builder().maxSize(-1));
   }
 
-  @Test(expected = NullPointerException.class)
+  @Test
   public void getNull() {
-    Cache.<String, String>builder()
-        .timeout(Duration.ofSeconds(2))
-        .fetcher(key -> CommonUtils.randomString())
-        .build()
-        .get(null);
+    Assertions.assertThrows(
+        NullPointerException.class,
+        () ->
+            Cache.<String, String>builder()
+                .timeout(Duration.ofSeconds(2))
+                .fetcher(key -> CommonUtils.randomString())
+                .build()
+                .get(null));
   }
 
   @Test
@@ -67,16 +73,16 @@ public class TestCache extends OharaTest {
                   return value;
                 })
             .build();
-    Assert.assertEquals(0, count.get());
-    Assert.assertEquals(value, cache.get("key"));
-    Assert.assertEquals(1, count.get());
-    Assert.assertEquals(value, cache.get("key"));
-    Assert.assertEquals(1, count.get());
-    Assert.assertEquals(value, cache.get("key2"));
-    Assert.assertEquals(2, count.get());
+    Assertions.assertEquals(0, count.get());
+    Assertions.assertEquals(value, cache.get("key"));
+    Assertions.assertEquals(1, count.get());
+    Assertions.assertEquals(value, cache.get("key"));
+    Assertions.assertEquals(1, count.get());
+    Assertions.assertEquals(value, cache.get("key2"));
+    Assertions.assertEquals(2, count.get());
     TimeUnit.SECONDS.sleep(5);
-    Assert.assertEquals(value, cache.get("ket"));
-    Assert.assertEquals(3, count.get());
+    Assertions.assertEquals(value, cache.get("ket"));
+    Assertions.assertEquals(3, count.get());
   }
 
   @Test
@@ -93,15 +99,15 @@ public class TestCache extends OharaTest {
             .build();
 
     cache.get("key");
-    Assert.assertEquals(1, count.get());
+    Assertions.assertEquals(1, count.get());
     cache.put("key2", "ad");
     cache.get("key2");
-    Assert.assertEquals(1, count.get());
+    Assertions.assertEquals(1, count.get());
     cache.put(Map.of("key3", "v", "key4", "v2"));
     cache.get("key3");
-    Assert.assertEquals(1, count.get());
+    Assertions.assertEquals(1, count.get());
     cache.get("key4");
-    Assert.assertEquals(1, count.get());
+    Assertions.assertEquals(1, count.get());
   }
 
   @Test
@@ -127,7 +133,7 @@ public class TestCache extends OharaTest {
             .build();
     ExecutorService service = Executors.newFixedThreadPool(2);
     try {
-      Assert.assertEquals(value, cache.get(key));
+      Assertions.assertEquals(value, cache.get(key));
       // sleep until the timeout
       TimeUnit.SECONDS.sleep(3);
       AtomicBoolean firstGet = new AtomicBoolean(false);
@@ -143,7 +149,7 @@ public class TestCache extends OharaTest {
       TimeUnit.SECONDS.sleep(2);
       // the getter is blocked since it faces the expired data. It is blocked until the data is
       // updated.
-      Assert.assertFalse(firstGet.get());
+      Assertions.assertFalse(firstGet.get());
       AtomicBoolean secondGet = new AtomicBoolean(false);
       // this thread should be blocked since the latch
       service.execute(
@@ -157,13 +163,13 @@ public class TestCache extends OharaTest {
       TimeUnit.SECONDS.sleep(2);
       // this getter is NOT blocked since the first get is updating data and this one get the older
       // stuff.
-      Assert.assertTrue(secondGet.get());
+      Assertions.assertTrue(secondGet.get());
       latch.countDown();
       TimeUnit.SECONDS.sleep(2);
-      Assert.assertTrue(firstGet.get());
+      Assertions.assertTrue(firstGet.get());
     } finally {
       service.shutdownNow();
-      Assert.assertTrue(service.awaitTermination(10, TimeUnit.SECONDS));
+      Assertions.assertTrue(service.awaitTermination(10, TimeUnit.SECONDS));
     }
   }
 
@@ -176,9 +182,9 @@ public class TestCache extends OharaTest {
             .build();
 
     cache.get(CommonUtils.randomString());
-    Assert.assertEquals(1, cache.size());
+    Assertions.assertEquals(1, cache.size());
     cache.clear();
-    Assert.assertEquals(0, cache.size());
+    Assertions.assertEquals(0, cache.size());
   }
 
   @Test
@@ -191,9 +197,10 @@ public class TestCache extends OharaTest {
 
     String key = CommonUtils.randomString();
     cache.get(key);
-    Assert.assertEquals(1, cache.size());
-    Assert.assertThrows(UnsupportedOperationException.class, () -> cache.snapshot().remove(key));
-    Assert.assertThrows(
+    Assertions.assertEquals(1, cache.size());
+    Assertions.assertThrows(
+        UnsupportedOperationException.class, () -> cache.snapshot().remove(key));
+    Assertions.assertThrows(
         UnsupportedOperationException.class,
         () -> cache.snapshot().put(key, CommonUtils.randomString()));
   }

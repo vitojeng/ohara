@@ -23,8 +23,8 @@ import java.util.List;
 import oharastream.ohara.common.json.JsonUtils;
 import oharastream.ohara.common.rule.OharaTest;
 import oharastream.ohara.common.util.CommonUtils;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class TestSettingValue extends OharaTest {
   @Test
@@ -32,7 +32,7 @@ public class TestSettingValue extends OharaTest {
     SettingValue value =
         SettingValue.of(CommonUtils.randomString(), CommonUtils.randomString(), List.of());
     ObjectMapper mapper = JsonUtils.objectMapper();
-    Assert.assertEquals(
+    Assertions.assertEquals(
         value,
         mapper.readValue(mapper.writeValueAsString(value), new TypeReference<SettingValue>() {}));
   }
@@ -43,37 +43,42 @@ public class TestSettingValue extends OharaTest {
     String value = CommonUtils.randomString(5);
     String error = CommonUtils.randomString(5);
     SettingValue settingValue = SettingValue.of(name, value, List.of(error));
-    Assert.assertEquals(name, settingValue.key());
-    Assert.assertEquals(value, settingValue.value());
-    Assert.assertEquals(1, settingValue.errors().size());
-    Assert.assertEquals(error, settingValue.errors().get(0));
+    Assertions.assertEquals(name, settingValue.key());
+    Assertions.assertEquals(value, settingValue.value());
+    Assertions.assertEquals(1, settingValue.errors().size());
+    Assertions.assertEquals(error, settingValue.errors().get(0));
   }
 
-  @Test(expected = NullPointerException.class)
+  @Test
   public void nullName() {
-    SettingValue.of(null, CommonUtils.randomString(), List.of());
+    Assertions.assertThrows(
+        NullPointerException.class,
+        () -> SettingValue.of(null, CommonUtils.randomString(), List.of()));
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   public void emptyName() {
-    SettingValue.of("", CommonUtils.randomString(), List.of());
+    Assertions.assertThrows(
+        IllegalArgumentException.class,
+        () -> SettingValue.of("", CommonUtils.randomString(), List.of()));
   }
 
   @Test
   public void nullValue() {
     SettingValue value = SettingValue.of(CommonUtils.randomString(), null, List.of());
-    Assert.assertNull(value.value());
+    Assertions.assertNull(value.value());
   }
 
   @Test
   public void emptyValue() {
     SettingValue value = SettingValue.of(CommonUtils.randomString(), "", List.of());
-    Assert.assertEquals("", value.value());
+    Assertions.assertEquals("", value.value());
   }
 
-  @Test(expected = NullPointerException.class)
+  @Test
   public void nullErrors() {
-    SettingValue.of(CommonUtils.randomString(), "", null);
+    Assertions.assertThrows(
+        NullPointerException.class, () -> SettingValue.of(CommonUtils.randomString(), "", null));
   }
 
   @Test
@@ -87,9 +92,9 @@ public class TestSettingValue extends OharaTest {
     String value = CommonUtils.randomString(5);
     String error = CommonUtils.randomString(5);
     SettingValue validatedValue = SettingValue.of(name, value, List.of(error));
-    Assert.assertTrue(validatedValue.toString().contains(name));
-    Assert.assertTrue(validatedValue.toString().contains(value));
-    Assert.assertTrue(validatedValue.toString().contains(error));
+    Assertions.assertTrue(validatedValue.toString().contains(name));
+    Assertions.assertTrue(validatedValue.toString().contains(value));
+    Assertions.assertTrue(validatedValue.toString().contains(error));
   }
 
   @Test
@@ -105,9 +110,9 @@ public class TestSettingValue extends OharaTest {
                 + "\"errrrrrrr\""
                 + "]"
                 + "}");
-    Assert.assertEquals("aaaa", value.key());
-    Assert.assertEquals("cccc", value.value());
-    Assert.assertEquals(1, value.errors().size());
-    Assert.assertEquals("errrrrrrr", value.errors().get(0));
+    Assertions.assertEquals("aaaa", value.key());
+    Assertions.assertEquals("cccc", value.value());
+    Assertions.assertEquals(1, value.errors().size());
+    Assertions.assertEquals("errrrrrrr", value.errors().get(0));
   }
 }

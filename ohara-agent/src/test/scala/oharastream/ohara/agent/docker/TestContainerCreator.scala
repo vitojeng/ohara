@@ -20,7 +20,7 @@ import java.util.Objects
 
 import oharastream.ohara.common.rule.OharaTest
 import oharastream.ohara.common.util.CommonUtils
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import org.scalatest.matchers.should.Matchers._
 
 import scala.concurrent.{ExecutionContext, Future}

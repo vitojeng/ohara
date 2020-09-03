@@ -19,7 +19,8 @@ package oharastream.ohara.kafka;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import oharastream.ohara.common.rule.OharaTest;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class TestProducerSender extends OharaTest {
 
@@ -34,33 +35,33 @@ public class TestProducerSender extends OharaTest {
     return new FakeSender<>();
   }
 
-  @Test(expected = NullPointerException.class)
+  @Test
   public void nullHeader() {
-    fake().header(null);
+    Assertions.assertThrows(NullPointerException.class, () -> fake().header(null));
   }
 
-  @Test(expected = NullPointerException.class)
+  @Test
   public void nullHeaders() {
-    fake().headers(null);
+    Assertions.assertThrows(NullPointerException.class, () -> fake().headers(null));
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   public void emptyHeaders() {
-    fake().headers(List.of());
+    Assertions.assertThrows(IllegalArgumentException.class, () -> fake().headers(List.of()));
   }
 
-  @Test(expected = NullPointerException.class)
+  @Test
   public void nullKey() {
-    fake().key(null);
+    Assertions.assertThrows(NullPointerException.class, () -> fake().key(null));
   }
 
-  @Test(expected = NullPointerException.class)
+  @Test
   public void nullValue() {
-    fake().value(null);
+    Assertions.assertThrows(NullPointerException.class, () -> fake().value(null));
   }
 
-  @Test(expected = NullPointerException.class)
+  @Test
   public void nullTopicKey() {
-    fake().topicKey(null);
+    Assertions.assertThrows(NullPointerException.class, () -> fake().topicKey(null));
   }
 }

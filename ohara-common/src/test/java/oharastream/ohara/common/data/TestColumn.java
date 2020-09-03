@@ -18,34 +18,34 @@ package oharastream.ohara.common.data;
 
 import oharastream.ohara.common.rule.OharaTest;
 import oharastream.ohara.common.util.CommonUtils;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class TestColumn extends OharaTest {
 
-  @Test(expected = NullPointerException.class)
+  @Test
   public void testNullName() {
-    Column.builder().name(null);
+    Assertions.assertThrows(NullPointerException.class, () -> Column.builder().name(null));
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   public void testEmptyName() {
-    Column.builder().name("");
+    Assertions.assertThrows(IllegalArgumentException.class, () -> Column.builder().name(""));
   }
 
-  @Test(expected = NullPointerException.class)
+  @Test
   public void testNullNewName() {
-    Column.builder().newName(null);
+    Assertions.assertThrows(NullPointerException.class, () -> Column.builder().newName(null));
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   public void testEmptyNewName() {
-    Column.builder().newName("");
+    Assertions.assertThrows(IllegalArgumentException.class, () -> Column.builder().newName(""));
   }
 
-  @Test(expected = NullPointerException.class)
+  @Test
   public void testNullDataType() {
-    Column.builder().dataType(null);
+    Assertions.assertThrows(NullPointerException.class, () -> Column.builder().dataType(null));
   }
 
   @Test
@@ -54,9 +54,9 @@ public class TestColumn extends OharaTest {
     DataType type = DataType.BOOLEAN;
     int order = 100;
     Column column = Column.builder().name(name).dataType(type).order(order).build();
-    Assert.assertEquals(name, column.name());
-    Assert.assertEquals(type, column.dataType());
-    Assert.assertEquals(order, column.order());
+    Assertions.assertEquals(name, column.name());
+    Assertions.assertEquals(type, column.dataType());
+    Assertions.assertEquals(order, column.order());
   }
 
   @Test
@@ -67,10 +67,10 @@ public class TestColumn extends OharaTest {
     int order = 100;
     Column column =
         Column.builder().name(name).newName(newName).dataType(type).order(order).build();
-    Assert.assertEquals(name, column.name());
-    Assert.assertEquals(newName, column.newName());
-    Assert.assertEquals(type, column.dataType());
-    Assert.assertEquals(order, column.order());
+    Assertions.assertEquals(name, column.name());
+    Assertions.assertEquals(newName, column.newName());
+    Assertions.assertEquals(type, column.dataType());
+    Assertions.assertEquals(order, column.order());
   }
 
   @Test
@@ -81,9 +81,9 @@ public class TestColumn extends OharaTest {
     int order = 100;
     Column column =
         Column.builder().newName(newName).name(name).dataType(type).order(order).build();
-    Assert.assertEquals(name, column.name());
-    Assert.assertEquals(newName, column.newName());
-    Assert.assertEquals(type, column.dataType());
-    Assert.assertEquals(order, column.order());
+    Assertions.assertEquals(name, column.name());
+    Assertions.assertEquals(newName, column.newName());
+    Assertions.assertEquals(type, column.dataType());
+    Assertions.assertEquals(order, column.order());
   }
 }

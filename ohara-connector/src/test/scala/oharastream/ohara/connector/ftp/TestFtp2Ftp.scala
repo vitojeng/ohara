@@ -25,7 +25,7 @@ import oharastream.ohara.common.data.{Cell, Column, DataType, Row}
 import oharastream.ohara.common.setting.{ConnectorKey, TopicKey}
 import oharastream.ohara.common.util.{CommonUtils, Releasable}
 import oharastream.ohara.testing.With3Brokers3Workers
-import org.junit.{After, Before, Test}
+import org.junit.jupiter.api.{AfterEach, BeforeEach, Test}
 import org.scalatest.matchers.should.Matchers._
 
 import scala.jdk.CollectionConverters._
@@ -60,7 +60,7 @@ class TestFtp2Ftp extends With3Brokers3Workers {
   private[this] val completedFolder = "/backup"
   private[this] val outputFolder    = "/output"
 
-  @Before
+  @BeforeEach
   def setup(): Unit = {
     rebuild(fileSystem, inputFolder)
     rebuild(fileSystem, completedFolder)
@@ -181,6 +181,6 @@ class TestFtp2Ftp extends With3Brokers3Workers {
     } finally writer.close()
   }
 
-  @After
+  @AfterEach
   def tearDown(): Unit = Releasable.close(fileSystem)
 }

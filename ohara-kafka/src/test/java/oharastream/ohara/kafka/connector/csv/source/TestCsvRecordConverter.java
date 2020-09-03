@@ -41,9 +41,9 @@ import oharastream.ohara.common.setting.TopicKey;
 import oharastream.ohara.kafka.connector.RowSourceContext;
 import oharastream.ohara.kafka.connector.RowSourceRecord;
 import org.apache.commons.lang.StringUtils;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class TestCsvRecordConverter extends OharaTest {
   private final Set<TopicKey> topicKeys =
@@ -58,7 +58,7 @@ public class TestCsvRecordConverter extends OharaTest {
   private File tempFile;
   private Map<Integer, List<Cell<String>>> data;
 
-  @Before
+  @BeforeEach
   public void setup() throws IOException {
     tempFile = File.createTempFile("test", "csv");
     path = tempFile.getName();
@@ -130,7 +130,7 @@ public class TestCsvRecordConverter extends OharaTest {
     System.out.println(data);
     Map<Integer, Row> transformedData = converter.transform(data);
     System.out.println(transformedData);
-    Assert.assertEquals(mapToRow(data), converter.transform(data));
+    Assertions.assertEquals(mapToRow(data), converter.transform(data));
   }
 
   @Test
@@ -138,8 +138,8 @@ public class TestCsvRecordConverter extends OharaTest {
     var converter = createConverter(schema);
     data = setupInputData();
     Map<Integer, Row> transformedData = converter.transform(data);
-    Assert.assertEquals(data.size(), transformedData.size());
-    Assert.assertEquals(mapToRow(data), transformedData);
+    Assertions.assertEquals(data.size(), transformedData.size());
+    Assertions.assertEquals(mapToRow(data), transformedData);
   }
 
   @Test
@@ -148,13 +148,13 @@ public class TestCsvRecordConverter extends OharaTest {
     var converter = createConverter(List.of(column));
     data = setupInputData();
     Map<Integer, Row> transformedData = converter.transform(data);
-    Assert.assertEquals(data.size(), transformedData.size());
+    Assertions.assertEquals(data.size(), transformedData.size());
     transformedData
         .values()
         .forEach(
             row -> {
-              Assert.assertEquals(1, row.size());
-              Assert.assertEquals("a", row.cell(column.newName()).value());
+              Assertions.assertEquals(1, row.size());
+              Assertions.assertEquals("a", row.cell(column.newName()).value());
             });
   }
 
@@ -172,34 +172,36 @@ public class TestCsvRecordConverter extends OharaTest {
     data = setupInputData();
     List<Cell<String>> cells = data.get(3);
     Cell<String> cell = converter.findCellByName(cells, "cf3");
-    Assert.assertEquals("cf3", cell.name());
-    Assert.assertEquals("c", cell.value());
+    Assertions.assertEquals("cf3", cell.name());
+    Assertions.assertEquals("c", cell.value());
   }
 
   @Test
   public void testConvertByType() {
     var converter = createConverter();
-    Assert.assertTrue(converter.convertByType("true", DataType.BOOLEAN) instanceof Boolean);
-    Assert.assertTrue(converter.convertByType("127", DataType.BYTE) instanceof Byte);
-    Assert.assertTrue(converter.convertByType("1", DataType.SHORT) instanceof Short);
-    Assert.assertTrue(converter.convertByType("2", DataType.INT) instanceof Integer);
-    Assert.assertTrue(converter.convertByType("3", DataType.LONG) instanceof Long);
-    Assert.assertTrue(converter.convertByType("4", DataType.FLOAT) instanceof Float);
-    Assert.assertTrue(converter.convertByType("5", DataType.DOUBLE) instanceof Double);
-    Assert.assertTrue(converter.convertByType("str", DataType.STRING) instanceof String);
-    Assert.assertNotNull(converter.convertByType("obj", DataType.OBJECT));
+    Assertions.assertTrue(converter.convertByType("true", DataType.BOOLEAN) instanceof Boolean);
+    Assertions.assertTrue(converter.convertByType("127", DataType.BYTE) instanceof Byte);
+    Assertions.assertTrue(converter.convertByType("1", DataType.SHORT) instanceof Short);
+    Assertions.assertTrue(converter.convertByType("2", DataType.INT) instanceof Integer);
+    Assertions.assertTrue(converter.convertByType("3", DataType.LONG) instanceof Long);
+    Assertions.assertTrue(converter.convertByType("4", DataType.FLOAT) instanceof Float);
+    Assertions.assertTrue(converter.convertByType("5", DataType.DOUBLE) instanceof Double);
+    Assertions.assertTrue(converter.convertByType("str", DataType.STRING) instanceof String);
+    Assertions.assertNotNull(converter.convertByType("obj", DataType.OBJECT));
   }
 
-  @Test(expected = NumberFormatException.class)
+  @Test
   public void testConvertByType_ThrowNumberFormatException() {
     var converter = createConverter();
-    converter.convertByType("128", DataType.BYTE);
+    Assertions.assertThrows(
+        NumberFormatException.class, () -> converter.convertByType("128", DataType.BYTE));
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   public void testConvertByType_ThrowIllegalArgumentException() {
     var converter = createConverter();
-    converter.convertByType("row", DataType.ROW);
+    Assertions.assertThrows(
+        IllegalArgumentException.class, () -> converter.convertByType("row", DataType.ROW));
   }
 
   @Test
@@ -211,13 +213,14 @@ public class TestCsvRecordConverter extends OharaTest {
     int index = 1;
     Row row = rows.get(index);
     List<RowSourceRecord> records = converter.toRecords(row, index);
-    Assert.assertEquals(records.size(), topicKeys.size());
+    Assertions.assertEquals(records.size(), topicKeys.size());
     for (RowSourceRecord record : records) {
-      Assert.assertTrue(topicKeys.contains(record.topicKey()));
-      Assert.assertEquals(
+      Assertions.assertTrue(topicKeys.contains(record.topicKey()));
+      Assertions.assertEquals(
           Map.of(CsvRecordConverter.CSV_PARTITION_KEY, path), record.sourcePartition());
-      Assert.assertEquals(Map.of(CsvRecordConverter.CSV_OFFSET_KEY, index), record.sourceOffset());
-      Assert.assertEquals(row, record.row());
+      Assertions.assertEquals(
+          Map.of(CsvRecordConverter.CSV_OFFSET_KEY, index), record.sourceOffset());
+      Assertions.assertEquals(row, record.row());
     }
   }
 
@@ -227,9 +230,9 @@ public class TestCsvRecordConverter extends OharaTest {
     var row0 = Row.of(Cell.of("a", "b"));
     var row1 = Row.of(Cell.of("ccc", "ddd"));
     var records = converter.toRecords(Map.of(1, row0, 2, row1));
-    Assert.assertEquals(row0, records.get(0).row());
+    Assertions.assertEquals(row0, records.get(0).row());
     // the order of records should be [0-t0][0-t1][1-t0][1-t1]
-    Assert.assertEquals(row1, records.get(topicKeys.size()).row());
+    Assertions.assertEquals(row1, records.get(topicKeys.size()).row());
   }
 
   @Test
@@ -239,7 +242,7 @@ public class TestCsvRecordConverter extends OharaTest {
     Map<Integer, Row> rows = mapToRow(data);
 
     List<RowSourceRecord> records = converter.toRecords(rows);
-    Assert.assertEquals(topicKeys.size() * rows.size(), records.size());
+    Assertions.assertEquals(topicKeys.size() * rows.size(), records.size());
   }
 
   @Test
@@ -248,7 +251,7 @@ public class TestCsvRecordConverter extends OharaTest {
     data = setupInputData();
     try (BufferedReader reader = createReader()) {
       Stream<String> lines = reader.lines();
-      Assert.assertEquals(data, converter.toCells(lines, Integer.MAX_VALUE));
+      Assertions.assertEquals(data, converter.toCells(lines, Integer.MAX_VALUE));
     }
   }
 
@@ -264,11 +267,12 @@ public class TestCsvRecordConverter extends OharaTest {
                 Stream<String> lines = reader.lines();
                 Map<Integer, List<Cell<String>>> converted =
                     converter.toCells(lines, expectedLines);
-                Assert.assertEquals(expectedLines, converted.size());
+                Assertions.assertEquals(expectedLines, converted.size());
                 IntStream.range(0, expectedLines)
                     .forEach(
                         cellsIndex ->
-                            Assert.assertEquals(data.get(cellsIndex), converted.get(cellsIndex)));
+                            Assertions.assertEquals(
+                                data.get(cellsIndex), converted.get(cellsIndex)));
               } catch (IOException e) {
                 throw new AssertionError(e);
               }
@@ -282,7 +286,7 @@ public class TestCsvRecordConverter extends OharaTest {
     try (BufferedReader reader = createReader()) {
       Stream<String> lines = reader.lines();
       List<RowSourceRecord> records = converter.convert(lines);
-      Assert.assertEquals(topicKeys.size() * data.size(), records.size());
+      Assertions.assertEquals(topicKeys.size() * data.size(), records.size());
     }
   }
 
@@ -311,23 +315,23 @@ public class TestCsvRecordConverter extends OharaTest {
     try (BufferedReader reader = createReader()) {
       Stream<String> lines = reader.lines();
       List<RowSourceRecord> records = converter.convert(lines);
-      Assert.assertEquals(0, records.size());
+      Assertions.assertEquals(0, records.size());
     }
   }
 
   @Test
   public void testRegex() {
     String[] splits = "1,\"2,3,4\",5".split(CsvRecordConverter.CSV_REGEX);
-    Assert.assertEquals(3, splits.length);
-    Assert.assertEquals("1", splits[0]);
-    Assert.assertEquals("\"2,3,4\"", splits[1]);
-    Assert.assertEquals("5", splits[2]);
+    Assertions.assertEquals(3, splits.length);
+    Assertions.assertEquals("1", splits[0]);
+    Assertions.assertEquals("\"2,3,4\"", splits[1]);
+    Assertions.assertEquals("5", splits[2]);
 
     String[] splits2 = "1,3,5".split(CsvRecordConverter.CSV_REGEX);
-    Assert.assertEquals(3, splits.length);
-    Assert.assertEquals("1", splits2[0]);
-    Assert.assertEquals("3", splits2[1]);
-    Assert.assertEquals("5", splits2[2]);
+    Assertions.assertEquals(3, splits.length);
+    Assertions.assertEquals("1", splits2[0]);
+    Assertions.assertEquals("3", splits2[1]);
+    Assertions.assertEquals("5", splits2[2]);
   }
 
   private static class FakeOffsetCache implements OffsetCache {

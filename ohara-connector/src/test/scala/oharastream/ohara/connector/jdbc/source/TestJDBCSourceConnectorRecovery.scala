@@ -29,7 +29,7 @@ import oharastream.ohara.kafka.Consumer
 import oharastream.ohara.kafka.connector.TaskSetting
 import oharastream.ohara.testing.With3Brokers3Workers
 import oharastream.ohara.testing.service.Database
-import org.junit.{After, Before, Test}
+import org.junit.jupiter.api.{AfterEach, BeforeEach, Test}
 import org.scalatest.matchers.should.Matchers._
 
 import scala.jdk.CollectionConverters._
@@ -44,7 +44,7 @@ class TestJDBCSourceConnectorRecovery extends With3Brokers3Workers {
   private[this] val timestampColumnName = "column1"
   private[this] val connectorAdmin      = ConnectorAdmin(testUtil.workersConnProps)
 
-  @Before
+  @BeforeEach
   def setup(): Unit = {
     val column1 = RdbColumn(timestampColumnName, "TIMESTAMP(6)", false)
     val column2 = RdbColumn("column2", "VARCHAR(45)", false)
@@ -170,7 +170,7 @@ class TestJDBCSourceConnectorRecovery extends With3Brokers3Workers {
     } finally result(connectorAdmin.delete(connectorKey))
   }
 
-  @After
+  @AfterEach
   def tearDown(): Unit = {
     Releasable.close(client)
     Releasable.close(db)

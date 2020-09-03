@@ -21,7 +21,7 @@ import oharastream.ohara.client.database.DatabaseClient
 import oharastream.ohara.common.rule.OharaTest
 import oharastream.ohara.common.util.{CommonUtils, Releasable}
 import oharastream.ohara.testing.service.Database
-import org.junit.{After, Test}
+import org.junit.jupiter.api.{AfterEach, Test}
 import org.scalatest.matchers.should.Matchers._
 
 class TestDatabaseClient extends OharaTest {
@@ -98,7 +98,7 @@ class TestDatabaseClient extends OharaTest {
     DatabaseClient.builder.password("")
   }
 
-  @After
+  @AfterEach
   def tearDown(): Unit = {
     Releasable.close(client)
     Releasable.close(db)

@@ -19,7 +19,7 @@ package oharastream.ohara.client
 import oharastream.ohara.client.configurator.{BrokerApi, WorkerApi, ZookeeperApi}
 import oharastream.ohara.common.rule.OharaTest
 import oharastream.ohara.common.util.VersionUtils
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import org.scalatest.matchers.should.Matchers._
 
 class TestVersion extends OharaTest {

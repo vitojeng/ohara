@@ -20,7 +20,7 @@ import oharastream.ohara.client.configurator.{ConnectorApi, TopicApi}
 import oharastream.ohara.common.setting.ConnectorKey
 import oharastream.ohara.common.util.CommonUtils
 import oharastream.ohara.connector.jdbc.source.JDBCSourceConnector
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import spray.json.{JsNumber, JsString}
 
 class TestPerformance4Oracle extends BasicTestPerformance4Jdbc {

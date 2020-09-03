@@ -31,8 +31,8 @@ import oharastream.ohara.common.rule.OharaTest;
 import oharastream.ohara.common.setting.PropGroup;
 import oharastream.ohara.common.util.CommonUtils;
 import oharastream.ohara.kafka.connector.TaskSetting;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class TestCsvSinkConfig extends OharaTest {
 
@@ -43,7 +43,7 @@ public class TestCsvSinkConfig extends OharaTest {
   @Test
   public void testEncode() {
     CsvSinkConfig config = config(FILE_ENCODE_KEY, "10");
-    Assert.assertEquals(config.encode(), "10");
+    Assertions.assertEquals(config.encode(), "10");
   }
 
   @Test
@@ -56,30 +56,30 @@ public class TestCsvSinkConfig extends OharaTest {
             .build();
     CsvSinkConfig config =
         config(COLUMNS_DEFINITION.key(), PropGroup.ofColumn(column).toJsonString());
-    Assert.assertEquals(config.columns(), List.of(column));
+    Assertions.assertEquals(config.columns(), List.of(column));
   }
 
   @Test
   public void testFlushSize() {
     CsvSinkConfig config = config(FLUSH_SIZE_KEY, "10");
-    Assert.assertEquals(config.flushSize(), 10);
+    Assertions.assertEquals(config.flushSize(), 10);
   }
 
   @Test
   public void testRotateIntervalMs() {
     CsvSinkConfig config = config(ROTATE_INTERVAL_MS_KEY, "10");
-    Assert.assertEquals(config.rotateIntervalMs(), 10);
+    Assertions.assertEquals(config.rotateIntervalMs(), 10);
   }
 
   @Test
   public void testOutputFolder() {
     CsvSinkConfig config = config(OUTPUT_FOLDER_KEY, "10");
-    Assert.assertEquals(config.outputFolder(), "10");
+    Assertions.assertEquals(config.outputFolder(), "10");
   }
 
   @Test
   public void testHeader() {
     CsvSinkConfig config = config(FILE_NEED_HEADER_KEY, "false");
-    Assert.assertFalse(config.needHeader());
+    Assertions.assertFalse(config.needHeader());
   }
 }

@@ -26,7 +26,7 @@ import akka.http.scaladsl.{Http, server}
 import oharastream.ohara.agent.k8s.K8SJson._
 import oharastream.ohara.common.rule.OharaTest
 import oharastream.ohara.common.util.{CommonUtils, VersionUtils}
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import org.scalatest.matchers.should.Matchers._
 import spray.json._
 

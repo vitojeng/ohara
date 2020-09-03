@@ -45,12 +45,10 @@ class DataImporter {
   private static final String OHARA_API_KEY = "--useOharaAPI";
   private static final String USAGE = String.format("[USAGE] %s %s", SERSERS_KEY, OHARA_API_KEY);
 
-  private static String PORTS = "9092";
-
-  private static String TOPIC_CARRIERS = "carriers";
-  private static String TOPIC_PLANE = "plane";
-  private static String TOPIC_AIRPORT = "airport";
-  private static String TOPIC_FLIGHT = "flight";
+  private static final String TOPIC_CARRIERS = "carriers";
+  private static final String TOPIC_PLANE = "plane";
+  private static final String TOPIC_AIRPORT = "airport";
+  private static final String TOPIC_FLIGHT = "flight";
 
   public static void main(String[] args) {
 
@@ -70,19 +68,20 @@ class DataImporter {
         if (key.equals(SERSERS_KEY)) {
           bootstrapServers = value;
         } else if (key.equals(OHARA_API_KEY)) {
-          useOharaAPI = Boolean.valueOf(value);
+          useOharaAPI = Boolean.parseBoolean(value);
         }
       }
 
       if (bootstrapServers.isEmpty()) {
         StringBuilder sb = new StringBuilder();
         String localIP = CommonUtils.anyLocalAddress();
+        String PORTS = "9092";
         for (String p : PORTS.split(",")) {
           sb.append(localIP).append(":").append(p).append(",");
         }
 
         int length = sb.toString().length();
-        bootstrapServers = sb.toString().substring(0, length - 1);
+        bootstrapServers = sb.substring(0, length - 1);
       }
 
       importData(bootstrapServers, useOharaAPI);
@@ -108,29 +107,19 @@ class DataImporter {
 
         Future f1 =
             executor.submit(
-                () -> {
-                  asyncImportFile(producer, TOPIC_CARRIERS, fileCarrier, 10, useOharaAPI);
-                });
+                () -> asyncImportFile(producer, TOPIC_CARRIERS, fileCarrier, 10, useOharaAPI));
         Future f2 =
             executor.submit(
-                () -> {
-                  asyncImportFile(producer, TOPIC_PLANE, filePlane, 10, useOharaAPI);
-                });
+                () -> asyncImportFile(producer, TOPIC_PLANE, filePlane, 10, useOharaAPI));
         Future f3 =
             executor.submit(
-                () -> {
-                  asyncImportFile(producer, TOPIC_AIRPORT, fileAirport, 10, useOharaAPI);
-                });
+                () -> asyncImportFile(producer, TOPIC_AIRPORT, fileAirport, 10, useOharaAPI));
         Future f4 =
             executor.submit(
-                () -> {
-                  asyncImportFile(producer, TOPIC_FLIGHT, fileFlight2007, 10, useOharaAPI);
-                });
+                () -> asyncImportFile(producer, TOPIC_FLIGHT, fileFlight2007, 10, useOharaAPI));
         Future f5 =
             executor.submit(
-                () -> {
-                  asyncImportFile(producer, TOPIC_FLIGHT, fileFlight2008, 10, useOharaAPI);
-                });
+                () -> asyncImportFile(producer, TOPIC_FLIGHT, fileFlight2008, 10, useOharaAPI));
 
         f1.get();
         f2.get();
@@ -161,11 +150,11 @@ class DataImporter {
             if (sleepMills > 0) {
               try {
                 Thread.sleep(sleepMills);
-              } catch (Exception e) {
+              } catch (Exception ignored) {
               }
             }
           });
-    } catch (Exception e) {
+    } catch (Exception ignored) {
     }
   }
 

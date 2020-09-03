@@ -16,10 +16,10 @@
 
 package oharastream.ohara.client.filesystem
 
-import oharastream.ohara.common.exception.{NoSuchFileException, FileSystemException}
+import oharastream.ohara.common.exception.{FileSystemException, NoSuchFileException}
 import oharastream.ohara.common.rule.OharaTest
 import oharastream.ohara.common.util.{CommonUtils, Releasable}
-import org.junit.{After, Before, Test}
+import org.junit.jupiter.api.{AfterEach, BeforeEach, Test}
 import org.scalatest.matchers.should.Matchers._
 
 import scala.jdk.CollectionConverters._
@@ -39,13 +39,13 @@ abstract class FileSystemTestBase extends OharaTest {
 
   protected def randomText(): String = CommonUtils.randomString(10)
 
-  @Before
+  @BeforeEach
   def setup(): Unit = {
     println(s"rootDir = $rootDir")
     if (!fileSystem.exists(rootDir)) fileSystem.mkdirs(rootDir)
   }
 
-  @After
+  @AfterEach
   def cleanup(): Unit = Releasable.close(fileSystem)
 
   @Test

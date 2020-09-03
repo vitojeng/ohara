@@ -16,12 +16,10 @@
 
 package oharastream.ohara.testing.service;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
-
 import oharastream.ohara.common.rule.OharaTest;
 import oharastream.ohara.common.util.CommonUtils;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class TestBrokers extends OharaTest {
 
@@ -30,7 +28,8 @@ public class TestBrokers extends OharaTest {
     int port = CommonUtils.availablePort();
     try (Zookeepers zk = Zookeepers.local(0);
         Brokers brokers = Brokers.local(zk, new int[] {port})) {
-      assertEquals(port, Integer.parseInt(brokers.connectionProps().split(",")[0].split(":")[1]));
+      Assertions.assertEquals(
+          port, Integer.parseInt(brokers.connectionProps().split(",")[0].split(":")[1]));
     }
   }
 
@@ -39,7 +38,8 @@ public class TestBrokers extends OharaTest {
     int[] ports = {0};
     try (Zookeepers zk = Zookeepers.local(0);
         Brokers brokers = Brokers.local(zk, ports)) {
-      assertNotEquals(0, Integer.parseInt(brokers.connectionProps().split(",")[0].split(":")[1]));
+      Assertions.assertNotEquals(
+          0, Integer.parseInt(brokers.connectionProps().split(",")[0].split(":")[1]));
     }
   }
 }

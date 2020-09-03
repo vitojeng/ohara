@@ -16,11 +16,9 @@
 
 package oharastream.ohara.common.data;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
-
 import oharastream.ohara.common.rule.OharaTest;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class TestBasicObject extends OharaTest {
 
@@ -41,24 +39,25 @@ public class TestBasicObject extends OharaTest {
   @Test
   public void testEquals() {
     MyBasicObject data = new MyBasicObject(5, 6, "test", new byte[] {5, 6, 7});
-    assertEquals(data, new MyBasicObject(5, 6, "test", new byte[] {5, 6, 7}));
-    assertNotEquals(data, new MyBasicObject(4, 6, "test", new byte[] {5, 6, 7}));
-    assertNotEquals(data, new MyBasicObject(5, 7, "test", new byte[] {5, 6, 7}));
-    assertNotEquals(data, new MyBasicObject(5, 6, "test2", new byte[] {5, 6, 7}));
-    assertNotEquals(data, new MyBasicObject(5, 6, "test", new byte[] {5, 6, 8}));
+    Assertions.assertEquals(data, new MyBasicObject(5, 6, "test", new byte[] {5, 6, 7}));
+    Assertions.assertNotEquals(data, new MyBasicObject(4, 6, "test", new byte[] {5, 6, 7}));
+    Assertions.assertNotEquals(data, new MyBasicObject(5, 7, "test", new byte[] {5, 6, 7}));
+    Assertions.assertNotEquals(data, new MyBasicObject(5, 6, "test2", new byte[] {5, 6, 7}));
+    Assertions.assertNotEquals(data, new MyBasicObject(5, 6, "test", new byte[] {5, 6, 8}));
   }
 
   @Test
   public void testHashCode() {
     MyBasicObject data = new MyBasicObject(5, 6, "test", new byte[] {5, 6, 7});
-    assertEquals(data.hashCode(), new MyBasicObject(5, 6, "test", new byte[] {5, 6, 7}).hashCode());
-    assertNotEquals(
+    Assertions.assertEquals(
+        data.hashCode(), new MyBasicObject(5, 6, "test", new byte[] {5, 6, 7}).hashCode());
+    Assertions.assertNotEquals(
         data.hashCode(), new MyBasicObject(4, 6, "test", new byte[] {5, 6, 7}).hashCode());
-    assertNotEquals(
+    Assertions.assertNotEquals(
         data.hashCode(), new MyBasicObject(5, 7, "test", new byte[] {5, 6, 7}).hashCode());
-    assertNotEquals(
+    Assertions.assertNotEquals(
         data.hashCode(), new MyBasicObject(5, 6, "test2", new byte[] {5, 6, 7}).hashCode());
-    assertNotEquals(
+    Assertions.assertNotEquals(
         data.hashCode(), new MyBasicObject(5, 6, "test", new byte[] {5, 6, 8}).hashCode());
   }
 }

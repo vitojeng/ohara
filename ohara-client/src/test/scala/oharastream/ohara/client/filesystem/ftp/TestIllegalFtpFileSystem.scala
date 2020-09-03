@@ -19,7 +19,7 @@ package oharastream.ohara.client.filesystem.ftp
 import oharastream.ohara.common.rule.OharaTest
 import oharastream.ohara.common.util.{CommonUtils, Releasable}
 import oharastream.ohara.testing.service.FtpServer
-import org.junit.{After, Test}
+import org.junit.jupiter.api.{AfterEach, Test}
 import org.scalatest.matchers.should.Matchers._
 
 class TestIllegalFtpFileSystem extends OharaTest {
@@ -68,7 +68,7 @@ class TestIllegalFtpFileSystem extends OharaTest {
   def testAttach(): Unit =
     an[Throwable] should be thrownBy fileSystem.attach(s"/${CommonUtils.randomString(10)}", "abc")
 
-  @After
+  @AfterEach
   def tearDown(): Unit = {
     Releasable.close(fileSystem)
     Releasable.close(server)

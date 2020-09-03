@@ -24,7 +24,7 @@ import oharastream.ohara.client.configurator.NodeApi.{Node, State}
 import oharastream.ohara.common.rule.OharaTest
 import oharastream.ohara.common.util.{CommonUtils, Releasable}
 import oharastream.ohara.testing.service.SshdServer
-import org.junit.{After, Test}
+import org.junit.jupiter.api.{AfterEach, Test}
 import org.scalatest.matchers.should.Matchers._
 
 import scala.concurrent.Await
@@ -80,7 +80,7 @@ class TestVerifyNode extends OharaTest {
     }.getMessage should include("unavailable")
   }
 
-  @After
+  @AfterEach
   def tearDown(): Unit = {
     Releasable.close(collie)
     Releasable.close(sshServer)

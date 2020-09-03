@@ -79,7 +79,9 @@ dependencies {
   testImplementation libs.akkaTestKit
   testImplementation libs.akkaHttpTestKit
   testImplementation libs.scalatest
-  testImplementation libs.junit
+  testImplementation libs.junitApi
+  testRuntimeOnly libs.junitEngine
+  testImplementation libs.junitParams
   testImplementation libs.akkaStream
 
   if (project.hasProperty("ohara.it.jar.folder")) {

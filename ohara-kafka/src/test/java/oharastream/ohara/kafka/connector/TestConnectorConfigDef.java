@@ -23,36 +23,36 @@ import oharastream.ohara.common.setting.SettingDef;
 import oharastream.ohara.common.setting.WithDefinitions;
 import oharastream.ohara.common.util.CommonUtils;
 import oharastream.ohara.kafka.connector.json.ConnectorDefUtils;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class TestConnectorConfigDef extends OharaTest {
 
   @Test
   public void testVersion() {
     DumbSink sink = new DumbSink();
-    Assert.assertNotNull(sink.config().configKeys().get(WithDefinitions.VERSION_KEY));
+    Assertions.assertNotNull(sink.config().configKeys().get(WithDefinitions.VERSION_KEY));
   }
 
   @Test
   public void testRevision() {
     DumbSink sink = new DumbSink();
-    Assert.assertNotNull(sink.config().configKeys().get(WithDefinitions.VERSION_KEY));
+    Assertions.assertNotNull(sink.config().configKeys().get(WithDefinitions.VERSION_KEY));
   }
 
   @Test
   public void testAuthor() {
     DumbSink sink = new DumbSink();
-    Assert.assertNotNull(sink.config().configKeys().get(WithDefinitions.AUTHOR_KEY));
+    Assertions.assertNotNull(sink.config().configKeys().get(WithDefinitions.AUTHOR_KEY));
   }
 
   @Test
   public void testSinkKind() {
     DumbSink sink = new DumbSink();
-    Assert.assertEquals(
+    Assertions.assertEquals(
         ClassType.SINK.key(),
         sink.config().configKeys().get(WithDefinitions.KIND_KEY).defaultValue);
-    Assert.assertEquals(
+    Assertions.assertEquals(
         ClassType.SINK.key(),
         sink.settingDefinitions().get(WithDefinitions.KIND_KEY).defaultString());
   }
@@ -60,10 +60,10 @@ public class TestConnectorConfigDef extends OharaTest {
   @Test
   public void testSourceKind() {
     DumbSource source = new DumbSource();
-    Assert.assertEquals(
+    Assertions.assertEquals(
         ClassType.SOURCE.key(),
         source.config().configKeys().get(WithDefinitions.KIND_KEY).defaultValue);
-    Assert.assertEquals(
+    Assertions.assertEquals(
         ClassType.SOURCE.key(),
         source.settingDefinitions().get(WithDefinitions.KIND_KEY).defaultString());
   }

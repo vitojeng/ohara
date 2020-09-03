@@ -27,7 +27,7 @@ import oharastream.ohara.common.util.{CommonUtils, Releasable, VersionUtils}
 import oharastream.ohara.configurator.Configurator
 import oharastream.ohara.kafka.RowDefaultPartitioner
 import oharastream.ohara.kafka.connector.csv.CsvConnectorDefinitions
-import org.junit.{After, Before, Test}
+import org.junit.jupiter.api.{AfterEach, BeforeEach, Test}
 import org.scalatest.matchers.should.Matchers._
 import spray.json.{JsArray, JsNumber, JsObject, JsString, JsTrue, JsValue}
 
@@ -63,7 +63,7 @@ class TestConnectorRoute extends OharaTest {
     CsvConnectorDefinitions.OUTPUT_FOLDER_KEY         -> JsString("output")
   )
 
-  @Before
+  @BeforeEach
   def setupTopic(): Unit = {
     result(topicApi.request.key(topicKey).brokerClusterKey(bkKey).create())
     result(topicApi.start(topicKey))
@@ -734,6 +734,6 @@ class TestConnectorRoute extends OharaTest {
       .toString()
   }
 
-  @After
+  @AfterEach
   def tearDown(): Unit = Releasable.close(configurator)
 }

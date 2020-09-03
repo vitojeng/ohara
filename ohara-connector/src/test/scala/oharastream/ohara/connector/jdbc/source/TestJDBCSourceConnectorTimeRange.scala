@@ -30,23 +30,17 @@ import oharastream.ohara.kafka.Consumer
 import oharastream.ohara.kafka.connector.TaskSetting
 import oharastream.ohara.testing.With3Brokers3Workers
 import oharastream.ohara.testing.service.Database
-import org.junit.{After, Before, Test}
-import org.junit.runner.RunWith
-import org.junit.runners.Parameterized
-import org.junit.runners.Parameterized.Parameters
+import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.CsvSource
 import org.scalatest.matchers.should.Matchers._
 
-import scala.jdk.CollectionConverters._
-import scala.concurrent.{Await, Future}
-import scala.concurrent.duration.Duration
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.duration.Duration
+import scala.concurrent.{Await, Future}
+import scala.jdk.CollectionConverters._
 
-@RunWith(value = classOf[Parameterized])
-class TestJDBCSourceConnectorTimeRange(parameter: TimeRangeParameter) extends With3Brokers3Workers {
-  private[this] val startTimestamp     = parameter.startTimestamp
-  private[this] val stopTimestamp      = parameter.stopTimestamp
-  private[this] val incrementTimestamp = parameter.increment
-
+class TestJDBCSourceConnectorTimeRange extends With3Brokers3Workers {
   protected[this] val db: Database        = Database.local()
   protected[this] val tableName           = "table1"
   protected[this] val timestampColumnName = "c0"
@@ -59,25 +53,28 @@ class TestJDBCSourceConnectorTimeRange(parameter: TimeRangeParameter) extends Wi
     RdbColumn(timestampColumnName, "TIMESTAMP(6)", false)
   ) ++
     (beginIndex to totalColumnSize).map { index =>
-      if (index == 1) RdbColumn(s"c${index}", "VARCHAR(45)", true)
-      else RdbColumn(s"c${index}", "VARCHAR(45)", false)
+      if (index == 1) RdbColumn(s"c$index", "VARCHAR(45)", true)
+      else RdbColumn(s"c$index", "VARCHAR(45)", false)
     }
   private[this] val connectorAdmin = ConnectorAdmin(testUtil.workersConnProps)
 
-  @Before
-  def setup(): Unit = {
+  @ParameterizedTest(name = "{displayName} with {argumentsWithNames}")
+  @CsvSource(
+    value = Array(
+      "1598506853739, 1598852453739,  3600000, 1", // 5 days ~ 1 days, split by 1 hour, 1 task
+      "1598506853739, 1598852453739,  3600000, 3", // 5 days ~ 1 days, split by 1 hour, 3 task
+      "1598506853739, 9998852453739,  3600000, 3"  // 5 days ~ future, split by 1 hour, 3 task
+    )
+  )
+  def testConnector(startTimestamp: Long, stopTimestamp: Long, incrementTimestamp: Long, taskNumber: Int): Unit = {
     client.createTable(tableName, columns)
-    insertData(startTimestamp.getTime.to(stopTimestamp.getTime).by(incrementTimestamp).map { value =>
+    insertData(startTimestamp.to(Math.min(stopTimestamp, CommonUtils.current())).by(incrementTimestamp).map { value =>
       new Timestamp(value)
     })
-  }
-
-  @Test
-  def testConnector(): Unit = {
     val connectorKey = ConnectorKey.of(CommonUtils.randomString(5), "JDBC-Source-Connector-Test")
     try {
       val topicKey = TopicKey.of(CommonUtils.randomString(5), CommonUtils.randomString(5))
-      result(createConnector(connectorAdmin, connectorKey, topicKey))
+      result(createConnector(connectorAdmin, connectorKey, topicKey, taskNumber))
 
       val consumer =
         Consumer
@@ -168,7 +165,7 @@ class TestJDBCSourceConnectorTimeRange(parameter: TimeRangeParameter) extends Wi
     } finally Releasable.close(preparedStatement)
   }
 
-  @After
+  @AfterEach
   def after(): Unit = {
     if (client != null) {
       val statement: Statement = client.connection.createStatement()
@@ -191,14 +188,15 @@ class TestJDBCSourceConnectorTimeRange(parameter: TimeRangeParameter) extends Wi
   private[this] def createConnector(
     connectorAdmin: ConnectorAdmin,
     connectorKey: ConnectorKey,
-    topicKey: TopicKey
+    topicKey: TopicKey,
+    taskNumber: Int
   ): Future[ConnectorCreationResponse] = {
     connectorAdmin
       .connectorCreator()
       .connectorKey(connectorKey)
       .connectorClass(classOf[JDBCSourceConnector])
       .topicKey(topicKey)
-      .numberOfTasks(parameter.taskNumber)
+      .numberOfTasks(taskNumber)
       .settings(jdbcSourceConnectorProps.toMap)
       .create()
   }
@@ -218,52 +216,4 @@ class TestJDBCSourceConnectorTimeRange(parameter: TimeRangeParameter) extends Wi
       )
     )
   }
-}
-
-object TestJDBCSourceConnectorTimeRange {
-  @Parameters(name = "{index} test, injected_args: {0}")
-  def parameters(): java.util.Collection[TimeRangeParameter] = {
-    val FIVE_DAY_TIMESTAMP = 432000000 // 5 * 24 * 60 * 60 * 1000 => 5 day
-    val ONE_DAY_TIMESTAMP  = 86400000  // 1 * 24 * 60 * 60 * 1000 => 1 day
-    val ONE_HOUR_TIMESTAMP = 3600000   // 60 * 60 * 1000 => 1 hour
-
-    (1 to 3).flatMap { taskNumber =>
-      Seq(
-        // For test the from 5 day ago to 1 day ago data
-        TimeRangeParameter(
-          new Timestamp(CommonUtils.current() - FIVE_DAY_TIMESTAMP),
-          new Timestamp(CommonUtils.current() - ONE_DAY_TIMESTAMP),
-          ONE_HOUR_TIMESTAMP,
-          s"Number of tasks: $taskNumber, Less current timestamp",
-          taskNumber
-        ),
-        // For test the from 5 day ago to current time
-        TimeRangeParameter(
-          new Timestamp(CommonUtils.current() - FIVE_DAY_TIMESTAMP),
-          new Timestamp(CommonUtils.current()),
-          ONE_HOUR_TIMESTAMP,
-          s"Number of tasks: $taskNumber, Equals current timestamp",
-          taskNumber
-        ),
-        // For the the from 5 day ago to 5 day later
-        TimeRangeParameter(
-          new Timestamp(CommonUtils.current() - FIVE_DAY_TIMESTAMP),
-          new Timestamp(CommonUtils.current() + FIVE_DAY_TIMESTAMP),
-          ONE_HOUR_TIMESTAMP,
-          s"Number of tasks: $taskNumber, more than the current timestamp",
-          taskNumber
-        )
-      )
-    }.asJava
-  }
-}
-
-case class TimeRangeParameter(
-  startTimestamp: Timestamp,
-  stopTimestamp: Timestamp,
-  increment: Int,
-  describe: String,
-  taskNumber: Int
-) {
-  override def toString: String = describe
 }

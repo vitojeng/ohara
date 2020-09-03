@@ -148,9 +148,7 @@ public class LocalFileSystem implements FileSystem {
           File file = Paths.get(path).toFile();
           if (file.isDirectory()) {
             File[] children = file.listFiles();
-            for (int i = 0; i < children.length; i++) {
-              delete(children[i].toString(), true);
-            }
+            for (File child : children) delete(child.toString(), true);
           }
         }
         Files.delete(Paths.get(path));

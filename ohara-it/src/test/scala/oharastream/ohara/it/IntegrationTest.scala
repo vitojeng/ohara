@@ -23,23 +23,14 @@ import oharastream.ohara.agent.docker.ContainerState
 import oharastream.ohara.client.configurator.ClusterInfo
 import oharastream.ohara.client.configurator.ContainerApi.ContainerInfo
 import oharastream.ohara.common.setting.ObjectKey
-import oharastream.ohara.common.util.CommonUtils
-import org.junit.rules.Timeout
-import org.junit.{AssumptionViolatedException, Rule}
+import oharastream.ohara.common.util.{CommonUtils, Releasable}
+import org.junit.jupiter.api.Timeout
 
 import scala.concurrent.duration.Duration
 import scala.concurrent.{Await, Future}
 
-abstract class IntegrationTest {
-  @Rule def timeout: Timeout = Timeout.seconds(720)
-
-  /**
-    * Skip all remaining test cases after calling this method.
-    *
-    * @param message why you want to skip all test cases?
-    */
-  protected def skipTest(message: String): Unit = throw new AssumptionViolatedException(message)
-
+@Timeout(value = 10, unit = TimeUnit.MINUTES)
+trait IntegrationTest {
   protected def result[T](f: Future[T]): T = Await.result(f, Duration(120, TimeUnit.SECONDS))
 
   /**
@@ -91,16 +82,16 @@ abstract class IntegrationTest {
     )
 
   /**
-    * Some ITs require the public hostname to expose service. If this method return none, it means the QA does not prepare
-    * the such env for IT.
-    * @return hostname or none
+    * used to release object after evaluation is done.
+    * @param obj releasable object
+    * @param f evaluation function
+    * @param cleanup a call in the final (the error is swallowed)
+    * @tparam T type of object
+    * @tparam R type of response
+    * @return response created by function
     */
-  protected def publicHostname: Option[String] = sys.env.get("ohara.it.hostname")
-
-  /**
-    * Some ITs require the public port to expose service. If this method return none, it means the QA does not prepare
-    * the such env for IT.
-    * @return public port or none
-    */
-  protected def publicPort: Option[Int] = sys.env.get("ohara.it.port").map(_.toInt)
+  protected def close[T <: AutoCloseable, R](obj: T)(f: T => R)(cleanup: T => Unit): R =
+    try f(obj)
+    finally try Releasable.close(() => cleanup(obj))
+    finally obj.close()
 }

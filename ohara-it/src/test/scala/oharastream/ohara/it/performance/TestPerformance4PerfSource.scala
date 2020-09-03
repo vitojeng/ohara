@@ -20,7 +20,7 @@ import oharastream.ohara.client.configurator.{ConnectorApi, TopicApi}
 import oharastream.ohara.common.setting.ConnectorKey
 import oharastream.ohara.common.util.CommonUtils
 import oharastream.ohara.connector.perf.PerfSource
-import org.junit.Test
+import org.junit.jupiter.api.Test
 
 class TestPerformance4PerfSource extends BasicTestPerformance {
   @Test

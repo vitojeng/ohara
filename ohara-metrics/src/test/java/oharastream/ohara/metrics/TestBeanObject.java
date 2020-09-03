@@ -19,56 +19,66 @@ package oharastream.ohara.metrics;
 import java.util.Map;
 import oharastream.ohara.common.rule.OharaTest;
 import oharastream.ohara.common.util.CommonUtils;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class TestBeanObject extends OharaTest {
 
-  @Test(expected = NullPointerException.class)
+  @Test
   public void testNullDomain() {
-    BeanObject.builder().domainName(null);
+    Assertions.assertThrows(
+        NullPointerException.class, () -> BeanObject.builder().domainName(null));
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   public void testEmptyDomain() {
-    BeanObject.builder().domainName("");
+    Assertions.assertThrows(
+        IllegalArgumentException.class, () -> BeanObject.builder().domainName(""));
   }
 
-  @Test(expected = NullPointerException.class)
+  @Test
   public void testNullProperties() {
-    BeanObject.builder().properties(null);
+    Assertions.assertThrows(
+        NullPointerException.class, () -> BeanObject.builder().properties(null));
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   public void testEmptyProperties() {
-    BeanObject.builder().properties(Map.of());
+    Assertions.assertThrows(
+        IllegalArgumentException.class, () -> BeanObject.builder().properties(Map.of()));
   }
 
-  @Test(expected = NullPointerException.class)
+  @Test
   public void testNullValueInProperties() {
-    BeanObject.builder().properties(Map.of("a", null));
+    Assertions.assertThrows(
+        NullPointerException.class, () -> BeanObject.builder().properties(Map.of("a", null)));
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   public void testEmptyValueInProperties() {
-    BeanObject.builder().properties(Map.of("a", ""));
+    Assertions.assertThrows(
+        IllegalArgumentException.class, () -> BeanObject.builder().properties(Map.of("a", "")));
   }
 
-  @Test(expected = NullPointerException.class)
+  @Test
   public void testNullAttributes() {
-    BeanObject.builder().attributes(null);
+    Assertions.assertThrows(
+        NullPointerException.class, () -> BeanObject.builder().attributes(null));
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   public void testEmptyAttributes() {
-    BeanObject.builder().attributes(Map.of());
+    Assertions.assertThrows(
+        IllegalArgumentException.class, () -> BeanObject.builder().attributes(Map.of()));
   }
 
-  @Test(expected = NullPointerException.class)
+  @Test
   public void testNullValueInAttributes() {
-    BeanObject.builder().attributes(Map.of("a", null));
+    Assertions.assertThrows(
+        NullPointerException.class, () -> BeanObject.builder().attributes(Map.of("a", null)));
   }
 
-  @Test(expected = UnsupportedOperationException.class)
+  @Test
   public void testImmutableProperties() {
     BeanObject obj =
         BeanObject.builder()
@@ -77,10 +87,11 @@ public class TestBeanObject extends OharaTest {
             .attributes(Map.of("a", "b"))
             .queryTime(CommonUtils.current())
             .build();
-    obj.properties().remove(("a"));
+    Assertions.assertThrows(
+        UnsupportedOperationException.class, () -> obj.properties().remove(("a")));
   }
 
-  @Test(expected = UnsupportedOperationException.class)
+  @Test
   public void testImmutableAttributes() {
     BeanObject obj =
         BeanObject.builder()
@@ -89,26 +100,33 @@ public class TestBeanObject extends OharaTest {
             .attributes(Map.of("a", "b"))
             .queryTime(CommonUtils.current())
             .build();
-    obj.attributes().remove(("a"));
+    Assertions.assertThrows(
+        UnsupportedOperationException.class, () -> obj.attributes().remove(("a")));
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   public void testZeroQueryNumber() {
-    BeanObject.builder()
-        .domainName(CommonUtils.randomString())
-        .properties(Map.of("a", "b"))
-        .attributes(Map.of("a", "b"))
-        .queryTime(0)
-        .build();
+    Assertions.assertThrows(
+        IllegalArgumentException.class,
+        () ->
+            BeanObject.builder()
+                .domainName(CommonUtils.randomString())
+                .properties(Map.of("a", "b"))
+                .attributes(Map.of("a", "b"))
+                .queryTime(0)
+                .build());
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   public void testNegativeQueryNumber() {
-    BeanObject.builder()
-        .domainName(CommonUtils.randomString())
-        .properties(Map.of("a", "b"))
-        .attributes(Map.of("a", "b"))
-        .queryTime(-999)
-        .build();
+    Assertions.assertThrows(
+        IllegalArgumentException.class,
+        () ->
+            BeanObject.builder()
+                .domainName(CommonUtils.randomString())
+                .properties(Map.of("a", "b"))
+                .attributes(Map.of("a", "b"))
+                .queryTime(-999)
+                .build());
   }
 }

@@ -22,7 +22,7 @@ import java.nio.file.Paths
 import oharastream.ohara.client.filesystem.{FileSystem, FileSystemTestBase}
 import oharastream.ohara.common.util.CommonUtils
 import oharastream.ohara.testing.service.FtpServer
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import org.scalatest.matchers.should.Matchers._
 
 import scala.jdk.CollectionConverters._

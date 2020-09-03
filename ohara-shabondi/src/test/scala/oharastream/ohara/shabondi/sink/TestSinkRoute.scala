@@ -29,7 +29,7 @@ import oharastream.ohara.metrics.basic.CounterMBean
 import oharastream.ohara.shabondi._
 import oharastream.ohara.shabondi.common.JsonSupport
 import oharastream.ohara.shabondi.common.JsonSupport.RowData
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import org.scalatest.matchers.should.Matchers._
 import spray.json.DefaultJsonProtocol._
 

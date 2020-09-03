@@ -21,7 +21,7 @@ import java.util.concurrent.TimeUnit
 import oharastream.ohara.client.configurator.{BrokerApi, NodeApi, WorkerApi, ZookeeperApi}
 import oharastream.ohara.common.util.CommonUtils
 import oharastream.ohara.testing.WithBrokerWorker
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import org.scalatest.matchers.should.Matchers._
 
 import scala.concurrent.Await

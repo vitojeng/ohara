@@ -22,7 +22,7 @@ import oharastream.ohara.client.configurator.InspectApi.RdbColumn
 import oharastream.ohara.common.rule.OharaTest
 import oharastream.ohara.connector.jdbc.datatype.{MySQLDataTypeConverter, RDBDataTypeConverter}
 import oharastream.ohara.connector.jdbc.util.{ColumnInfo, DateTimeUtils}
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import org.mockito.Mockito
 import org.mockito.Mockito._
 import org.scalatest.matchers.should.Matchers._

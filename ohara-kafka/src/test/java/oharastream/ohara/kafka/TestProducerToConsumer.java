@@ -30,16 +30,16 @@ import oharastream.ohara.common.util.CommonUtils;
 import oharastream.ohara.kafka.connector.TopicPartition;
 import oharastream.ohara.testing.WithBroker;
 import org.apache.kafka.clients.CommonClientConfigs;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class TestProducerToConsumer extends WithBroker {
 
   private final TopicKey topicKey = TopicKey.of("group", CommonUtils.randomString());
 
-  @Before
+  @BeforeEach
   public void setup() throws ExecutionException, InterruptedException {
     createTopic(topicKey);
   }
@@ -76,9 +76,9 @@ public class TestProducerToConsumer extends WithBroker {
             .connectionProps(testUtil().brokersConnProps())
             .build()) {
       List<Consumer.Record<String, String>> records = consumer.poll(Duration.ofSeconds(30), 1);
-      Assert.assertEquals(1, records.size());
-      Assert.assertEquals(timestamp, records.get(0).timestamp());
-      Assert.assertEquals(TimestampType.CREATE_TIME, records.get(0).timestampType());
+      Assertions.assertEquals(1, records.size());
+      Assertions.assertEquals(timestamp, records.get(0).timestamp());
+      Assertions.assertEquals(TimestampType.CREATE_TIME, records.get(0).timestampType());
     }
   }
 
@@ -103,15 +103,15 @@ public class TestProducerToConsumer extends WithBroker {
             .connectionProps(testUtil().brokersConnProps())
             .build()) {
       List<Consumer.Record<String, String>> record1s = consumer.poll(Duration.ofSeconds(30), 100);
-      Assert.assertEquals(100, record1s.size());
+      Assertions.assertEquals(100, record1s.size());
 
       List<Consumer.Record<String, String>> record2s = consumer.poll(Duration.ofSeconds(1), 0);
-      Assert.assertEquals(0, record2s.size());
+      Assertions.assertEquals(0, record2s.size());
 
       consumer.seekToBeginning(consumer.assignment()); // Reset topic to beginning
 
       List<Consumer.Record<String, String>> record3s = consumer.poll(Duration.ofSeconds(30), 100);
-      Assert.assertEquals(100, record3s.size());
+      Assertions.assertEquals(100, record3s.size());
     }
 
     try (Producer<String, String> producer =
@@ -133,14 +133,14 @@ public class TestProducerToConsumer extends WithBroker {
             .connectionProps(testUtil().brokersConnProps())
             .build()) {
       List<Consumer.Record<String, String>> record1s = consumer.poll(Duration.ofSeconds(30), 200);
-      Assert.assertEquals(200, record1s.size());
+      Assertions.assertEquals(200, record1s.size());
 
       consumer.seekToBeginning();
       List<Consumer.Record<String, String>> record2s = consumer.poll(Duration.ofSeconds(30), 200);
-      Assert.assertEquals(200, record2s.size());
+      Assertions.assertEquals(200, record2s.size());
 
       List<Consumer.Record<String, String>> record3s = consumer.poll(Duration.ofSeconds(1), 0);
-      Assert.assertEquals(0, record3s.size());
+      Assertions.assertEquals(0, record3s.size());
     }
   }
 
@@ -165,19 +165,19 @@ public class TestProducerToConsumer extends WithBroker {
             .connectionProps(testUtil().brokersConnProps())
             .build()) {
       List<Consumer.Record<String, String>> records = consumer.poll(Duration.ofSeconds(30), 100);
-      Assert.assertEquals(100, records.size());
+      Assertions.assertEquals(100, records.size());
 
-      Assert.assertEquals(0, records.get(0).offset());
-      Assert.assertEquals("key0", records.get(0).key().get());
-      Assert.assertEquals("value0", records.get(0).value().get());
+      Assertions.assertEquals(0, records.get(0).offset());
+      Assertions.assertEquals("key0", records.get(0).key().get());
+      Assertions.assertEquals("value0", records.get(0).value().get());
 
-      Assert.assertEquals(50, records.get(50).offset());
-      Assert.assertEquals("key50", records.get(50).key().get());
-      Assert.assertEquals("value50", records.get(50).value().get());
+      Assertions.assertEquals(50, records.get(50).offset());
+      Assertions.assertEquals("key50", records.get(50).key().get());
+      Assertions.assertEquals("value50", records.get(50).value().get());
 
-      Assert.assertEquals(99, records.get(99).offset());
-      Assert.assertEquals("key99", records.get(99).key().get());
-      Assert.assertEquals("value99", records.get(99).value().get());
+      Assertions.assertEquals(99, records.get(99).offset());
+      Assertions.assertEquals("key99", records.get(99).key().get());
+      Assertions.assertEquals("value99", records.get(99).value().get());
     }
   }
 
@@ -191,7 +191,7 @@ public class TestProducerToConsumer extends WithBroker {
             .build()) {
       RecordMetadata metadata =
           producer.sender().key("a").value("b").topicKey(topicKey).send().get();
-      Assert.assertEquals(metadata.topicKey(), topicKey);
+      Assertions.assertEquals(metadata.topicKey(), topicKey);
       try (Consumer<String, String> consumer =
           Consumer.builder()
               .keySerializer(Serializer.STRING)
@@ -201,10 +201,10 @@ public class TestProducerToConsumer extends WithBroker {
               .connectionProps(testUtil().brokersConnProps())
               .build()) {
         List<Consumer.Record<String, String>> records = consumer.poll(Duration.ofSeconds(30), 1);
-        Assert.assertEquals(1, records.size());
-        Assert.assertEquals("a", records.get(0).key().get());
-        Assert.assertEquals("b", records.get(0).value().get());
-        Assert.assertEquals(0, records.get(0).offset());
+        Assertions.assertEquals(1, records.size());
+        Assertions.assertEquals("a", records.get(0).key().get());
+        Assertions.assertEquals("b", records.get(0).value().get());
+        Assertions.assertEquals(0, records.get(0).offset());
       }
     }
   }
@@ -220,7 +220,7 @@ public class TestProducerToConsumer extends WithBroker {
             .options(
                 Map.of(CommonClientConfigs.CONNECTIONS_MAX_IDLE_MS_CONFIG, String.valueOf(timeout)))
             .build()) {
-      Assert.assertEquals(
+      Assertions.assertEquals(
           producer.sender().key("a").value("b").topicKey(topicKey).send().get().topicKey(),
           topicKey);
       try (Consumer<String, String> consumer =
@@ -233,18 +233,18 @@ public class TestProducerToConsumer extends WithBroker {
               .option(CommonClientConfigs.CONNECTIONS_MAX_IDLE_MS_CONFIG, String.valueOf(timeout))
               .build()) {
         List<Consumer.Record<String, String>> records = consumer.poll(Duration.ofSeconds(30), 1);
-        Assert.assertEquals(1, records.size());
-        Assert.assertEquals("a", records.get(0).key().get());
-        Assert.assertEquals("b", records.get(0).value().get());
+        Assertions.assertEquals(1, records.size());
+        Assertions.assertEquals("a", records.get(0).key().get());
+        Assertions.assertEquals("b", records.get(0).value().get());
 
         TimeUnit.MILLISECONDS.sleep(timeout * 2);
-        Assert.assertEquals(
+        Assertions.assertEquals(
             producer.sender().key("c").value("d").topicKey(topicKey).send().get().topicKey(),
             topicKey);
         List<Consumer.Record<String, String>> records2 = consumer.poll(Duration.ofSeconds(30), 1);
-        Assert.assertEquals(1, records2.size());
-        Assert.assertEquals("c", records2.get(0).key().get());
-        Assert.assertEquals("d", records2.get(0).value().get());
+        Assertions.assertEquals(1, records2.size());
+        Assertions.assertEquals("c", records2.get(0).key().get());
+        Assertions.assertEquals("d", records2.get(0).value().get());
       }
     }
   }
@@ -281,17 +281,17 @@ public class TestProducerToConsumer extends WithBroker {
               .connectionProps(testUtil().brokersConnProps())
               .offsetFromBegin()
               .build()) {
-        Assert.assertEquals(consumer.poll(Duration.ofSeconds(5), count).size(), count);
+        Assertions.assertEquals(consumer.poll(Duration.ofSeconds(5), count).size(), count);
         consumer.seek(1);
         List<Consumer.Record<String, String>> records = consumer.poll(Duration.ofSeconds(5), count);
-        Assert.assertEquals(
+        Assertions.assertEquals(
             records.stream().filter(record -> record.key().isPresent()).count(), count - 1);
         consumer
             .endOffsets()
             .forEach(
                 (tp, offset) -> {
                   if (tp.topicKey().equals(topicKey))
-                    Assert.assertEquals(offset.longValue(), count);
+                    Assertions.assertEquals(offset.longValue(), count);
                 });
       }
     }
@@ -311,11 +311,11 @@ public class TestProducerToConsumer extends WithBroker {
               .filter(tp -> tp.topicKey().equals(topicKey))
               .collect(Collectors.toUnmodifiableSet());
       consumer.assignments(tps);
-      Assert.assertEquals(tps, consumer.assignment());
+      Assertions.assertEquals(tps, consumer.assignment());
     }
   }
 
-  @After
+  @AfterEach
   public void tearDown() {
     try (TopicAdmin client = TopicAdmin.of(testUtil().brokersConnProps())) {
       client.deleteTopic(topicKey);

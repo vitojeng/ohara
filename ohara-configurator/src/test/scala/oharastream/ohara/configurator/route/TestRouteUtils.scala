@@ -19,7 +19,7 @@ package oharastream.ohara.configurator.route
 import oharastream.ohara.common.rule.OharaTest
 import oharastream.ohara.common.setting.SettingDef
 import oharastream.ohara.common.setting.SettingDef.Permission
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import spray.json.JsString
 import org.scalatest.matchers.should.Matchers._
 

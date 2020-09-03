@@ -17,10 +17,9 @@
 package oharastream.ohara.it.script
 
 import oharastream.ohara.common.util.{Releasable, VersionUtils}
-import oharastream.ohara.it.category.ClientGroup
-import oharastream.ohara.it.{ContainerPlatform, IntegrationTest, ServiceKeyHolder}
-import org.junit.experimental.categories.Category
-import org.junit.{After, Test}
+import oharastream.ohara.it.{ContainerPlatform, IntegrationTest}
+import org.junit.jupiter.api.condition.EnabledIfEnvironmentVariable
+import org.junit.jupiter.api.{AfterEach, Tag, Test}
 import org.scalatest.matchers.should.Matchers._
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -29,12 +28,12 @@ import scala.concurrent.ExecutionContext.Implicits.global
   * test command "-v" for all ohara images.
   * Noted: the "version" may be changed at runtime by jenkins so we check only revision.
   */
-@Category(Array(classOf[ClientGroup]))
+@Tag("integration-test-client")
+@EnabledIfEnvironmentVariable(named = "ohara.it.docker", matches = ".*")
 class TestVersionFile extends IntegrationTest {
-  private[this] val platform                       = ContainerPlatform.dockerMode
-  private[this] val resourceRef                    = platform.setup()
-  private[this] val containerClient                = resourceRef.containerClient
-  protected val serviceKeyHolder: ServiceKeyHolder = ServiceKeyHolder(containerClient)
+  private[this] val platform        = ContainerPlatform.dockerMode
+  private[this] val resourceRef     = platform.setup()
+  private[this] val containerClient = resourceRef.containerClient
 
   /**
     * see VersionUtils for following fields
@@ -81,7 +80,7 @@ class TestVersionFile extends IntegrationTest {
 
   private[this] def testVersion(imageName: String, expectedStrings: Set[String]): Unit = platform.nodeNames.foreach {
     hostname =>
-      val key           = serviceKeyHolder.generateClusterKey()
+      val key           = resourceRef.generateObjectKey
       val containerName = s"${key.group()}-${key.name()}"
       val versionString: String = result(
         containerClient.containerCreator
@@ -95,9 +94,6 @@ class TestVersionFile extends IntegrationTest {
       expectedStrings.foreach(s => versionString should include(s))
   }
 
-  @After
-  def releaseConfigurator(): Unit = {
-    Releasable.close(serviceKeyHolder)
-    Releasable.close(resourceRef)
-  }
+  @AfterEach
+  def releaseConfigurator(): Unit = Releasable.close(resourceRef)
 }

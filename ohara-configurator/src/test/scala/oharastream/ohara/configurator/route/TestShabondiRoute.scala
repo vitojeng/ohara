@@ -26,7 +26,7 @@ import oharastream.ohara.common.setting.{ClassType, ObjectKey, TopicKey}
 import oharastream.ohara.common.util.{CommonUtils, Releasable}
 import oharastream.ohara.configurator.Configurator
 import oharastream.ohara.shabondi.ShabondiDefinitions._
-import org.junit.{After, Before, Test}
+import org.junit.jupiter.api.{AfterEach, BeforeEach, Test}
 import org.scalatest.matchers.should.Matchers._
 import spray.json._
 
@@ -61,13 +61,13 @@ class TestShabondiRoute extends OharaTest {
       JDuration.ofSeconds(20)
     )
 
-  @Before
+  @BeforeEach
   def setup(): Unit = {
     await(topicApi.request.brokerClusterKey(brokerClusterInfo.key).key(topicKey).create())
     await(topicApi.start(topicKey))
   }
 
-  @After
+  @AfterEach
   def tearDown(): Unit = Releasable.close(configurator)
 
   @Test
@@ -184,7 +184,7 @@ class TestShabondiRoute extends OharaTest {
     clusterInfo.clientPort should ===(clientPort)
     clusterInfo.brokerClusterKey should ===(brokerClusterInfo.key)
     clusterInfo.nodeNames should contain(nodeName)
-    clusterInfo.sourceToTopics should be(empty)
+    clusterInfo.sourceToTopics.size shouldBe 0
     clusterInfo.imageName should ===(IMAGE_NAME_DEFAULT)
     clusterInfo.endpoint should ===(s"http://$nodeName:$clientPort/")
 
@@ -216,7 +216,7 @@ class TestShabondiRoute extends OharaTest {
     clusterInfo.clientPort should ===(clientPort)
     clusterInfo.brokerClusterKey should ===(brokerClusterInfo.key)
     clusterInfo.nodeNames should contain(nodeName)
-    clusterInfo.sinkFromTopics should be(empty)
+    clusterInfo.sinkFromTopics.size shouldBe 0
     clusterInfo.imageName should ===(IMAGE_NAME_DEFAULT)
     clusterInfo.endpoint should ===(s"http://$nodeName:$clientPort/groups/" + "${groupName}")
 

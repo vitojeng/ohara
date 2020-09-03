@@ -19,7 +19,7 @@ package oharastream.ohara.connector.jdbc.util
 import java.sql.Timestamp
 
 import oharastream.ohara.common.rule.OharaTest
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import org.scalatest.matchers.should.Matchers._
 
 class TestDateTimeUtils extends OharaTest {

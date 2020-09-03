@@ -23,7 +23,7 @@ import oharastream.ohara.common.setting.ObjectKey
 import oharastream.ohara.common.util.{CommonUtils, Releasable}
 import oharastream.ohara.configurator.Configurator
 import oharastream.ohara.configurator.fake.FakeBrokerCollie
-import org.junit.{After, Before, Test}
+import org.junit.jupiter.api.{AfterEach, BeforeEach, Test}
 import org.scalatest.matchers.should.Matchers._
 import spray.json.{DeserializationException, JsArray, JsNumber, JsObject, JsString, JsTrue}
 
@@ -42,7 +42,7 @@ class TestBrokerRoute extends OharaTest {
 
   private[this] def result[T](f: Future[T]): T = Await.result(f, Duration("20 seconds"))
 
-  @Before
+  @BeforeEach
   def setup(): Unit = {
     val nodeAccess = NodeApi.access.hostname(configurator.hostname).port(configurator.port)
 
@@ -609,6 +609,6 @@ class TestBrokerRoute extends OharaTest {
         .create()
     ).maxOfRequestMemory shouldBe 12345
 
-  @After
+  @AfterEach
   def tearDown(): Unit = Releasable.close(configurator)
 }

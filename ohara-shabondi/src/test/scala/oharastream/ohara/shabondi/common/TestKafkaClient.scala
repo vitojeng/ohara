@@ -23,7 +23,7 @@ import oharastream.ohara.common.data.{Cell, Row}
 import oharastream.ohara.common.setting.TopicKey
 import oharastream.ohara.common.util.{CommonUtils, Releasable}
 import oharastream.ohara.shabondi.{BasicShabondiTest, KafkaSupport}
-import org.junit.{After, Before, Test}
+import org.junit.jupiter.api.{AfterEach, BeforeEach, Test}
 import org.scalatest.matchers.should.Matchers._
 
 import scala.concurrent.ExecutionContext.Implicits._
@@ -37,10 +37,10 @@ final class TestKafkaClient extends BasicShabondiTest {
 
   private[this] val topicKey = TopicKey.of("group", CommonUtils.randomString(5))
 
-  @Before
+  @BeforeEach
   def before(): Unit = createTestTopic(topicKey)
 
-  @After
+  @AfterEach
   override def tearDown(): Unit =
     topicAdmin.deleteTopic(topicKey)
 

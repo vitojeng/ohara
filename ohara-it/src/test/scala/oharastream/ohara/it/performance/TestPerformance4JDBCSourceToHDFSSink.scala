@@ -23,10 +23,13 @@ import oharastream.ohara.common.setting.ConnectorKey
 import oharastream.ohara.common.util.{CommonUtils, Releasable}
 import oharastream.ohara.connector.hdfs.sink.HDFSSink
 import oharastream.ohara.connector.jdbc.source.JDBCSourceConnector
-import org.junit.Test
+import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.condition.EnabledIfEnvironmentVariable
 import spray.json.{JsNumber, JsString}
 
+@EnabledIfEnvironmentVariable(named = "ohara.it.performance.hdfs.url", matches = ".*")
 class TestPerformance4JDBCSourceToHDFSSink extends BasicTestPerformance4Jdbc {
+  private[this] val HDFS_URL_KEY: String   = "ohara.it.performance.hdfs.url"
   override protected val tableName: String = s"TABLE${CommonUtils.randomString().toUpperCase()}"
 
   @Test
@@ -41,7 +44,7 @@ class TestPerformance4JDBCSourceToHDFSSink extends BasicTestPerformance4Jdbc {
       //Running JDBC Source Connector
       setupConnector(
         connectorKey = ConnectorKey.of(groupName, CommonUtils.randomString(5)),
-        className = classOf[JDBCSourceConnector].getName(),
+        className = classOf[JDBCSourceConnector].getName,
         settings = Map(
           oharastream.ohara.connector.jdbc.source.DB_URL_KEY                -> JsString(url),
           oharastream.ohara.connector.jdbc.source.DB_USERNAME_KEY           -> JsString(user),
@@ -57,9 +60,9 @@ class TestPerformance4JDBCSourceToHDFSSink extends BasicTestPerformance4Jdbc {
       //Running HDFS Sink Connector
       setupConnector(
         connectorKey = ConnectorKey.of(groupName, CommonUtils.randomString(5)),
-        className = classOf[HDFSSink].getName(),
+        className = classOf[HDFSSink].getName,
         settings = Map(
-          oharastream.ohara.connector.hdfs.sink.HDFS_URL_KEY   -> JsString(PerformanceTestingUtils.hdfsURL),
+          oharastream.ohara.connector.hdfs.sink.HDFS_URL_KEY   -> JsString(sys.env(HDFS_URL_KEY)),
           oharastream.ohara.connector.hdfs.sink.FLUSH_SIZE_KEY -> JsNumber(numberOfCsvFileToFlush),
           oharastream.ohara.connector.hdfs.sink.OUTPUT_FOLDER_KEY -> JsString(
             PerformanceTestingUtils.createFolder(hdfs, PerformanceTestingUtils.dataDir)
@@ -89,7 +92,6 @@ class TestPerformance4JDBCSourceToHDFSSink extends BasicTestPerformance4Jdbc {
     }
   }
 
-  private[this] def hdfsClient(): FileSystem = {
-    FileSystem.hdfsBuilder.url(PerformanceTestingUtils.hdfsURL).build
-  }
+  private[this] def hdfsClient(): FileSystem =
+    FileSystem.hdfsBuilder.url(sys.env(HDFS_URL_KEY)).build
 }

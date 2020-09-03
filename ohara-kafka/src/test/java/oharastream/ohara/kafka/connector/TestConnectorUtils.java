@@ -23,8 +23,8 @@ import oharastream.ohara.common.data.DataType;
 import oharastream.ohara.common.data.Row;
 import oharastream.ohara.common.rule.OharaTest;
 import oharastream.ohara.common.util.CommonUtils;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class TestConnectorUtils extends OharaTest {
   @Test
@@ -37,12 +37,12 @@ public class TestConnectorUtils extends OharaTest {
             .build();
 
     // test illegal type
-    Assert.assertThrows(
+    Assertions.assertThrows(
         IllegalArgumentException.class,
         () -> ConnectorUtils.match(Row.of(Cell.of(column.name(), 123)), List.of(column), true));
 
     // test illegal name
-    Assert.assertThrows(
+    Assertions.assertThrows(
         IllegalArgumentException.class,
         () ->
             ConnectorUtils.match(
@@ -53,12 +53,12 @@ public class TestConnectorUtils extends OharaTest {
         Row.of(Cell.of(column.name(), CommonUtils.randomString())), List.of(column), true);
 
     // test illegal type
-    Assert.assertThrows(
+    Assertions.assertThrows(
         IllegalArgumentException.class,
         () -> ConnectorUtils.match(Row.of(Cell.of(column.newName(), 123)), List.of(column), false));
 
     // test illegal name
-    Assert.assertThrows(
+    Assertions.assertThrows(
         IllegalArgumentException.class,
         () ->
             ConnectorUtils.match(

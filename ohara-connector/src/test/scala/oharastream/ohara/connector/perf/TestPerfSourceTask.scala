@@ -18,7 +18,7 @@ package oharastream.ohara.connector.perf
 
 import oharastream.ohara.common.rule.OharaTest
 import oharastream.ohara.kafka.connector.json.ConnectorDefUtils
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import org.scalatest.matchers.should.Matchers._
 
 class TestPerfSourceTask extends OharaTest {

@@ -18,12 +18,13 @@ package oharastream.ohara.metrics.basic;
 
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 import oharastream.ohara.common.rule.OharaTest;
 import oharastream.ohara.common.setting.ObjectKey;
 import oharastream.ohara.common.util.CommonUtils;
 import oharastream.ohara.metrics.BeanChannel;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class TestCounter extends OharaTest {
 
@@ -35,7 +36,7 @@ public class TestCounter extends OharaTest {
             .value(0)
             .item(CommonUtils.randomString(10))
             .build()) {
-      Assert.assertEquals(1, counter.incrementAndGet());
+      Assertions.assertEquals(1, counter.incrementAndGet());
     }
   }
 
@@ -47,7 +48,7 @@ public class TestCounter extends OharaTest {
             .value(0)
             .item(CommonUtils.randomString(10))
             .build()) {
-      Assert.assertEquals(0, counter.getAndIncrement());
+      Assertions.assertEquals(0, counter.getAndIncrement());
     }
   }
 
@@ -59,7 +60,7 @@ public class TestCounter extends OharaTest {
             .value(0)
             .item(CommonUtils.randomString(10))
             .build();
-    Assert.assertEquals(-1, counter.decrementAndGet());
+    Assertions.assertEquals(-1, counter.decrementAndGet());
   }
 
   @Test
@@ -70,7 +71,7 @@ public class TestCounter extends OharaTest {
             .value(0)
             .item(CommonUtils.randomString(10))
             .build()) {
-      Assert.assertEquals(0, counter.getAndDecrement());
+      Assertions.assertEquals(0, counter.getAndDecrement());
     }
   }
 
@@ -82,7 +83,7 @@ public class TestCounter extends OharaTest {
             .value(0)
             .item(CommonUtils.randomString(10))
             .build()) {
-      Assert.assertEquals(0, counter.getAndSet(10));
+      Assertions.assertEquals(0, counter.getAndSet(10));
     }
   }
 
@@ -94,7 +95,7 @@ public class TestCounter extends OharaTest {
             .value(0)
             .item(CommonUtils.randomString(10))
             .build()) {
-      Assert.assertEquals(10, counter.setAndGet(10));
+      Assertions.assertEquals(10, counter.setAndGet(10));
     }
   }
 
@@ -106,7 +107,7 @@ public class TestCounter extends OharaTest {
             .value(0)
             .item(CommonUtils.randomString(10))
             .build()) {
-      Assert.assertEquals(0, counter.getAndAdd(10));
+      Assertions.assertEquals(0, counter.getAndAdd(10));
     }
   }
 
@@ -118,7 +119,7 @@ public class TestCounter extends OharaTest {
             .value(0)
             .item(CommonUtils.randomString(10))
             .build()) {
-      Assert.assertEquals(10, counter.addAndGet(10));
+      Assertions.assertEquals(10, counter.addAndGet(10));
     }
   }
 
@@ -131,7 +132,7 @@ public class TestCounter extends OharaTest {
             .startTime(CommonUtils.current())
             .item(CommonUtils.randomString(10))
             .build()) {
-      Assert.assertEquals(counter, counter);
+      Assertions.assertEquals(counter, counter);
     }
   }
 
@@ -145,7 +146,7 @@ public class TestCounter extends OharaTest {
             .key(CommonUtils.randomKey());
     try (Counter c0 = builder.build();
         Counter c1 = builder.key(CommonUtils.randomKey()).build()) {
-      Assert.assertNotEquals(c0, c1);
+      Assertions.assertNotEquals(c0, c1);
     }
   }
 
@@ -159,7 +160,7 @@ public class TestCounter extends OharaTest {
             .key(CommonUtils.randomKey());
     try (Counter c0 = builder.build();
         Counter c1 = builder.key(CommonUtils.randomKey()).build()) {
-      Assert.assertNotEquals(c0.hashCode(), c1.hashCode());
+      Assertions.assertNotEquals(c0.hashCode(), c1.hashCode());
     }
   }
 
@@ -173,7 +174,7 @@ public class TestCounter extends OharaTest {
             .item(CommonUtils.randomString(10));
     try (Counter c0 = builder.build();
         Counter c1 = builder.document(CommonUtils.randomString()).build()) {
-      Assert.assertEquals(c0, c1);
+      Assertions.assertEquals(c0, c1);
     }
   }
 
@@ -187,7 +188,7 @@ public class TestCounter extends OharaTest {
             .item(CommonUtils.randomString(10));
     try (Counter c0 = builder.build();
         Counter c1 = builder.document(CommonUtils.randomString()).build()) {
-      Assert.assertEquals(c0.hashCode(), c1.hashCode());
+      Assertions.assertEquals(c0.hashCode(), c1.hashCode());
     }
   }
 
@@ -201,7 +202,7 @@ public class TestCounter extends OharaTest {
             .item(CommonUtils.randomString(10));
     try (Counter c0 = builder.build();
         Counter c1 = builder.unit(CommonUtils.randomString()).build()) {
-      Assert.assertNotEquals(c0, c1);
+      Assertions.assertNotEquals(c0, c1);
     }
   }
 
@@ -215,7 +216,7 @@ public class TestCounter extends OharaTest {
             .item(CommonUtils.randomString(10));
     try (Counter c0 = builder.build();
         Counter c1 = builder.unit(CommonUtils.randomString()).build()) {
-      Assert.assertNotEquals(c0.hashCode(), c1.hashCode());
+      Assertions.assertNotEquals(c0.hashCode(), c1.hashCode());
     }
   }
 
@@ -229,7 +230,7 @@ public class TestCounter extends OharaTest {
             .item(CommonUtils.randomString(10));
     try (Counter c0 = builder.build();
         Counter c1 = builder.value(CommonUtils.current() + 1000).build()) {
-      Assert.assertNotEquals(c0, c1);
+      Assertions.assertNotEquals(c0, c1);
     }
   }
 
@@ -243,7 +244,7 @@ public class TestCounter extends OharaTest {
             .item(CommonUtils.randomString(10));
     try (Counter c0 = builder.build();
         Counter c1 = builder.value(CommonUtils.current() + 1000).build()) {
-      Assert.assertNotEquals(c0.hashCode(), c1.hashCode());
+      Assertions.assertNotEquals(c0.hashCode(), c1.hashCode());
     }
   }
 
@@ -256,7 +257,7 @@ public class TestCounter extends OharaTest {
             .startTime(CommonUtils.current())
             .item(CommonUtils.randomString(10))
             .build()) {
-      Assert.assertEquals(counter.hashCode(), counter.hashCode());
+      Assertions.assertEquals(counter.hashCode(), counter.hashCode());
     }
   }
 
@@ -270,7 +271,7 @@ public class TestCounter extends OharaTest {
             .item(CommonUtils.randomString(10));
     try (Counter c0 = builder.build();
         Counter c1 = builder.item(CommonUtils.randomString(10)).build()) {
-      Assert.assertNotEquals(c0, c1);
+      Assertions.assertNotEquals(c0, c1);
     }
   }
 
@@ -284,7 +285,7 @@ public class TestCounter extends OharaTest {
             .item(CommonUtils.randomString(10));
     try (Counter c0 = builder.build();
         Counter c1 = builder.item(CommonUtils.randomString(10)).build()) {
-      Assert.assertNotEquals(c0.hashCode(), c1.hashCode());
+      Assertions.assertNotEquals(c0.hashCode(), c1.hashCode());
     }
   }
 
@@ -306,8 +307,7 @@ public class TestCounter extends OharaTest {
     }
   }
 
-  @SuppressWarnings("try")
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   public void testDuplicateRegister() {
     Counter.Builder builder =
         Counter.builder()
@@ -316,10 +316,8 @@ public class TestCounter extends OharaTest {
             .startTime(CommonUtils.current())
             .item(CommonUtils.randomString(10))
             .id(CommonUtils.randomString());
-    try (Counter c = builder.register();
-        Counter c2 = builder.register()) {
-      throw new AssertionError();
-    }
+    builder.register();
+    Assertions.assertThrows(IllegalArgumentException.class, builder::register);
   }
 
   @Test
@@ -331,16 +329,16 @@ public class TestCounter extends OharaTest {
     try (Counter counter =
         Counter.builder().key(key).item(name).document(document).unit(unit).register()) {
       List<CounterMBean> beans = BeanChannel.local().counterMBeans();
-      Assert.assertNotEquals(0, beans.size());
+      Assertions.assertNotEquals(0, beans.size());
       CounterMBean bean = beans.stream().filter(c -> c.item().equals(name)).findFirst().get();
-      Assert.assertEquals(counter.key(), bean.key());
-      Assert.assertEquals(counter.item(), bean.item());
-      Assert.assertEquals(counter.getDocument(), bean.getDocument());
-      Assert.assertEquals(counter.getUnit(), bean.getUnit());
-      Assert.assertEquals(key, bean.key());
-      Assert.assertEquals(name, bean.item());
-      Assert.assertEquals(document, bean.getDocument());
-      Assert.assertEquals(unit, bean.getUnit());
+      Assertions.assertEquals(counter.key(), bean.key());
+      Assertions.assertEquals(counter.item(), bean.item());
+      Assertions.assertEquals(counter.getDocument(), bean.getDocument());
+      Assertions.assertEquals(counter.getUnit(), bean.getUnit());
+      Assertions.assertEquals(key, bean.key());
+      Assertions.assertEquals(name, bean.item());
+      Assertions.assertEquals(document, bean.getDocument());
+      Assertions.assertEquals(unit, bean.getUnit());
 
       counter.setAndGet(CommonUtils.current());
 
@@ -363,13 +361,13 @@ public class TestCounter extends OharaTest {
             .key(CommonUtils.randomKey())
             .item(CommonUtils.randomString(10))
             .register()) {
-      Assert.assertFalse(counter.properties.isEmpty());
-      Assert.assertTrue(counter.needClose);
+      Assertions.assertFalse(counter.properties.isEmpty());
+      Assertions.assertTrue(counter.needClose);
     }
     try (Counter counter =
         Counter.builder().key(CommonUtils.randomKey()).item(CommonUtils.randomString(10)).build()) {
-      Assert.assertFalse(counter.properties.isEmpty());
-      Assert.assertFalse(counter.needClose);
+      Assertions.assertFalse(counter.properties.isEmpty());
+      Assertions.assertFalse(counter.needClose);
     }
   }
 
@@ -381,7 +379,7 @@ public class TestCounter extends OharaTest {
             .key(CommonUtils.randomKey())
             .item(CommonUtils.randomString(10))
             .register()) {
-      Assert.assertEquals(
+      Assertions.assertEquals(
           1,
           BeanChannel.builder()
               .local()
@@ -392,7 +390,7 @@ public class TestCounter extends OharaTest {
               .size());
       properties = counter.properties;
     }
-    Assert.assertEquals(
+    Assertions.assertEquals(
         0,
         BeanChannel.builder()
             .local()
@@ -403,58 +401,71 @@ public class TestCounter extends OharaTest {
             .size());
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   public void testZeroStartTime() {
-    Counter.builder()
-        .key(CommonUtils.randomKey())
-        .item("name")
-        .unit("unit")
-        .document("document")
-        .startTime(0)
-        .build();
-  }
-
-  @Test(expected = IllegalArgumentException.class)
-  public void testNegativeStartTime() {
-    Counter.builder()
-        .key(CommonUtils.randomKey())
-        .item("name")
-        .unit("unit")
-        .document("document")
-        .startTime(-999)
-        .build();
-  }
-
-  @Test(expected = IllegalArgumentException.class)
-  public void testZeroQueryTime() {
-    Counter.builder()
-        .key(CommonUtils.randomKey())
-        .item("name")
-        .unit("unit")
-        .document("document")
-        .queryTime(0)
-        .build();
-  }
-
-  @Test(expected = IllegalArgumentException.class)
-  public void testNegativeQueryTime() {
-    Counter.builder().queryTime(-999);
-  }
-
-  @Test(expected = IllegalArgumentException.class)
-  public void testNegativeLastModifiedTime() {
-    Counter.builder().lastModified(-999);
+    Assertions.assertThrows(
+        IllegalArgumentException.class,
+        () ->
+            Counter.builder()
+                .key(CommonUtils.randomKey())
+                .item("name")
+                .unit("unit")
+                .document("document")
+                .startTime(0)
+                .build());
   }
 
   @Test
-  public void testInPerSecond() {
+  public void testNegativeStartTime() {
+    Assertions.assertThrows(
+        IllegalArgumentException.class,
+        () ->
+            Counter.builder()
+                .key(CommonUtils.randomKey())
+                .item("name")
+                .unit("unit")
+                .document("document")
+                .startTime(-999)
+                .build());
+  }
+
+  @Test
+  public void testZeroQueryTime() {
+    Assertions.assertThrows(
+        IllegalArgumentException.class,
+        () ->
+            Counter.builder()
+                .key(CommonUtils.randomKey())
+                .item("name")
+                .unit("unit")
+                .document("document")
+                .queryTime(0)
+                .build());
+  }
+
+  @Test
+  public void testNegativeQueryTime() {
+    Assertions.assertThrows(
+        IllegalArgumentException.class, () -> Counter.builder().queryTime(-999));
+  }
+
+  @Test
+  public void testNegativeLastModifiedTime() {
+    Assertions.assertThrows(
+        IllegalArgumentException.class, () -> Counter.builder().lastModified(-999));
+  }
+
+  @Test
+  public void testInPerSecond() throws InterruptedException {
     try (Counter counter =
         Counter.builder()
             .key(CommonUtils.randomKey())
             .item(CommonUtils.randomString(10))
             .register()) {
+      TimeUnit.SECONDS.sleep(1);
       counter.addAndGet(100);
-      Assert.assertNotEquals(0.0f, counter.valueInPerSec());
+      Assertions.assertEquals(100, counter.getValue());
+      Assertions.assertNotEquals(0.0F, counter.valueInPerSec());
     }
   }
 }

@@ -28,7 +28,7 @@ import oharastream.ohara.kafka.connector.csv.CsvConnectorDefinitions._
 import oharastream.ohara.kafka.connector.csv.CsvSinkConnector
 import oharastream.ohara.kafka.Producer
 import oharastream.ohara.testing.With3Brokers3Workers
-import org.junit.{After, Before, Test}
+import org.junit.jupiter.api.{AfterEach, BeforeEach, Test}
 import org.scalatest.matchers.should.Matchers._
 
 import scala.concurrent.duration.Duration
@@ -112,7 +112,7 @@ abstract class CsvSinkTestBase extends With3Brokers3Workers {
 
   private[this] def createReplicaData[T](data: T, number: Int): Seq[T] = 0 until number map (_ => data)
 
-  @Before
+  @BeforeEach
   def setup(): Unit = {
     fileSystem.reMkdirs(outputFolder)
     fileSystem.exists(outputFolder) shouldBe true
@@ -307,6 +307,6 @@ abstract class CsvSinkTestBase extends With3Brokers3Workers {
   def testFileToInputFolder(): Unit =
     ConnectorTestUtils.fileShouldFail(fileSystem, connectorClass, props, props(OUTPUT_FOLDER_KEY))
 
-  @After
+  @AfterEach
   def tearDown(): Unit = Releasable.close(fileSystem)
 }

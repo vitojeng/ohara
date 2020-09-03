@@ -21,50 +21,52 @@ import java.time.Duration;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 import oharastream.ohara.common.rule.OharaTest;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class TestCommonUtils extends OharaTest {
 
-  private String DRIVE = System.getenv("SystemDrive");
+  private final String DRIVE = System.getenv("SystemDrive");
 
   @Test
   public void testTimer() throws InterruptedException {
-    Assert.assertTrue(CommonUtils.current() != 0);
+    Assertions.assertTrue(CommonUtils.current() != 0);
     CommonUtils.inject(() -> 0);
-    Assert.assertEquals(0, CommonUtils.current());
+    Assertions.assertEquals(0, CommonUtils.current());
     TimeUnit.SECONDS.sleep(2);
-    Assert.assertEquals(0, CommonUtils.current());
+    Assertions.assertEquals(0, CommonUtils.current());
     CommonUtils.reset();
-    Assert.assertTrue(CommonUtils.current() != 0);
+    Assertions.assertTrue(CommonUtils.current() != 0);
   }
 
   @Test
   public void testPath() {
-    Assert.assertEquals(String.join(File.separator, "ccc"), CommonUtils.path("ccc"));
-    Assert.assertEquals(String.join(File.separator, "ccc", "abc"), CommonUtils.path("ccc", "abc"));
-    Assert.assertEquals(String.join(File.separator, "ccc", "abc"), CommonUtils.path("ccc/", "abc"));
-    Assert.assertEquals(
+    Assertions.assertEquals(String.join(File.separator, "ccc"), CommonUtils.path("ccc"));
+    Assertions.assertEquals(
+        String.join(File.separator, "ccc", "abc"), CommonUtils.path("ccc", "abc"));
+    Assertions.assertEquals(
+        String.join(File.separator, "ccc", "abc"), CommonUtils.path("ccc/", "abc"));
+    Assertions.assertEquals(
         String.join(File.separator, DRIVE, "ccc", "abc"), CommonUtils.path(DRIVE, "ccc", "abc"));
-    Assert.assertEquals(
+    Assertions.assertEquals(
         String.join(File.separator, DRIVE, "ccc", "abc"), CommonUtils.path(DRIVE, "ccc/", "abc"));
   }
 
   @Test
   public void testName() {
-    Assert.assertEquals("ddd", CommonUtils.name("/abc/ddd"));
-    Assert.assertEquals("aaa", CommonUtils.name("/abc/ddd/aaa"));
+    Assertions.assertEquals("ddd", CommonUtils.name("/abc/ddd"));
+    Assertions.assertEquals("aaa", CommonUtils.name("/abc/ddd/aaa"));
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   public void failedToExtractNameFromRootPath() {
-    CommonUtils.name("/");
+    Assertions.assertThrows(IllegalArgumentException.class, () -> CommonUtils.name("/"));
   }
 
   @Test
   public void testGetAddress() {
-    Assert.assertEquals(CommonUtils.address("localhost"), "127.0.0.1");
-    Assert.assertEquals(CommonUtils.address("127.0.0.1"), "127.0.0.1");
+    Assertions.assertEquals(CommonUtils.address("localhost"), "127.0.0.1");
+    Assertions.assertEquals(CommonUtils.address("127.0.0.1"), "127.0.0.1");
   }
 
   @Test
@@ -76,10 +78,10 @@ public class TestCommonUtils extends OharaTest {
     List<String> list3 = new MyList<>(list);
     list3.add("c");
 
-    Assert.assertNotEquals(list, list2);
-    Assert.assertNotEquals(list, list3);
-    Assert.assertTrue(CommonUtils.equals(list, list2));
-    Assert.assertFalse(CommonUtils.equals(list, list3));
+    Assertions.assertNotEquals(list, list2);
+    Assertions.assertNotEquals(list, list3);
+    Assertions.assertTrue(CommonUtils.equals(list, list2));
+    Assertions.assertFalse(CommonUtils.equals(list, list3));
   }
 
   @Test
@@ -91,10 +93,10 @@ public class TestCommonUtils extends OharaTest {
     Map<String, String> map3 = new MyMap<>(map);
     map3.put("c", "valueC");
 
-    Assert.assertNotEquals(map, map2);
-    Assert.assertNotEquals(map, map3);
-    Assert.assertTrue(CommonUtils.equals(map, map2));
-    Assert.assertFalse(CommonUtils.equals(map, map3));
+    Assertions.assertNotEquals(map, map2);
+    Assertions.assertNotEquals(map, map3);
+    Assertions.assertTrue(CommonUtils.equals(map, map2));
+    Assertions.assertFalse(CommonUtils.equals(map, map3));
   }
 
   @Test
@@ -106,10 +108,10 @@ public class TestCommonUtils extends OharaTest {
     Set<String> set3 = new MySet<>(set);
     set3.add("c");
 
-    Assert.assertNotEquals(set, set2);
-    Assert.assertNotEquals(set, set3);
-    Assert.assertTrue(CommonUtils.equals(set, set2));
-    Assert.assertFalse(CommonUtils.equals(set, set3));
+    Assertions.assertNotEquals(set, set2);
+    Assertions.assertNotEquals(set, set3);
+    Assertions.assertTrue(CommonUtils.equals(set, set2));
+    Assertions.assertFalse(CommonUtils.equals(set, set3));
   }
 
   @Test
@@ -132,10 +134,10 @@ public class TestCommonUtils extends OharaTest {
     nestedMap3.add(new MyMap<>(map));
     nestedMap3.add(new MyMap<>(map3));
 
-    Assert.assertNotEquals(nestedMap, nestedMap2);
-    Assert.assertNotEquals(nestedMap, nestedMap3);
-    Assert.assertTrue(CommonUtils.equals(nestedMap, nestedMap2));
-    Assert.assertFalse(CommonUtils.equals(nestedMap, nestedMap3));
+    Assertions.assertNotEquals(nestedMap, nestedMap2);
+    Assertions.assertNotEquals(nestedMap, nestedMap3);
+    Assertions.assertTrue(CommonUtils.equals(nestedMap, nestedMap2));
+    Assertions.assertFalse(CommonUtils.equals(nestedMap, nestedMap3));
   }
 
   @Test
@@ -159,10 +161,10 @@ public class TestCommonUtils extends OharaTest {
     nestedList3.add(new MyList<>(list));
     nestedList3.add(new MyList<>(list3));
 
-    Assert.assertNotEquals(nestedList, nestedList2);
-    Assert.assertNotEquals(nestedList, nestedList3);
-    Assert.assertTrue(CommonUtils.equals(nestedList, nestedList2));
-    Assert.assertFalse(CommonUtils.equals(nestedList, nestedList3));
+    Assertions.assertNotEquals(nestedList, nestedList2);
+    Assertions.assertNotEquals(nestedList, nestedList3);
+    Assertions.assertTrue(CommonUtils.equals(nestedList, nestedList2));
+    Assertions.assertFalse(CommonUtils.equals(nestedList, nestedList3));
   }
 
   @Test
@@ -186,10 +188,10 @@ public class TestCommonUtils extends OharaTest {
     nestedList3.add(new MySet<>(set));
     nestedList3.add(new MySet<>(set3));
 
-    Assert.assertNotEquals(nestedList, nestedList2);
-    Assert.assertNotEquals(nestedList, nestedList3);
-    Assert.assertTrue(CommonUtils.equals(nestedList, nestedList2));
-    Assert.assertFalse(CommonUtils.equals(nestedList, nestedList3));
+    Assertions.assertNotEquals(nestedList, nestedList2);
+    Assertions.assertNotEquals(nestedList, nestedList3);
+    Assertions.assertTrue(CommonUtils.equals(nestedList, nestedList2));
+    Assertions.assertFalse(CommonUtils.equals(nestedList, nestedList3));
   }
 
   @Test
@@ -212,10 +214,10 @@ public class TestCommonUtils extends OharaTest {
     nestedMap3.put("key", new MyList<>(list));
     nestedMap3.put("key2", new MyList<>(list3));
 
-    Assert.assertNotEquals(nestedMap, nestedMap2);
-    Assert.assertNotEquals(nestedMap, nestedMap3);
-    Assert.assertTrue(CommonUtils.equals(nestedMap, nestedMap2));
-    Assert.assertFalse(CommonUtils.equals(nestedMap, nestedMap3));
+    Assertions.assertNotEquals(nestedMap, nestedMap2);
+    Assertions.assertNotEquals(nestedMap, nestedMap3);
+    Assertions.assertTrue(CommonUtils.equals(nestedMap, nestedMap2));
+    Assertions.assertFalse(CommonUtils.equals(nestedMap, nestedMap3));
   }
 
   @Test
@@ -238,10 +240,10 @@ public class TestCommonUtils extends OharaTest {
     nestedMap3.put("key", new MySet<>(set));
     nestedMap3.put("key2", new MySet<>(set3));
 
-    Assert.assertNotEquals(nestedMap, nestedMap2);
-    Assert.assertNotEquals(nestedMap, nestedMap3);
-    Assert.assertTrue(CommonUtils.equals(nestedMap, nestedMap2));
-    Assert.assertFalse(CommonUtils.equals(nestedMap, nestedMap3));
+    Assertions.assertNotEquals(nestedMap, nestedMap2);
+    Assertions.assertNotEquals(nestedMap, nestedMap3);
+    Assertions.assertTrue(CommonUtils.equals(nestedMap, nestedMap2));
+    Assertions.assertFalse(CommonUtils.equals(nestedMap, nestedMap3));
   }
 
   @Test
@@ -264,10 +266,10 @@ public class TestCommonUtils extends OharaTest {
     nestedMap3.put("key", new MyMap<>(map));
     nestedMap3.put("key2", new MyMap<>(map3));
 
-    Assert.assertNotEquals(nestedMap, nestedMap2);
-    Assert.assertNotEquals(nestedMap, nestedMap3);
-    Assert.assertTrue(CommonUtils.equals(nestedMap, nestedMap2));
-    Assert.assertFalse(CommonUtils.equals(nestedMap, nestedMap3));
+    Assertions.assertNotEquals(nestedMap, nestedMap2);
+    Assertions.assertNotEquals(nestedMap, nestedMap3);
+    Assertions.assertTrue(CommonUtils.equals(nestedMap, nestedMap2));
+    Assertions.assertFalse(CommonUtils.equals(nestedMap, nestedMap3));
   }
 
   private static class MyList<T> extends ArrayList<T> {
@@ -324,40 +326,45 @@ public class TestCommonUtils extends OharaTest {
     }
   }
 
-  @Test(expected = NullPointerException.class)
+  @Test
   public void testNullString() {
-    CommonUtils.requireNonEmpty((String) null);
+    Assertions.assertThrows(
+        NullPointerException.class, () -> CommonUtils.requireNonEmpty((String) null));
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   public void testEmptyString() {
-    CommonUtils.requireNonEmpty("");
+    Assertions.assertThrows(IllegalArgumentException.class, () -> CommonUtils.requireNonEmpty(""));
   }
 
-  @Test(expected = NullPointerException.class)
+  @Test
   public void testNullCollection() {
-    CommonUtils.requireNonEmpty((Collection<?>) null);
+    Assertions.assertThrows(
+        NullPointerException.class, () -> CommonUtils.requireNonEmpty((Collection<?>) null));
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   public void testEmptyCollection() {
-    CommonUtils.requireNonEmpty(List.of());
+    Assertions.assertThrows(
+        IllegalArgumentException.class, () -> CommonUtils.requireNonEmpty(List.of()));
   }
 
-  @Test(expected = NullPointerException.class)
+  @Test
   public void testNullMap() {
-    CommonUtils.requireNonEmpty((Map<?, ?>) null);
+    Assertions.assertThrows(
+        NullPointerException.class, () -> CommonUtils.requireNonEmpty((Map<?, ?>) null));
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   public void testEmptyMap() {
-    CommonUtils.requireNonEmpty(Map.of());
+    Assertions.assertThrows(
+        IllegalArgumentException.class, () -> CommonUtils.requireNonEmpty(Map.of()));
   }
 
   @Test
   public void testTemporaryFolder() {
     File f = CommonUtils.createTempFolder(CommonUtils.randomString(10));
-    Assert.assertTrue(f.exists());
+    Assertions.assertTrue(f.exists());
     CommonUtils.requireFolder(f);
   }
 
@@ -365,74 +372,78 @@ public class TestCommonUtils extends OharaTest {
   public void testRequireConnectionPort() {
     // pass since it is ok to bind port on zero
     CommonUtils.requireBindPort(0);
-    Assert.assertThrows(
+    Assertions.assertThrows(
         IllegalArgumentException.class, () -> CommonUtils.requireBindPort(65535 + 10));
-    Assert.assertThrows(IllegalArgumentException.class, () -> CommonUtils.requireBindPort(-1));
+    Assertions.assertThrows(IllegalArgumentException.class, () -> CommonUtils.requireBindPort(-1));
   }
 
   @Test
   public void testRequireBindPort() {
     CommonUtils.requireBindPort(0);
-    Assert.assertThrows(
+    Assertions.assertThrows(
         IllegalArgumentException.class, () -> CommonUtils.requireBindPort(65535 + 10));
-    Assert.assertThrows(IllegalArgumentException.class, () -> CommonUtils.requireBindPort(-1));
+    Assertions.assertThrows(IllegalArgumentException.class, () -> CommonUtils.requireBindPort(-1));
   }
 
   @Test
   public void testRequirePositiveShort() {
-    Assert.assertThrows(
+    Assertions.assertThrows(
         IllegalArgumentException.class, () -> CommonUtils.requirePositiveShort((short) -1));
-    Assert.assertThrows(
+    Assertions.assertThrows(
         IllegalArgumentException.class, () -> CommonUtils.requirePositiveShort((short) 0));
   }
 
   @Test
   public void testRequirePositiveInt() {
-    Assert.assertThrows(IllegalArgumentException.class, () -> CommonUtils.requirePositiveInt(-1));
-    Assert.assertThrows(IllegalArgumentException.class, () -> CommonUtils.requirePositiveInt(0));
+    Assertions.assertThrows(
+        IllegalArgumentException.class, () -> CommonUtils.requirePositiveInt(-1));
+    Assertions.assertThrows(
+        IllegalArgumentException.class, () -> CommonUtils.requirePositiveInt(0));
   }
 
   @Test
   public void testRequirePositiveLong() {
-    Assert.assertThrows(IllegalArgumentException.class, () -> CommonUtils.requirePositiveLong(-1));
-    Assert.assertThrows(IllegalArgumentException.class, () -> CommonUtils.requirePositiveLong(0));
+    Assertions.assertThrows(
+        IllegalArgumentException.class, () -> CommonUtils.requirePositiveLong(-1));
+    Assertions.assertThrows(
+        IllegalArgumentException.class, () -> CommonUtils.requirePositiveLong(0));
   }
 
   @Test
   public void testRequireNonNegativeShort() {
     CommonUtils.requireNonNegativeShort((short) 0);
-    Assert.assertThrows(
+    Assertions.assertThrows(
         IllegalArgumentException.class, () -> CommonUtils.requireNonNegativeShort((short) -1));
   }
 
   @Test
   public void testRequireNonNegativeInt() {
     CommonUtils.requireNonNegativeInt(0);
-    Assert.assertThrows(
+    Assertions.assertThrows(
         IllegalArgumentException.class, () -> CommonUtils.requireNonNegativeInt(-1));
   }
 
   @Test
   public void testRequireNonNegativeLong() {
     CommonUtils.requireNonNegativeLong(0);
-    Assert.assertThrows(
+    Assertions.assertThrows(
         IllegalArgumentException.class, () -> CommonUtils.requireNonNegativeLong(-1));
   }
 
   @Test
   public void testToDuration() {
-    Assert.assertEquals(Duration.ofSeconds(1), CommonUtils.toDuration("1 second"));
-    Assert.assertEquals(Duration.ofSeconds(1), CommonUtils.toDuration("1 seconds"));
-    Assert.assertEquals(Duration.ofSeconds(3), CommonUtils.toDuration("3 seconds"));
-    Assert.assertEquals(Duration.ofDays(1), CommonUtils.toDuration("1 day"));
-    Assert.assertEquals(Duration.ofDays(1), CommonUtils.toDuration("1 days"));
-    Assert.assertEquals(Duration.ofDays(3), CommonUtils.toDuration("3 days"));
+    Assertions.assertEquals(Duration.ofSeconds(1), CommonUtils.toDuration("1 second"));
+    Assertions.assertEquals(Duration.ofSeconds(1), CommonUtils.toDuration("1 seconds"));
+    Assertions.assertEquals(Duration.ofSeconds(3), CommonUtils.toDuration("3 seconds"));
+    Assertions.assertEquals(Duration.ofDays(1), CommonUtils.toDuration("1 day"));
+    Assertions.assertEquals(Duration.ofDays(1), CommonUtils.toDuration("1 days"));
+    Assertions.assertEquals(Duration.ofDays(3), CommonUtils.toDuration("3 days"));
   }
 
   @Test
   public void availablePortShouldBeBiggerThan1024() {
     for (int i = 0; i != 100; ++i) {
-      Assert.assertTrue(CommonUtils.availablePort() > 1024);
+      Assertions.assertTrue(CommonUtils.availablePort() > 1024);
     }
   }
 
@@ -440,7 +451,7 @@ public class TestCommonUtils extends OharaTest {
   public void testParseLines() {
     Map<String, String> args = CommonUtils.parse(Arrays.asList("=aaa", "aaa=", "ccc", "a=b"));
 
-    Assert.assertEquals(args.size(), 1);
-    Assert.assertEquals(args.get("a"), "b");
+    Assertions.assertEquals(args.size(), 1);
+    Assertions.assertEquals(args.get("a"), "b");
   }
 }

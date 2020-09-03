@@ -18,14 +18,16 @@ package oharastream.ohara.stream.config;
 
 import oharastream.ohara.common.rule.OharaTest;
 import oharastream.ohara.common.setting.SettingDef;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class TestStreamDefUtils extends OharaTest {
 
   @Test
   public void testJarDefinition() {
-    Assert.assertEquals(StreamDefUtils.JAR_KEY_DEFINITION.valueType(), SettingDef.Type.OBJECT_KEY);
-    Assert.assertEquals(StreamDefUtils.JAR_KEY_DEFINITION.reference(), SettingDef.Reference.FILE);
+    Assertions.assertEquals(
+        StreamDefUtils.JAR_KEY_DEFINITION.valueType(), SettingDef.Type.OBJECT_KEY);
+    Assertions.assertEquals(
+        StreamDefUtils.JAR_KEY_DEFINITION.reference(), SettingDef.Reference.FILE);
   }
 }

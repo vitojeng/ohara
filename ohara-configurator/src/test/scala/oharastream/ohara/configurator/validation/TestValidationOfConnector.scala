@@ -24,7 +24,7 @@ import oharastream.ohara.common.util.{CommonUtils, Releasable}
 import oharastream.ohara.configurator.{Configurator, FallibleSink}
 import oharastream.ohara.kafka.connector.json.ConnectorDefUtils
 import oharastream.ohara.testing.With3Brokers3Workers
-import org.junit.{After, Test}
+import org.junit.jupiter.api.{AfterEach, Test}
 import org.scalatest.matchers.should.Matchers._
 import spray.json.{JsString, _}
 
@@ -165,6 +165,6 @@ class TestValidationOfConnector extends With3Brokers3Workers {
     response2.errorCount() shouldBe 0
   }
 
-  @After
+  @AfterEach
   def tearDown(): Unit = Releasable.close(configurator)
 }

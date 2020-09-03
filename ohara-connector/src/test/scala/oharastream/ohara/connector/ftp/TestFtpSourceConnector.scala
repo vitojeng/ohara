@@ -27,7 +27,7 @@ import oharastream.ohara.common.util.{CommonUtils, Releasable}
 import oharastream.ohara.kafka.Consumer
 import oharastream.ohara.kafka.Consumer.Record
 import oharastream.ohara.testing.With3Brokers3Workers
-import org.junit.{After, Before, Test}
+import org.junit.jupiter.api.{AfterEach, BeforeEach, Test}
 import org.scalatest.matchers.should.Matchers._
 
 import scala.jdk.CollectionConverters._
@@ -58,7 +58,7 @@ class TestFtpSourceConnector extends With3Brokers3Workers {
   private[this] val completedFolder = "/complete"
   private[this] val outputFolder    = "/output"
 
-  @Before
+  @BeforeEach
   def setup(): Unit = {
     createFolder(fileSystem, inputFolder)
     createFolder(fileSystem, completedFolder)
@@ -186,6 +186,6 @@ class TestFtpSourceConnector extends With3Brokers3Workers {
     finally consumer.close()
   }
 
-  @After
+  @AfterEach
   def tearDown(): Unit = Releasable.close(fileSystem)
 }

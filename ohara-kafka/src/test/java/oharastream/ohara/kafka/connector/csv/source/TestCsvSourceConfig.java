@@ -23,7 +23,8 @@ import static oharastream.ohara.kafka.connector.csv.CsvConnectorDefinitions.INPU
 import static oharastream.ohara.kafka.connector.csv.CsvConnectorDefinitions.MAXIMUM_NUMBER_OF_LINES_KEY;
 import static oharastream.ohara.kafka.connector.csv.CsvConnectorDefinitions.TASK_HASH_KEY;
 import static oharastream.ohara.kafka.connector.csv.CsvConnectorDefinitions.TASK_TOTAL_KEY;
-import static oharastream.ohara.kafka.connector.json.ConnectorDefUtils.*;
+import static oharastream.ohara.kafka.connector.json.ConnectorDefUtils.COLUMNS_DEFINITION;
+import static oharastream.ohara.kafka.connector.json.ConnectorDefUtils.TOPIC_KEYS_DEFINITION;
 
 import java.util.List;
 import java.util.Map;
@@ -36,8 +37,8 @@ import oharastream.ohara.common.setting.PropGroup;
 import oharastream.ohara.common.setting.TopicKey;
 import oharastream.ohara.common.util.CommonUtils;
 import oharastream.ohara.kafka.connector.TaskSetting;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class TestCsvSourceConfig extends OharaTest {
 
@@ -48,36 +49,36 @@ public class TestCsvSourceConfig extends OharaTest {
   @Test
   public void testMaximumNumberOfLines() {
     CsvSourceConfig config = config(MAXIMUM_NUMBER_OF_LINES_KEY, "10");
-    Assert.assertEquals(config.maximumNumberOfLines(), 10);
+    Assertions.assertEquals(config.maximumNumberOfLines(), 10);
   }
 
   @Test
   public void testHash() {
     CsvSourceConfig config = config(TASK_HASH_KEY, "10");
-    Assert.assertEquals(config.hash(), 10);
+    Assertions.assertEquals(config.hash(), 10);
   }
 
   @Test
   public void testTotal() {
     CsvSourceConfig config = config(TASK_TOTAL_KEY, "10");
-    Assert.assertEquals(config.total(), 10);
+    Assertions.assertEquals(config.total(), 10);
   }
 
   @Test
   public void testInputFolder() {
     CsvSourceConfig config = config(INPUT_FOLDER_KEY, "10");
-    Assert.assertEquals(config.inputFolder(), "10");
+    Assertions.assertEquals(config.inputFolder(), "10");
   }
 
   @Test
   public void testCompleteFolder() {
     CsvSourceConfig config = config(COMPLETED_FOLDER_KEY, "10");
-    Assert.assertEquals(config.completedFolder().get(), "10");
+    Assertions.assertEquals(config.completedFolder().get(), "10");
   }
 
   @Test
   public void testOptionalCompleteFolder() {
-    Assert.assertEquals(
+    Assertions.assertEquals(
         config(CommonUtils.randomString(), CommonUtils.randomString()).completedFolder(),
         Optional.empty());
   }
@@ -85,13 +86,13 @@ public class TestCsvSourceConfig extends OharaTest {
   @Test
   public void testErrorFolder() {
     CsvSourceConfig config = config(ERROR_FOLDER_KEY, "10");
-    Assert.assertEquals(config.errorFolder().get(), "10");
+    Assertions.assertEquals(config.errorFolder().get(), "10");
   }
 
   @Test
   public void testEncode() {
     CsvSourceConfig config = config(FILE_ENCODE_KEY, "10");
-    Assert.assertEquals(config.encode(), "10");
+    Assertions.assertEquals(config.encode(), "10");
   }
 
   @Test
@@ -99,7 +100,7 @@ public class TestCsvSourceConfig extends OharaTest {
     TopicKey key = TopicKey.of("g", "n");
     CsvSourceConfig config =
         config(TOPIC_KEYS_DEFINITION.key(), TopicKey.toJsonString(Set.of(key)));
-    Assert.assertEquals(config.topicKeys(), Set.of(key));
+    Assertions.assertEquals(config.topicKeys(), Set.of(key));
   }
 
   @Test
@@ -112,6 +113,6 @@ public class TestCsvSourceConfig extends OharaTest {
             .build();
     CsvSourceConfig config =
         config(COLUMNS_DEFINITION.key(), PropGroup.ofColumn(column).toJsonString());
-    Assert.assertEquals(config.columns(), List.of(column));
+    Assertions.assertEquals(config.columns(), List.of(column));
   }
 }

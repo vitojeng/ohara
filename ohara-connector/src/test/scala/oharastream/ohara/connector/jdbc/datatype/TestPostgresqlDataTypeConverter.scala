@@ -21,7 +21,7 @@ import java.sql.{ResultSet, Time, Timestamp}
 import oharastream.ohara.client.configurator.InspectApi.RdbColumn
 import oharastream.ohara.common.rule.OharaTest
 import oharastream.ohara.connector.jdbc.util.DateTimeUtils
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import org.mockito.Mockito
 import org.mockito.Mockito.when
 import org.scalatest.exceptions.TestFailedException

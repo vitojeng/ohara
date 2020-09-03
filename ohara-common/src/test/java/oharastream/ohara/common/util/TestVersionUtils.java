@@ -17,22 +17,22 @@
 package oharastream.ohara.common.util;
 
 import oharastream.ohara.common.rule.OharaTest;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class TestVersionUtils extends OharaTest {
 
   @Test
   public void allMembersShouldExist() {
-    Assert.assertNotNull(VersionUtils.DATE);
-    Assert.assertFalse(VersionUtils.DATE.isEmpty());
-    Assert.assertNotNull(VersionUtils.REVISION);
-    Assert.assertFalse(VersionUtils.REVISION.isEmpty());
-    Assert.assertNotNull(VersionUtils.USER);
-    Assert.assertFalse(VersionUtils.USER.isEmpty());
-    Assert.assertNotNull(VersionUtils.VERSION);
-    Assert.assertFalse(VersionUtils.VERSION.isEmpty());
-    Assert.assertNotNull(VersionUtils.BRANCH);
-    Assert.assertFalse(VersionUtils.BRANCH.isEmpty());
+    Assertions.assertNotNull(VersionUtils.DATE);
+    Assertions.assertFalse(VersionUtils.DATE.isEmpty());
+    Assertions.assertNotNull(VersionUtils.REVISION);
+    Assertions.assertFalse(VersionUtils.REVISION.isEmpty());
+    Assertions.assertNotNull(VersionUtils.USER);
+    Assertions.assertFalse(VersionUtils.USER.isEmpty());
+    Assertions.assertNotNull(VersionUtils.VERSION);
+    Assertions.assertFalse(VersionUtils.VERSION.isEmpty());
+    Assertions.assertNotNull(VersionUtils.BRANCH);
+    Assertions.assertFalse(VersionUtils.BRANCH.isEmpty());
   }
 }

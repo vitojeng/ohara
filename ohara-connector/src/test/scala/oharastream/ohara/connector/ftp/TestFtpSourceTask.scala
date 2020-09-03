@@ -25,7 +25,7 @@ import oharastream.ohara.kafka.connector.TaskSetting
 import oharastream.ohara.kafka.connector.csv.CsvConnectorDefinitions
 import oharastream.ohara.kafka.connector.json.ConnectorFormatter
 import oharastream.ohara.testing.service.FtpServer
-import org.junit.{After, Before, Test}
+import org.junit.jupiter.api.{AfterEach, BeforeEach, Test}
 import org.scalatest.matchers.should.Matchers._
 
 import scala.jdk.CollectionConverters._
@@ -52,7 +52,7 @@ class TestFtpSourceTask extends OharaTest {
     CsvConnectorDefinitions.TASK_HASH_KEY        -> "0"
   )
 
-  @Before
+  @BeforeEach
   def setup(): Unit = {
     val fileSystem = createFileSystem()
 
@@ -125,6 +125,6 @@ class TestFtpSourceTask extends OharaTest {
     fs.listFileNames(inputFolder).asScala.size shouldBe 3
   }
 
-  @After
+  @AfterEach
   def tearDown(): Unit = Releasable.close(ftpServer)
 }

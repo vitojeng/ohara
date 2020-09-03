@@ -22,7 +22,7 @@ import oharastream.ohara.common.rule.OharaTest
 import oharastream.ohara.common.setting.ObjectKey
 import oharastream.ohara.common.util.{CommonUtils, Releasable}
 import oharastream.ohara.configurator.Configurator
-import org.junit.{After, Test}
+import org.junit.jupiter.api.{AfterEach, Test}
 import org.scalatest.matchers.should.Matchers._
 import spray.json.{DeserializationException, JsNumber, JsString}
 
@@ -285,6 +285,6 @@ class TestNodeRoute extends OharaTest {
         .create()
     ).state shouldBe NodeApi.State.AVAILABLE
 
-  @After
+  @AfterEach
   def tearDown(): Unit = Releasable.close(configurator)
 }

@@ -21,8 +21,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import oharastream.ohara.common.rule.OharaTest;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class TestStreamUtils extends OharaTest {
 
@@ -33,9 +33,9 @@ public class TestStreamUtils extends OharaTest {
     Map<Integer, String> namesWithIndex =
         StreamUtils.zipWithIndex(names.stream())
             .collect(Collectors.toUnmodifiableMap(Map.Entry::getKey, Map.Entry::getValue));
-    Assert.assertEquals(3, namesWithIndex.size());
-    Assert.assertEquals("a", namesWithIndex.get(0));
-    Assert.assertEquals("b", namesWithIndex.get(1));
-    Assert.assertEquals("c", namesWithIndex.get(2));
+    Assertions.assertEquals(3, namesWithIndex.size());
+    Assertions.assertEquals("a", namesWithIndex.get(0));
+    Assertions.assertEquals("b", namesWithIndex.get(1));
+    Assertions.assertEquals("c", namesWithIndex.get(2));
   }
 }

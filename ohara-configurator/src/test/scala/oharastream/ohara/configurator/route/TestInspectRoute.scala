@@ -36,7 +36,7 @@ import oharastream.ohara.common.util.{CommonUtils, Releasable, VersionUtils}
 import oharastream.ohara.configurator.Configurator.Mode
 import oharastream.ohara.configurator.{Configurator, ReflectionUtils}
 import oharastream.ohara.testing.service.Database
-import org.junit.{After, Test}
+import org.junit.jupiter.api.{AfterEach, Test}
 import org.scalatest.matchers.should.Matchers._
 import spray.json.{JsArray, JsBoolean, JsNull, JsNumber, JsObject, JsString}
 
@@ -340,7 +340,7 @@ class TestInspectRoute extends OharaTest {
     typeCount shouldBe 5
   }
 
-  @After
+  @AfterEach
   def tearDown(): Unit = {
     Releasable.close(configurator)
     Releasable.close(db)

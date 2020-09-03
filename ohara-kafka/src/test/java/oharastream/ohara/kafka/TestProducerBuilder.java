@@ -17,27 +17,32 @@
 package oharastream.ohara.kafka;
 
 import oharastream.ohara.common.rule.OharaTest;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class TestProducerBuilder extends OharaTest {
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   public void emptyConnectionProps() {
-    Producer.builder().connectionProps("");
+    Assertions.assertThrows(
+        IllegalArgumentException.class, () -> Producer.builder().connectionProps(""));
   }
 
-  @Test(expected = NullPointerException.class)
+  @Test
   public void nullConnectionProps() {
-    Producer.builder().connectionProps(null);
+    Assertions.assertThrows(
+        NullPointerException.class, () -> Producer.builder().connectionProps(null));
   }
 
-  @Test(expected = NullPointerException.class)
+  @Test
   public void nullKeySerializer() {
-    Producer.builder().keySerializer(null);
+    Assertions.assertThrows(
+        NullPointerException.class, () -> Producer.builder().keySerializer(null));
   }
 
-  @Test(expected = NullPointerException.class)
+  @Test
   public void nullValueSerializer() {
-    Producer.builder().valueSerializer(null);
+    Assertions.assertThrows(
+        NullPointerException.class, () -> Producer.builder().valueSerializer(null));
   }
 }

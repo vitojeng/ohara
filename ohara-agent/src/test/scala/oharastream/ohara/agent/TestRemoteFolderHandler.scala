@@ -22,7 +22,7 @@ import oharastream.ohara.client.configurator.NodeApi.Node
 import oharastream.ohara.common.rule.OharaTest
 import oharastream.ohara.common.util.{CommonUtils, Releasable}
 import oharastream.ohara.testing.service.SshdServer
-import org.junit.{After, Test}
+import org.junit.jupiter.api.{AfterEach, Test}
 import org.scalatest.matchers.should.Matchers._
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -77,6 +77,6 @@ class TestRemoteFolderHandler extends OharaTest {
 
   private[this] def result[T](f: Future[T]): T = Await.result(f, Duration(120, TimeUnit.SECONDS))
 
-  @After
+  @AfterEach
   def tearDown(): Unit = Releasable.close(server)
 }

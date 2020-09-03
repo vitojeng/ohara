@@ -20,7 +20,8 @@ import java.util.Map;
 import java.util.concurrent.CompletionStage;
 import oharastream.ohara.common.rule.OharaTest;
 import oharastream.ohara.common.setting.TopicKey;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class TestTopicCreator extends OharaTest {
 
@@ -39,23 +40,24 @@ public class TestTopicCreator extends OharaTest {
     return new FakeTopicCreator();
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   public void illegalNumberOfPartitions() {
-    fake().numberOfPartitions(-1);
+    Assertions.assertThrows(IllegalArgumentException.class, () -> fake().numberOfPartitions(-1));
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   public void illegalNumberOfReplications() {
-    fake().numberOfReplications((short) -1);
+    Assertions.assertThrows(
+        IllegalArgumentException.class, () -> fake().numberOfReplications((short) -1));
   }
 
-  @Test(expected = NullPointerException.class)
+  @Test
   public void nullOptions() {
-    fake().options(null);
+    Assertions.assertThrows(NullPointerException.class, () -> fake().options(null));
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   public void emptyOptions() {
-    fake().options(Map.of());
+    Assertions.assertThrows(IllegalArgumentException.class, () -> fake().options(Map.of()));
   }
 }

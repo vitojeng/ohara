@@ -25,7 +25,7 @@ import oharastream.ohara.common.util.{CommonUtils, Releasable}
 import oharastream.ohara.connector.ftp.FtpSource
 import oharastream.ohara.kafka.connector.csv.CsvConnectorDefinitions
 import oharastream.ohara.testing.WithBrokerWorker
-import org.junit.{After, Ignore, Test}
+import org.junit.jupiter.api.{AfterEach, Disabled, Test}
 import org.scalatest.matchers.should.Matchers._
 import spray.json.{JsArray, JsBoolean, JsNumber, JsString}
 
@@ -464,7 +464,7 @@ class TestControlConnector extends WithBrokerWorker {
     result(connectorApi.get(source.key)).tasksStatus.filterNot(_.coordinator).foreach(_.state shouldBe State.FAILED)
   }
 
-  @Ignore("this test case should be enabled by https://github.com/oharastream/ohara/issues/4506")
+  @Disabled("this test case should be enabled by https://github.com/oharastream/ohara/issues/4506")
   @Test
   def testMaximumNumberOfLines(): Unit = {
     val topic = result(
@@ -511,6 +511,6 @@ class TestControlConnector extends WithBrokerWorker {
     }.getMessage should include(CsvConnectorDefinitions.MAXIMUM_NUMBER_OF_LINES_KEY)
   }
 
-  @After
+  @AfterEach
   def tearDown(): Unit = Releasable.close(configurator)
 }

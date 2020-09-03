@@ -18,8 +18,8 @@ package oharastream.ohara.testing.service;
 
 import oharastream.ohara.common.rule.OharaTest;
 import oharastream.ohara.common.util.CommonUtils;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class TestSshdServer extends OharaTest {
 
@@ -27,14 +27,14 @@ public class TestSshdServer extends OharaTest {
   public void testSpecificPort() {
     int port = CommonUtils.availablePort();
     try (SshdServer server = SshdServer.local(port)) {
-      Assert.assertEquals(server.port(), port);
+      Assertions.assertEquals(server.port(), port);
     }
   }
 
   @Test
   public void testRandomPort() {
     try (SshdServer server = SshdServer.local(0)) {
-      Assert.assertNotEquals(server.port(), 0);
+      Assertions.assertNotEquals(server.port(), 0);
     }
   }
 }

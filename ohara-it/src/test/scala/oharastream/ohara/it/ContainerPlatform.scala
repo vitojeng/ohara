@@ -20,21 +20,34 @@ import java.net.URL
 import java.util.Objects
 import java.util.concurrent.TimeUnit
 
-import oharastream.ohara.agent.{DataCollie, RemoteFolderHandler}
 import oharastream.ohara.agent.container.ContainerClient
 import oharastream.ohara.agent.docker.DockerClient
 import oharastream.ohara.agent.k8s.K8SClient
+import oharastream.ohara.agent.{DataCollie, RemoteFolderHandler}
 import oharastream.ohara.client.configurator.NodeApi.{Node, State}
-import oharastream.ohara.client.configurator.{InspectApi, NodeApi}
+import oharastream.ohara.client.configurator.{
+  BrokerApi,
+  ContainerApi,
+  FileInfoApi,
+  InspectApi,
+  LogApi,
+  NodeApi,
+  ShabondiApi,
+  StreamApi,
+  TopicApi,
+  WorkerApi,
+  ZookeeperApi
+}
+import oharastream.ohara.common.setting.ObjectKey
 import oharastream.ohara.common.util.{CommonUtils, Releasable, VersionUtils}
 import oharastream.ohara.configurator.Configurator
 import oharastream.ohara.it.ContainerPlatform.ResourceRef
-import org.junit.AssumptionViolatedException
 
-import scala.jdk.CollectionConverters._
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration.Duration
 import scala.concurrent.{Await, Future}
+import scala.jdk.CollectionConverters._
+
 trait ContainerPlatform {
   /**
     * setup all runtime services. The return object must be released after completing test case. Normally, it should be
@@ -61,6 +74,37 @@ object ContainerPlatform {
     def configuratorHostname: String
     def configuratorPort: Int
     def containerClient: ContainerClient
+
+    /**
+      * create and register a object key. Those generated keys get closed after releasing ResourceRef
+      * @return object key
+      */
+    def generateObjectKey: ObjectKey
+
+    /**
+      * @return the node names exists on Configurator
+      */
+    def nodeNames: Set[String]
+    //----------------[helpers]----------------//
+    def zookeeperApi: ZookeeperApi.Access =
+      ZookeeperApi.access.hostname(configuratorHostname).port(configuratorPort)
+    def brokerApi: BrokerApi.Access = BrokerApi.access.hostname(configuratorHostname).port(configuratorPort)
+    def workerApi: WorkerApi.Access = WorkerApi.access.hostname(configuratorHostname).port(configuratorPort)
+    def streamApi: StreamApi.Access = StreamApi.access.hostname(configuratorHostname).port(configuratorPort)
+
+    def containerApi: ContainerApi.Access =
+      ContainerApi.access.hostname(configuratorHostname).port(configuratorPort)
+    def topicApi: TopicApi.Access = TopicApi.access.hostname(configuratorHostname).port(configuratorPort)
+    def fileApi: FileInfoApi.Access =
+      FileInfoApi.access.hostname(configuratorHostname).port(configuratorPort)
+    def nodeApi: NodeApi.Access =
+      NodeApi.access.hostname(configuratorHostname).port(configuratorPort)
+    def logApi: LogApi.Access =
+      LogApi.access.hostname(configuratorHostname).port(configuratorPort)
+    def inspectApi: InspectApi.Access =
+      InspectApi.access.hostname(configuratorHostname).port(configuratorPort)
+
+    def shabondiApi: ShabondiApi.Access = ShabondiApi.access.hostname(configuratorHostname).port(configuratorPort)
   }
 
   private[ContainerPlatform] def result[T](f: Future[T]): T = Await.result(f, Duration(120, TimeUnit.SECONDS))
@@ -113,10 +157,7 @@ object ContainerPlatform {
   /**
     * @return k8s platform information. Or skip test
     */
-  def k8sMode: ContainerPlatform =
-    _k8sMode.getOrElse(
-      throw new AssumptionViolatedException(s"set ${ContainerPlatform.K8S_COORDINATOR_URL_KEY} to run IT on k8s mode")
-    )
+  def k8sMode: ContainerPlatform = _k8sMode.get
 
   /**
     * @return docker nodes information passed by env
@@ -162,10 +203,7 @@ object ContainerPlatform {
   /**
     * @return docker platform information. Or skip test
     */
-  def dockerMode: ContainerPlatform =
-    _dockerMode.getOrElse(
-      throw new AssumptionViolatedException(s"set ${ContainerPlatform.DOCKER_NODES_KEY} to run IT on docker mode")
-    )
+  def dockerMode: ContainerPlatform = _dockerMode.get
 
   private[this] val CUSTOM_CONFIGURATOR_KEY = "ohara.it.configurator"
 
@@ -199,12 +237,16 @@ object ContainerPlatform {
       }
       new ContainerPlatform {
         override def setup(): ResourceRef = new ResourceRef {
+          private[this] val serviceKeyHolder        = ServiceKeyHolder(clientCreator())
+          override def generateObjectKey: ObjectKey = serviceKeyHolder.generateObjectKey()
           override def configuratorHostname: String = hostname
           override def configuratorPort: Int        = port
           override def close(): Unit = {
-            // nothing
+            Releasable.close(containerClient)
+            Releasable.close(serviceKeyHolder)
           }
-          override lazy val containerClient: ContainerClient = clientCreator()
+          override val containerClient: ContainerClient = clientCreator()
+          override def nodeNames: Set[String]           = nodes.map(_.hostname).toSet
         }
 
         override def setupContainerClient(): ContainerClient = clientCreator()
@@ -341,6 +383,8 @@ object ContainerPlatform {
         override def setup(): ResourceRef = {
           val (configuratorName, hostname, port) = createConfigurator(clientCreator())
           new ResourceRef {
+            private[this] val serviceKeyHolder        = ServiceKeyHolder(clientCreator())
+            override def generateObjectKey: ObjectKey = serviceKeyHolder.generateObjectKey()
             override def configuratorHostname: String = hostname
             override def configuratorPort: Int        = port
             override def close(): Unit = {
@@ -349,8 +393,12 @@ object ContainerPlatform {
               println("[------------------------------------------------------------------------------------]")
               Releasable.close(() => result(containerClient.forceRemove(configuratorName)))
               Releasable.close(containerClient)
+              Releasable.close(serviceKeyHolder)
             }
             override lazy val containerClient: ContainerClient = clientCreator()
+
+            override def nodeNames: Set[String] =
+              CommonUtils.requireNonEmpty(Builder.this.followerNodes.asJava).asScala.map(_.hostname).toSet
           }
         }
 

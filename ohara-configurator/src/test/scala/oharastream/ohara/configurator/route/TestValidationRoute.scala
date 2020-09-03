@@ -21,7 +21,7 @@ import oharastream.ohara.common.rule.OharaTest
 import oharastream.ohara.common.setting.TopicKey
 import oharastream.ohara.common.util.{CommonUtils, Releasable}
 import oharastream.ohara.configurator.{Configurator, FallibleSink}
-import org.junit.{After, Test}
+import org.junit.jupiter.api.{AfterEach, Test}
 import org.scalatest.matchers.should.Matchers._
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -50,6 +50,6 @@ class TestValidationRoute extends OharaTest {
     response.className.get() shouldBe className
   }
 
-  @After
+  @AfterEach
   def tearDown(): Unit = Releasable.close(configurator)
 }

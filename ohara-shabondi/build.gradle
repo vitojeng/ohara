@@ -42,7 +42,8 @@ dependencies {
   testImplementation libs.akkaHttpTestKit
   testImplementation libs.scalatest
   testImplementation libs.mockitoAll
-  testImplementation libs.junit
+  testImplementation libs.junitApi
+  testRuntimeOnly libs.junitEngine
 }
 
 

@@ -17,8 +17,8 @@
 package oharastream.ohara.kafka.connector.csv.source;
 
 import oharastream.ohara.common.rule.OharaTest;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class TestCsvOffsetCache extends OharaTest {
   private final String path = getClass().getName();
@@ -27,7 +27,7 @@ public class TestCsvOffsetCache extends OharaTest {
   public void testUpdate() {
     CsvOffsetCache cache = new CsvOffsetCache();
     cache.update(path, 1);
-    Assert.assertTrue(cache.predicate(path, 2));
-    Assert.assertFalse(cache.predicate(path, 1));
+    Assertions.assertTrue(cache.predicate(path, 2));
+    Assertions.assertFalse(cache.predicate(path, 1));
   }
 }

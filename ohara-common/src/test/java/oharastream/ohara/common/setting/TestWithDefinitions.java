@@ -20,15 +20,15 @@ import java.util.Map;
 import oharastream.ohara.common.rule.OharaTest;
 import oharastream.ohara.common.util.CommonUtils;
 import oharastream.ohara.common.util.VersionUtils;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class TestWithDefinitions extends OharaTest {
 
   @Test
   public void authorShouldNotBeReplaced() {
     String author = CommonUtils.randomString();
-    Assert.assertEquals(
+    Assertions.assertEquals(
         author,
         WithDefinitions.merge(
                 this,
@@ -40,7 +40,7 @@ public class TestWithDefinitions extends OharaTest {
 
   @Test
   public void authorShouldHaveDefaultValue() {
-    Assert.assertEquals(
+    Assertions.assertEquals(
         VersionUtils.USER,
         WithDefinitions.merge(this, Map.of(), Map.of())
             .get(WithDefinitions.AUTHOR_KEY)
@@ -50,7 +50,7 @@ public class TestWithDefinitions extends OharaTest {
   @Test
   public void versionShouldNotBeReplaced() {
     String version = CommonUtils.randomString();
-    Assert.assertEquals(
+    Assertions.assertEquals(
         version,
         WithDefinitions.merge(
                 this,
@@ -62,7 +62,7 @@ public class TestWithDefinitions extends OharaTest {
 
   @Test
   public void versionShouldHaveDefaultValue() {
-    Assert.assertEquals(
+    Assertions.assertEquals(
         VersionUtils.VERSION,
         WithDefinitions.merge(this, Map.of(), Map.of())
             .get(WithDefinitions.VERSION_KEY)
@@ -72,7 +72,7 @@ public class TestWithDefinitions extends OharaTest {
   @Test
   public void revisionShouldNotBeReplaced() {
     String revision = CommonUtils.randomString();
-    Assert.assertEquals(
+    Assertions.assertEquals(
         revision,
         WithDefinitions.merge(
                 this,
@@ -84,7 +84,7 @@ public class TestWithDefinitions extends OharaTest {
 
   @Test
   public void revisionShouldHaveDefaultValue() {
-    Assert.assertEquals(
+    Assertions.assertEquals(
         VersionUtils.REVISION,
         WithDefinitions.merge(this, Map.of(), Map.of())
             .get(WithDefinitions.REVISION_KEY)
@@ -93,7 +93,7 @@ public class TestWithDefinitions extends OharaTest {
 
   @Test
   public void kindShouldBeUnknown() {
-    Assert.assertEquals(
+    Assertions.assertEquals(
         ClassType.UNKNOWN.key(),
         WithDefinitions.merge(this, Map.of(), Map.of())
             .get(WithDefinitions.KIND_KEY)
@@ -102,6 +102,6 @@ public class TestWithDefinitions extends OharaTest {
 
   @Test
   public void testDefaultGroup() {
-    Assert.assertNotEquals(WithDefinitions.META_GROUP, SettingDef.COMMON_GROUP);
+    Assertions.assertNotEquals(WithDefinitions.META_GROUP, SettingDef.COMMON_GROUP);
   }
 }

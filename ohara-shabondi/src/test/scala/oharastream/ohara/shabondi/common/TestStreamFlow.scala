@@ -25,7 +25,7 @@ import oharastream.ohara.common.data.{Cell, Row}
 import oharastream.ohara.common.util.Releasable
 import oharastream.ohara.kafka.{Consumer, RecordMetadata}
 import oharastream.ohara.shabondi.{BasicShabondiTest, KafkaSupport}
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import org.scalatest.matchers.should.Matchers._
 
 import scala.concurrent.duration.Duration

@@ -17,17 +17,18 @@
 package oharastream.ohara.connector.jdbc.source
 
 import java.sql.Statement
+
 import oharastream.ohara.client.configurator.InspectApi.RdbColumn
 import oharastream.ohara.client.database.DatabaseClient
 import oharastream.ohara.common.data.{Column, DataType}
 import oharastream.ohara.common.rule.OharaTest
 import oharastream.ohara.common.setting.TopicKey
 import oharastream.ohara.common.util.Releasable
-import oharastream.ohara.testing.service.Database
-import org.junit.{Before, Test}
 import oharastream.ohara.kafka.connector.{RowSourceRecord, TaskSetting}
+import oharastream.ohara.testing.service.Database
 import org.apache.kafka.connect.source.SourceTaskContext
 import org.apache.kafka.connect.storage.OffsetStorageReader
+import org.junit.jupiter.api.{BeforeEach, Test}
 import org.mockito.Mockito
 import org.mockito.Mockito.when
 import org.scalatest.matchers.should.Matchers._
@@ -44,7 +45,7 @@ class TestJDBCSourceTaskOffset extends OharaTest {
   private[this] val taskContext: SourceTaskContext           = Mockito.mock(classOf[SourceTaskContext])
   private[this] val taskSetting: TaskSetting                 = Mockito.mock(classOf[TaskSetting])
   private[this] val offsetStorageReader: OffsetStorageReader = Mockito.mock(classOf[OffsetStorageReader])
-  @Before
+  @BeforeEach
   def setup(): Unit = {
     val column2 = "COLUMN2"
     val dbColumns = Seq(

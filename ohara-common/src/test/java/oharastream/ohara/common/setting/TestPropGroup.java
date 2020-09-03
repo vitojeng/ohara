@@ -24,8 +24,8 @@ import oharastream.ohara.common.data.Column;
 import oharastream.ohara.common.data.DataType;
 import oharastream.ohara.common.rule.OharaTest;
 import oharastream.ohara.common.util.CommonUtils;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class TestPropGroup extends OharaTest {
   @Test
@@ -33,10 +33,10 @@ public class TestPropGroup extends OharaTest {
     PropGroup propGroup =
         PropGroup.ofJson(
             "[" + "{" + "\"order\": 1," + "\"aa\": \"cc\"," + "\"aa2\": \"cc2\"" + "}" + "]");
-    Assert.assertEquals(1, propGroup.size());
-    Assert.assertEquals("1", propGroup.props(0).get("order"));
-    Assert.assertEquals("cc", propGroup.props(0).get("aa"));
-    Assert.assertEquals("cc2", propGroup.props(0).get("aa2"));
+    Assertions.assertEquals(1, propGroup.size());
+    Assertions.assertEquals("1", propGroup.props(0).get("order"));
+    Assertions.assertEquals("cc", propGroup.props(0).get("aa"));
+    Assertions.assertEquals("cc2", propGroup.props(0).get("aa2"));
   }
 
   @Test
@@ -45,45 +45,35 @@ public class TestPropGroup extends OharaTest {
         PropGroup.ofJson(
             "[" + "{" + "\"order\": 1," + "\"aa\": \"cc\"," + "\"aaa\": \"cc\"" + "}" + "]");
     PropGroup another = PropGroup.ofJson(propGroup.toJsonString());
-    Assert.assertEquals(propGroup.size(), another.size());
-    Assert.assertEquals(propGroup.props(0).get("order"), another.props(0).get("order"));
-    Assert.assertEquals(propGroup.props(0).get("aa"), another.props(0).get("aa"));
-    Assert.assertEquals(propGroup.props(0).get("aaa"), another.props(0).get("aaa"));
+    Assertions.assertEquals(propGroup.size(), another.size());
+    Assertions.assertEquals(propGroup.props(0).get("order"), another.props(0).get("order"));
+    Assertions.assertEquals(propGroup.props(0).get("aa"), another.props(0).get("aa"));
+    Assertions.assertEquals(propGroup.props(0).get("aaa"), another.props(0).get("aaa"));
   }
 
-  @Test(expected = NullPointerException.class)
+  @Test
   public void testNullJson() {
-    Assert.assertTrue(PropGroup.ofJson(null).isEmpty());
+    Assertions.assertThrows(NullPointerException.class, () -> PropGroup.ofJson(null));
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   public void testEmptyJson() {
-    Assert.assertTrue(PropGroup.ofJson("").isEmpty());
-  }
-
-  @Test(expected = IllegalArgumentException.class)
-  public void testNullStringJson() {
-    Assert.assertTrue(PropGroup.ofJson("NULL").isEmpty());
-  }
-
-  @Test(expected = NullPointerException.class)
-  public void testNullStringJson2() {
-    Assert.assertTrue(PropGroup.ofJson("null").isEmpty());
+    Assertions.assertThrows(IllegalArgumentException.class, () -> PropGroup.ofJson(""));
   }
 
   @Test
   public void testEmpty() {
-    Assert.assertTrue(PropGroup.of(List.of()).isEmpty());
+    Assertions.assertTrue(PropGroup.of(List.of()).isEmpty());
   }
 
   @Test
   public void testEmpty2() {
-    Assert.assertTrue(PropGroup.of(List.of(Map.of())).isEmpty());
+    Assertions.assertTrue(PropGroup.of(List.of(Map.of())).isEmpty());
   }
 
   @Test
   public void testEmpty3() {
-    Assert.assertEquals(0, PropGroup.of(List.of(Map.of())).numberOfElements());
+    Assertions.assertEquals(0, PropGroup.of(List.of(Map.of())).numberOfElements());
   }
 
   @Test
@@ -91,10 +81,10 @@ public class TestPropGroup extends OharaTest {
     String json = "[" + "{" + "\"order\": 1," + "\"aa\": \"cc\"," + "\"aaa\": \"ccc\"" + "}" + "]";
 
     PropGroup propGroup = PropGroup.ofJson(json);
-    Assert.assertEquals(1, propGroup.size());
-    Assert.assertEquals("1", propGroup.iterator().next().get("order"));
-    Assert.assertEquals("cc", propGroup.iterator().next().get("aa"));
-    Assert.assertEquals("ccc", propGroup.iterator().next().get("aaa"));
+    Assertions.assertEquals(1, propGroup.size());
+    Assertions.assertEquals("1", propGroup.iterator().next().get("order"));
+    Assertions.assertEquals("cc", propGroup.iterator().next().get("aa"));
+    Assertions.assertEquals("ccc", propGroup.iterator().next().get("aaa"));
   }
 
   @Test
@@ -115,8 +105,8 @@ public class TestPropGroup extends OharaTest {
                 .build());
     PropGroup pgs = PropGroup.ofColumns(columns);
     List<Column> another = pgs.toColumns();
-    Assert.assertEquals(columns.size(), another.size());
-    another.forEach(c -> Assert.assertTrue(columns.contains(c)));
+    Assertions.assertEquals(columns.size(), another.size());
+    another.forEach(c -> Assertions.assertTrue(columns.contains(c)));
   }
 
   @Test
@@ -132,47 +122,48 @@ public class TestPropGroup extends OharaTest {
             + "]";
     PropGroup pgs = PropGroup.ofJson(json);
     List<Column> columns = pgs.toColumns();
-    Assert.assertEquals(1, columns.size());
-    Assert.assertEquals(1, columns.get(0).order());
-    Assert.assertEquals("cc", columns.get(0).name());
-    Assert.assertEquals("ccc", columns.get(0).newName());
-    Assert.assertEquals(DataType.BYTES, columns.get(0).dataType());
+    Assertions.assertEquals(1, columns.size());
+    Assertions.assertEquals(1, columns.get(0).order());
+    Assertions.assertEquals("cc", columns.get(0).name());
+    Assertions.assertEquals("ccc", columns.get(0).newName());
+    Assertions.assertEquals(DataType.BYTES, columns.get(0).dataType());
 
     String json2 =
         "[" + "{" + "\"order\": 1," + "\"name\": \"cc\"," + "\"dataType\": \"BYTES\"" + "}" + "]";
 
     PropGroup pgs2 = PropGroup.ofJson(json2);
     List<Column> columns2 = pgs2.toColumns();
-    Assert.assertEquals(1, columns2.size());
-    Assert.assertEquals(1, columns2.get(0).order());
-    Assert.assertEquals("cc", columns2.get(0).name());
-    Assert.assertEquals("cc", columns2.get(0).newName());
-    Assert.assertEquals(DataType.BYTES, columns2.get(0).dataType());
+    Assertions.assertEquals(1, columns2.size());
+    Assertions.assertEquals(1, columns2.get(0).order());
+    Assertions.assertEquals("cc", columns2.get(0).name());
+    Assertions.assertEquals("cc", columns2.get(0).newName());
+    Assertions.assertEquals(DataType.BYTES, columns2.get(0).dataType());
   }
 
-  @Test(expected = UnsupportedOperationException.class)
+  @Test
   public void testRemove() {
     PropGroup pgs = PropGroup.of(List.of(Map.of("a", "b")));
-    pgs.iterator().remove();
+    Assertions.assertThrows(UnsupportedOperationException.class, () -> pgs.iterator().remove());
   }
 
-  @Test(expected = UnsupportedOperationException.class)
+  @Test
   public void testRemoveFromList() {
     PropGroup pgs = PropGroup.of(List.of(Map.of("a", "b")));
-    pgs.raw().remove(0);
+    Assertions.assertThrows(UnsupportedOperationException.class, () -> pgs.raw().remove(0));
   }
 
-  @Test(expected = UnsupportedOperationException.class)
+  @Test
   public void testRemoveFromMap() {
     PropGroup pgs = PropGroup.of(List.of(Map.of("a", "b")));
-    pgs.raw().get(0).remove("a");
+    Assertions.assertThrows(
+        UnsupportedOperationException.class, () -> pgs.raw().get(0).remove("a"));
   }
 
   @Test
   public void testConvert() {
     PropGroup propGroup = PropGroup.of(List.of(Map.of("a", "b")));
     PropGroup another = PropGroup.ofJson(propGroup.toJsonString());
-    Assert.assertEquals(propGroup, another);
+    Assertions.assertEquals(propGroup, another);
   }
 
   @Test
@@ -188,6 +179,6 @@ public class TestPropGroup extends OharaTest {
         SettingDef.COLUMN_DATA_TYPE_KEY, raw.get(SettingDef.COLUMN_DATA_TYPE_KEY).toLowerCase());
     PropGroup group = PropGroup.of(List.of(raw));
     Column another = group.toColumns().get(0);
-    Assert.assertEquals(column, another);
+    Assertions.assertEquals(column, another);
   }
 }

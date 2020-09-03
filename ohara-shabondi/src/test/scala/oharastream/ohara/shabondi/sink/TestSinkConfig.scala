@@ -20,7 +20,7 @@ import java.time.{Duration => JDuration}
 
 import oharastream.ohara.common.rule.OharaTest
 import oharastream.ohara.common.setting.TopicKey
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import org.scalatest.matchers.should.Matchers._
 
 import scala.jdk.CollectionConverters._

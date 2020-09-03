@@ -20,7 +20,7 @@ import java.util.concurrent.{ConcurrentHashMap, TimeUnit}
 
 import oharastream.ohara.client.configurator.{ConnectorApi, WorkerApi}
 import oharastream.ohara.testing.WithBrokerWorker
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import org.scalatest.matchers.should.Matchers._
 
 import scala.concurrent.ExecutionContext.Implicits.global

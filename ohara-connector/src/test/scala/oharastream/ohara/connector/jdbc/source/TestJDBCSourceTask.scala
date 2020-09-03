@@ -29,7 +29,7 @@ import oharastream.ohara.kafka.connector.{RowSourceRecord, TaskSetting}
 import oharastream.ohara.testing.service.Database
 import org.apache.kafka.connect.source.SourceTaskContext
 import org.apache.kafka.connect.storage.OffsetStorageReader
-import org.junit.{After, Before, Test}
+import org.junit.jupiter.api.{AfterEach, BeforeEach, Test}
 import org.mockito.Mockito
 import org.mockito.Mockito._
 import org.scalatest.matchers.should.Matchers._
@@ -42,7 +42,7 @@ class TestJDBCSourceTask extends OharaTest {
   private[this] val tableName           = "TABLE1"
   private[this] val timestampColumnName = "COLUMN1"
 
-  @Before
+  @BeforeEach
   def setup(): Unit = {
     val column1 = RdbColumn("COLUMN1", "TIMESTAMP(6)", true)
     val column2 = RdbColumn("COLUMN2", "varchar(45)", false)
@@ -340,7 +340,7 @@ class TestJDBCSourceTask extends OharaTest {
     taskSetting
   }
 
-  @After
+  @AfterEach
   def afterTest(): Unit = {
     Releasable.close(client)
     Releasable.close(db)

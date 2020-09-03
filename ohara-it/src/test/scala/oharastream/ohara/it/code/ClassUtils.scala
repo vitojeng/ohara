@@ -21,7 +21,8 @@ import java.lang.reflect.Modifier
 import java.util.jar.JarInputStream
 import java.util.regex.Pattern
 
-import org.junit.Test
+import org.junit.jupiter.api.Test
+import org.junit.jupiter.params.ParameterizedTest
 
 import scala.jdk.CollectionConverters._
 
@@ -47,7 +48,12 @@ private[code] object ClassUtils {
       .filter { m =>
         val annotations = m.getAnnotations
         if (annotations == null || annotations.isEmpty) false
-        else annotations.exists(_.annotationType() == classOf[Test])
+        else
+          annotations.exists(
+            annotation =>
+              annotation.annotationType() == classOf[Test]
+                || annotation.annotationType() == classOf[ParameterizedTest]
+          )
       }
       .map(_.getName)
       .toSet

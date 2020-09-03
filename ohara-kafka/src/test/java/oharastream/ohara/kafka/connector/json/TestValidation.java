@@ -22,19 +22,27 @@ import java.util.NoSuchElementException;
 import java.util.Set;
 import oharastream.ohara.common.rule.OharaTest;
 import oharastream.ohara.common.util.CommonUtils;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class TestValidation extends OharaTest {
 
-  @Test(expected = NoSuchElementException.class)
+  @Test
   public void ignoreClassName() {
-    Validation.of(Map.of(CommonUtils.randomString(), CommonUtils.randomString())).className();
+    Assertions.assertThrows(
+        NoSuchElementException.class,
+        () ->
+            Validation.of(Map.of(CommonUtils.randomString(), CommonUtils.randomString()))
+                .className());
   }
 
-  @Test(expected = NoSuchElementException.class)
+  @Test
   public void ignoreTopicNames() {
-    Validation.of(Map.of(CommonUtils.randomString(), CommonUtils.randomString())).topicNames();
+    Assertions.assertThrows(
+        NoSuchElementException.class,
+        () ->
+            Validation.of(Map.of(CommonUtils.randomString(), CommonUtils.randomString()))
+                .topicNames());
   }
 
   @Test
@@ -42,36 +50,36 @@ public class TestValidation extends OharaTest {
     String className = CommonUtils.randomString();
     Set<String> topicNames = Set.of(CommonUtils.randomString());
     Validation validation = Validation.of(className, topicNames);
-    Assert.assertEquals(className, validation.className());
-    Assert.assertEquals(topicNames, validation.topicNames());
+    Assertions.assertEquals(className, validation.className());
+    Assertions.assertEquals(topicNames, validation.topicNames());
   }
 
   @Test
   public void testEqual() {
     Validation validation =
         Validation.of(Map.of(CommonUtils.randomString(), CommonUtils.randomString()));
-    Assert.assertEquals(validation, validation);
+    Assertions.assertEquals(validation, validation);
   }
 
   @Test
   public void testToString() {
     Validation validation =
         Validation.of(Map.of(CommonUtils.randomString(), CommonUtils.randomString()));
-    Assert.assertEquals(validation.toString(), validation.toString());
+    Assertions.assertEquals(validation.toString(), validation.toString());
   }
 
   @Test
   public void testToJsonString() {
     Validation validation =
         Validation.of(Map.of(CommonUtils.randomString(), CommonUtils.randomString()));
-    Assert.assertEquals(validation.toJsonString(), validation.toJsonString());
+    Assertions.assertEquals(validation.toJsonString(), validation.toJsonString());
   }
 
   @Test
   public void testHashCode() {
     Validation validation =
         Validation.of(Map.of(CommonUtils.randomString(), CommonUtils.randomString()));
-    Assert.assertEquals(validation.hashCode(), validation.hashCode());
+    Assertions.assertEquals(validation.hashCode(), validation.hashCode());
   }
 
   @Test
@@ -79,23 +87,25 @@ public class TestValidation extends OharaTest {
     String key = CommonUtils.randomString(5);
     String value = CommonUtils.randomString(5);
     Validation validation = Validation.of(Map.of(key, value));
-    Assert.assertEquals(Map.of(key, value), validation.settings());
-    Assert.assertEquals(value, validation.settings().get(key));
+    Assertions.assertEquals(Map.of(key, value), validation.settings());
+    Assertions.assertEquals(value, validation.settings().get(key));
   }
 
-  @Test(expected = NullPointerException.class)
+  @Test
   public void nullSettings() {
-    Validation.of(null);
+    Assertions.assertThrows(NullPointerException.class, () -> Validation.of(null));
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   public void emptySettings() {
-    Validation.of(Map.of());
+    Assertions.assertThrows(IllegalArgumentException.class, () -> Validation.of(Map.of()));
   }
 
-  @Test(expected = NullPointerException.class)
+  @Test
   public void nullValue() {
-    Validation.of(Collections.singletonMap(CommonUtils.randomString(), null));
+    Assertions.assertThrows(
+        NullPointerException.class,
+        () -> Validation.of(Collections.singletonMap(CommonUtils.randomString(), null)));
   }
 
   @Test
@@ -103,10 +113,13 @@ public class TestValidation extends OharaTest {
     Validation.of(Map.of(CommonUtils.randomString(), ""));
   }
 
-  @Test(expected = UnsupportedOperationException.class)
+  @Test
   public void failToModify() {
-    Validation.of(Map.of(CommonUtils.randomString(), CommonUtils.randomString()))
-        .settings()
-        .remove("a");
+    Assertions.assertThrows(
+        UnsupportedOperationException.class,
+        () ->
+            Validation.of(Map.of(CommonUtils.randomString(), CommonUtils.randomString()))
+                .settings()
+                .remove("a"));
   }
 }

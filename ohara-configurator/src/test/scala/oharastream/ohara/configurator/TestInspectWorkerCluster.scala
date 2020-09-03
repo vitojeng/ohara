@@ -21,7 +21,7 @@ import java.util.concurrent.TimeUnit
 import oharastream.ohara.client.configurator.{InspectApi, WorkerApi}
 import oharastream.ohara.common.util.Releasable
 import oharastream.ohara.testing.WithBrokerWorker
-import org.junit.{After, Test}
+import org.junit.jupiter.api.{AfterEach, Test}
 import org.scalatest.matchers.should.Matchers._
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -59,6 +59,6 @@ class TestInspectWorkerCluster extends WithBrokerWorker {
     }
   }
 
-  @After
+  @AfterEach
   def tearDown(): Unit = Releasable.close(configurator)
 }

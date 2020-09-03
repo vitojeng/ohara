@@ -24,13 +24,16 @@ import oharastream.ohara.common.util.{CommonUtils, Releasable}
 import oharastream.ohara.connector.ftp.FtpSource
 import oharastream.ohara.connector.hdfs.sink.HDFSSink
 import oharastream.ohara.kafka.connector.csv.CsvConnectorDefinitions
-import org.junit.Test
+import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.condition.EnabledIfEnvironmentVariable
 import spray.json.{JsNumber, JsString}
 
+@EnabledIfEnvironmentVariable(named = "ohara.it.performance.hdfs.url", matches = ".*")
 class TestPerformance4FtpSourceToHDFSSink extends BasicTestPerformance4Ftp {
-  private[this] val ftpCompletedPath = "/completed"
-  private[this] val ftpErrorPath     = "/error"
-  private[this] val (path, _, _)     = setupInputData(timeoutOfInputData)
+  private[this] val HDFS_URL_KEY: String = "ohara.it.performance.hdfs.url"
+  private[this] val ftpCompletedPath     = "/completed"
+  private[this] val ftpErrorPath         = "/error"
+  private[this] val (path, _, _)         = setupInputData(timeoutOfInputData)
 
   @Test
   def test(): Unit = {
@@ -56,9 +59,9 @@ class TestPerformance4FtpSourceToHDFSSink extends BasicTestPerformance4Ftp {
       //Running HDFS Sink Connector
       setupConnector(
         connectorKey = ConnectorKey.of(groupName, CommonUtils.randomString(5)),
-        className = classOf[HDFSSink].getName(),
+        className = classOf[HDFSSink].getName,
         settings = Map(
-          oharastream.ohara.connector.hdfs.sink.HDFS_URL_KEY   -> JsString(PerformanceTestingUtils.hdfsURL),
+          oharastream.ohara.connector.hdfs.sink.HDFS_URL_KEY   -> JsString(sys.env(HDFS_URL_KEY)),
           oharastream.ohara.connector.hdfs.sink.FLUSH_SIZE_KEY -> JsNumber(numberOfCsvFileToFlush),
           oharastream.ohara.connector.hdfs.sink.OUTPUT_FOLDER_KEY -> JsString(
             PerformanceTestingUtils.createFolder(hdfs, PerformanceTestingUtils.dataDir)
@@ -97,7 +100,6 @@ class TestPerformance4FtpSourceToHDFSSink extends BasicTestPerformance4Ftp {
     }
   }
 
-  private[this] def hdfsClient(): FileSystem = {
-    FileSystem.hdfsBuilder.url(PerformanceTestingUtils.hdfsURL).build
-  }
+  private[this] def hdfsClient(): FileSystem =
+    FileSystem.hdfsBuilder.url(sys.env(HDFS_URL_KEY)).build
 }

@@ -22,7 +22,7 @@ import oharastream.ohara.common.rule.OharaTest
 import oharastream.ohara.common.setting.{ConnectorKey, ObjectKey, TopicKey}
 import oharastream.ohara.common.util.{CommonUtils, Releasable}
 import oharastream.ohara.configurator.{Configurator, FallibleSink}
-import org.junit.{After, Test}
+import org.junit.jupiter.api.{AfterEach, Test}
 import org.scalatest.matchers.should.Matchers._
 import spray.json.{JsArray, JsNumber, JsObject, JsString, JsTrue}
 
@@ -53,7 +53,7 @@ class TestPipelineRoute extends OharaTest {
 
   private[this] val nodeNames = workerClusterInfo.nodeNames
 
-  private[this] def result[T](f: Future[T]): T = Await.result(f, Duration("20 seconds"))
+  private[this] def result[T](f: Future[T]): T = Await.result(f, Duration("30 seconds"))
 
   @Test
   def testEndpointAndObjects(): Unit = {
@@ -587,6 +587,6 @@ class TestPipelineRoute extends OharaTest {
     }
     result(request.create())
   }
-  @After
+  @AfterEach
   def tearDown(): Unit = Releasable.close(configurator)
 }

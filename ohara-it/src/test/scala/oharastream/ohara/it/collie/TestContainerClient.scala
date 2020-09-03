@@ -23,96 +23,99 @@ import oharastream.ohara.agent.docker.DockerClient
 import oharastream.ohara.client.configurator.NodeApi.Node
 import oharastream.ohara.common.util.{CommonUtils, Releasable}
 import oharastream.ohara.it.{ContainerPlatform, IntegrationTest}
-import org.junit.runner.RunWith
-import org.junit.runners.Parameterized
-import org.junit.runners.Parameterized.Parameters
-import org.junit.{After, Test}
+import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.condition.EnabledIfEnvironmentVariable
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.{Arguments, MethodSource}
 import org.scalatest.matchers.should.Matchers._
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.jdk.CollectionConverters._
 
-@RunWith(value = classOf[Parameterized])
-class TestContainerClient(platform: ContainerPlatform) extends IntegrationTest {
-  private[this] val containerClient = platform.setupContainerClient()
-  private[this] val name            = CommonUtils.randomString(5)
-  private[this] val imageName       = "centos:7"
-  private[this] val webHost         = "www.google.com.tw"
+@EnabledIfEnvironmentVariable(named = "ohara.it.docker", matches = ".*")
+class TestContainerClient extends IntegrationTest {
+  private[this] val name      = CommonUtils.randomString(5)
+  private[this] val imageName = "centos:7"
+  private[this] val webHost   = "www.google.com.tw"
 
-  private[this] def createBusyBox(arguments: Seq[String]): Unit =
-    result(
-      containerClient.containerCreator
-        .nodeName(platform.nodeNames.head)
-        .name(name)
-        .imageName("busybox")
-        .arguments(arguments)
-        .create()
-    )
+  @ParameterizedTest(name = "{displayName} with {argumentsWithNames}")
+  @MethodSource(value = Array("parameters"))
+  def testLog(platform: ContainerPlatform): Unit =
+    close(platform.setupContainerClient()) { containerClient =>
+      def log(name: String, sinceSeconds: Option[Long]): String =
+        result(containerClient.log(name, sinceSeconds)).head._2
+      def createBusyBox(arguments: Seq[String]): Unit =
+        result(
+          containerClient.containerCreator
+            .nodeName(platform.nodeNames.head)
+            .name(name)
+            .imageName("busybox")
+            .arguments(arguments)
+            .create()
+        )
+      createBusyBox(Seq("sh", "-c", "while true; do $(echo date); sleep 1; done"))
+      try {
+        // wait the container
+        await(() => log(name, None).contains("UTC"))
+        val lastLine = log(name, None).split("\n").last
+        TimeUnit.SECONDS.sleep(3)
+        log(name, Some(1)) should not include lastLine
+        log(name, Some(10)) should include(lastLine)
+      } finally Releasable.close(() => result(containerClient.forceRemove(name)))
+    }(containerClient => result(containerClient.forceRemove(name)))
 
-  @Test
-  def testLog(): Unit = {
-    def log(name: String, sinceSeconds: Option[Long]): String =
-      result(containerClient.log(name, sinceSeconds)).head._2
-
-    createBusyBox(Seq("sh", "-c", "while true; do $(echo date); sleep 1; done"))
-    try {
-      // wait the container
-      await(() => log(name, None).contains("UTC"))
-      val lastLine = log(name, None).split("\n").last
-      TimeUnit.SECONDS.sleep(3)
-      log(name, Some(1)) should not include lastLine
-      log(name, Some(10)) should include(lastLine)
-    } finally Releasable.close(() => result(containerClient.forceRemove(name)))
-  }
-
-  @Test
-  def testVolume(): Unit = {
-    def checkVolumeExists(names: Seq[String]): Unit = {
-      names.foreach { volumeName =>
-        await(() => !result(containerClient.volumes()).exists(_.name == volumeName))
+  @ParameterizedTest(name = "{displayName} with {argumentsWithNames}")
+  @MethodSource(value = Array("parameters"))
+  def testVolume(platform: ContainerPlatform): Unit =
+    close(platform.setupContainerClient()) { containerClient =>
+      def checkVolumeExists(names: Seq[String]): Unit = {
+        names.foreach { volumeName =>
+          await(() => !result(containerClient.volumes()).exists(_.name == volumeName))
+        }
       }
-    }
-    val path  = s"/tmp/${CommonUtils.randomString(10)}"
-    val names = Seq(CommonUtils.randomString(), CommonUtils.randomString())
-    checkVolumeExists(names)
-    try {
-      names.foreach(
-        name =>
-          result(
-            containerClient.volumeCreator
-              .name(name)
-              .nodeName(platform.nodeNames.head)
-              .path(path)
-              .create()
-          )
-      )
-      names.foreach { name =>
-        result(containerClient.volumes(name)).head.path shouldBe path
-        result(containerClient.volumes(name)).head.name shouldBe name
-        result(containerClient.volumes(name)).head.nodeName shouldBe platform.nodeNames.head
-      }
-    } finally {
-      names.foreach(name => Releasable.close(() => result(containerClient.removeVolumes(name))))
+      val path  = s"/tmp/${CommonUtils.randomString(10)}"
+      val names = Seq(CommonUtils.randomString(), CommonUtils.randomString())
       checkVolumeExists(names)
-    }
-  }
+      try {
+        names.foreach(
+          name =>
+            result(
+              containerClient.volumeCreator
+                .name(name)
+                .nodeName(platform.nodeNames.head)
+                .path(path)
+                .create()
+            )
+        )
+        names.foreach { name =>
+          result(containerClient.volumes(name)).head.path shouldBe path
+          result(containerClient.volumes(name)).head.name shouldBe name
+          result(containerClient.volumes(name)).head.nodeName shouldBe platform.nodeNames.head
+        }
+      } finally {
+        names.foreach(name => Releasable.close(() => result(containerClient.removeVolumes(name))))
+        checkVolumeExists(names)
+      }
+    }(containerClient => result(containerClient.forceRemove(name)))
 
-  @Test
-  def testList(): Unit = {
-    result(
-      containerClient.containerCreator
-        .nodeName(platform.nodeNames.head)
-        .name(name)
-        .imageName(imageName)
-        .command(s"""/bin/bash -c \"ping $webHost\"""")
-        .create()
-    )
-    result(containerClient.containerNames()).map(_.name) should contain(name)
-  }
+  @ParameterizedTest(name = "{displayName} with {argumentsWithNames}")
+  @MethodSource(value = Array("parameters"))
+  def testList(platform: ContainerPlatform): Unit =
+    close(platform.setupContainerClient()) { containerClient =>
+      result(
+        containerClient.containerCreator
+          .nodeName(platform.nodeNames.head)
+          .name(name)
+          .imageName(imageName)
+          .command(s"""/bin/bash -c \"ping $webHost\"""")
+          .create()
+      )
+      result(containerClient.containerNames()).map(_.name) should contain(name)
+    }(containerClient => result(containerClient.forceRemove(name)))
 
-  @Test
-  def testRoute(): Unit = containerClient match {
-    case _: DockerClient =>
+  def testRoute(): Unit = {
+    val platform = ContainerPlatform.dockerMode
+    close(platform.setupContainerClient()) { containerClient =>
       result(
         containerClient.containerCreator
           .nodeName(platform.nodeNames.head)
@@ -126,76 +129,84 @@ class TestContainerClient(platform: ContainerPlatform) extends IntegrationTest {
         result(containerClient.asInstanceOf[DockerClient].containerInspector.name(name).cat("/etc/hosts")).head._2
       hostFile should include("192.168.123.123")
       hostFile should include("ABC")
-    case _ => skipTest(s"${containerClient.getClass.getName} is skipped")
+    }(containerClient => result(containerClient.forceRemove(name)))
   }
 
-  @Test
-  def testPortMapping(): Unit = {
-    val availablePort = CommonUtils.availablePort()
-    result(
-      containerClient.containerCreator
-        .nodeName(platform.nodeNames.head)
-        .name(name)
-        .imageName(imageName)
-        .portMappings(Map(availablePort -> availablePort))
-        .command(s"""/bin/bash -c \"ping $webHost\"""")
-        .create()
-    )
+  @ParameterizedTest(name = "{displayName} with {argumentsWithNames}")
+  @MethodSource(value = Array("parameters"))
+  def testPortMapping(platform: ContainerPlatform): Unit =
+    close(platform.setupContainerClient()) { containerClient =>
+      val availablePort = CommonUtils.availablePort()
+      result(
+        containerClient.containerCreator
+          .nodeName(platform.nodeNames.head)
+          .name(name)
+          .imageName(imageName)
+          .portMappings(Map(availablePort -> availablePort))
+          .command(s"""/bin/bash -c \"ping $webHost\"""")
+          .create()
+      )
 
-    val container = result(containerClient.containers()).find(_.name == name).get
-    container.portMappings.size shouldBe 1
-    container.portMappings.size shouldBe 1
-    container.portMappings.head.hostPort shouldBe availablePort
-    container.portMappings.head.containerPort shouldBe availablePort
-  }
+      val container = result(containerClient.containers()).find(_.name == name).get
+      container.portMappings.size shouldBe 1
+      container.portMappings.size shouldBe 1
+      container.portMappings.head.hostPort shouldBe availablePort
+      container.portMappings.head.containerPort shouldBe availablePort
+    }(containerClient => result(containerClient.forceRemove(name)))
 
-  @Test
-  def testSetEnv(): Unit = {
-    result(
-      containerClient.containerCreator
-        .nodeName(platform.nodeNames.head)
-        .name(name)
-        .imageName(imageName)
-        .envs(Map("abc" -> "123", "ccc" -> "ttt"))
-        .command(s"""/bin/bash -c \"ping $webHost\"""")
-        .create()
-    )
-    val container = result(containerClient.containers()).find(_.name == name).get
-    container.environments("abc") shouldBe "123"
-    container.environments("ccc") shouldBe "ttt"
-  }
+  @ParameterizedTest(name = "{displayName} with {argumentsWithNames}")
+  @MethodSource(value = Array("parameters"))
+  def testSetEnv(platform: ContainerPlatform): Unit =
+    close(platform.setupContainerClient()) { containerClient =>
+      result(
+        containerClient.containerCreator
+          .nodeName(platform.nodeNames.head)
+          .name(name)
+          .imageName(imageName)
+          .envs(Map("abc" -> "123", "ccc" -> "ttt"))
+          .command(s"""/bin/bash -c \"ping $webHost\"""")
+          .create()
+      )
+      val container = result(containerClient.containers()).find(_.name == name).get
+      container.environments("abc") shouldBe "123"
+      container.environments("ccc") shouldBe "ttt"
+    }(containerClient => result(containerClient.forceRemove(name)))
 
-  @Test
-  def testHostname(): Unit = {
-    val hostname = CommonUtils.randomString(5)
-    result(
-      containerClient.containerCreator
-        .nodeName(platform.nodeNames.head)
-        .name(name)
-        .imageName(imageName)
-        .hostname(hostname)
-        .command(s"""/bin/bash -c \"ping $webHost\"""")
-        .create()
-    )
-    result(containerClient.containers()).find(_.name == name).get.hostname shouldBe hostname
-  }
+  @ParameterizedTest(name = "{displayName} with {argumentsWithNames}")
+  @MethodSource(value = Array("parameters"))
+  def testHostname(platform: ContainerPlatform): Unit =
+    close(platform.setupContainerClient()) { containerClient =>
+      val hostname = CommonUtils.randomString(5)
+      result(
+        containerClient.containerCreator
+          .nodeName(platform.nodeNames.head)
+          .name(name)
+          .imageName(imageName)
+          .hostname(hostname)
+          .command(s"""/bin/bash -c \"ping $webHost\"""")
+          .create()
+      )
+      result(containerClient.containers()).find(_.name == name).get.hostname shouldBe hostname
+    }(containerClient => result(containerClient.forceRemove(name)))
 
-  @Test
-  def testNodeName(): Unit = {
-    result(
-      containerClient.containerCreator
-        .nodeName(platform.nodeNames.head)
-        .name(name)
-        .imageName(imageName)
-        .command(s"""/bin/bash -c \"ping $webHost\"""")
-        .create()
-    )
-    result(containerClient.containers()).find(_.name == name).get.nodeName shouldBe platform.nodeNames.head
-  }
+  @ParameterizedTest(name = "{displayName} with {argumentsWithNames}")
+  @MethodSource(value = Array("parameters"))
+  def testNodeName(platform: ContainerPlatform): Unit =
+    close(platform.setupContainerClient()) { containerClient =>
+      result(
+        containerClient.containerCreator
+          .nodeName(platform.nodeNames.head)
+          .name(name)
+          .imageName(imageName)
+          .command(s"""/bin/bash -c \"ping $webHost\"""")
+          .create()
+      )
+      result(containerClient.containers()).find(_.name == name).get.nodeName shouldBe platform.nodeNames.head
+    }(containerClient => result(containerClient.forceRemove(name)))
 
-  @Test
-  def testAppend(): Unit = containerClient match {
-    case _: DockerClient =>
+  def testAppend(): Unit = {
+    val platform = ContainerPlatform.dockerMode
+    close(platform.setupContainerClient()) { containerClient =>
       result(
         containerClient.containerCreator
           .nodeName(platform.nodeNames.head)
@@ -218,37 +229,33 @@ class TestContainerClient(platform: ContainerPlatform) extends IntegrationTest {
           .name(container.name)
           .append("/tmp/ttt", Seq("t", "z"))
       ).head._2 shouldBe "abc\nabc\nt\nz\n"
-    case _ => skipTest(s"${containerClient.getClass.getName} is skipped")
+    }(containerClient => result(containerClient.forceRemove(name)))
   }
 
-  @Test
-  def testResources(): Unit = result(containerClient.resources()) should not be Map.empty
+  @ParameterizedTest(name = "{displayName} with {argumentsWithNames}")
+  @MethodSource(value = Array("parameters"))
+  def testResources(platform: ContainerPlatform): Unit =
+    close(platform.setupContainerClient()) { containerClient =>
+      result(containerClient.resources()) should not be Map.empty
+    }(_ => ())
 
   @Test
-  def testResourcesOfUnavailableNode(): Unit = {
-    val c = DockerClient(
-      DataCollie(
-        Seq(
-          Node(
-            hostname = "abc",
-            user = "user",
-            password = "password"
+  def testResourcesOfUnavailableNode(): Unit =
+    close(
+      DockerClient(
+        DataCollie(
+          Seq(
+            Node(
+              hostname = "abc",
+              user = "user",
+              password = "password"
+            )
           )
         )
       )
-    )
-    try result(c.resources()) shouldBe Map.empty
-    finally c.close()
-  }
-
-  @After
-  def tearDown(): Unit = {
-    Releasable.close(() => result(containerClient.forceRemove(name)))
-    Releasable.close(containerClient)
-  }
+    )(containerClient => result(containerClient.resources()) shouldBe Map.empty)(_ => ())
 }
 
 object TestContainerClient {
-  @Parameters(name = "{index} mode = {0}")
-  def parameters: java.util.Collection[ContainerPlatform] = ContainerPlatform.all.asJava
+  def parameters: java.util.stream.Stream[Arguments] = ContainerPlatform.all.map(o => Arguments.of(o)).asJava.stream()
 }

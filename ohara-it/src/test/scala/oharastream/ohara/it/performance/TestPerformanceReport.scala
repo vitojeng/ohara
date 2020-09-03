@@ -19,7 +19,7 @@ package oharastream.ohara.it.performance
 import oharastream.ohara.common.rule.OharaTest
 import oharastream.ohara.common.setting.ConnectorKey
 import oharastream.ohara.common.util.CommonUtils
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import org.scalatest.matchers.should.Matchers._
 
 class TestPerformanceReport extends OharaTest {
@@ -35,15 +35,13 @@ class TestPerformanceReport extends OharaTest {
       .record(1, headerName, 100)
       .build
     // Before clean value
-    record.records.get(1).get(headerName) shouldBe 100
+    record.records(1)(headerName) shouldBe 100
 
     // After clean value
     report
       .resetValue(1, headerName)
       .build
-      .records
-      .get(1)
-      .get(headerName) shouldBe 0.0
+      .records(1)(headerName) shouldBe 0.0
   }
 
   @Test
@@ -57,9 +55,7 @@ class TestPerformanceReport extends OharaTest {
       .record(1, headerName, 200)
       .record(1, headerName, 300)
       .build
-      .records
-      .get(1)
-      .get(headerName) shouldBe 600
+      .records(1)(headerName) shouldBe 600
   }
 
   @Test
@@ -78,8 +74,6 @@ class TestPerformanceReport extends OharaTest {
       .record(1, headerName, 200)
       .record(1, headerName, 300)
       .build
-      .records
-      .get(1)
-      .get(headerName) shouldBe 600
+      .records(1)(headerName) shouldBe 600
   }
 }

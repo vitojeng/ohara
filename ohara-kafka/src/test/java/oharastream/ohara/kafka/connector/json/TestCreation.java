@@ -22,8 +22,8 @@ import java.io.IOException;
 import oharastream.ohara.common.json.JsonUtils;
 import oharastream.ohara.common.rule.OharaTest;
 import oharastream.ohara.common.util.CommonUtils;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class TestCreation extends OharaTest {
 
@@ -33,7 +33,7 @@ public class TestCreation extends OharaTest {
         Creation.of(
             CommonUtils.randomString(5), CommonUtils.randomString(5), CommonUtils.randomString(5));
     ObjectMapper mapper = JsonUtils.objectMapper();
-    Assert.assertEquals(
+    Assertions.assertEquals(
         creation,
         mapper.readValue(mapper.writeValueAsString(creation), new TypeReference<Creation>() {}));
   }
@@ -44,38 +44,50 @@ public class TestCreation extends OharaTest {
     String key = CommonUtils.randomString(5);
     String value = CommonUtils.randomString(5);
     Creation creation = Creation.of(id, key, value);
-    Assert.assertEquals(id, creation.name());
-    Assert.assertEquals(value, creation.configs().get(key));
+    Assertions.assertEquals(id, creation.name());
+    Assertions.assertEquals(value, creation.configs().get(key));
   }
 
-  @Test(expected = NullPointerException.class)
+  @Test
   public void nullName() {
-    Creation.of(null, CommonUtils.randomString(5), CommonUtils.randomString(5));
+    Assertions.assertThrows(
+        NullPointerException.class,
+        () -> Creation.of(null, CommonUtils.randomString(5), CommonUtils.randomString(5)));
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   public void emptyName() {
-    Creation.of("", CommonUtils.randomString(5), CommonUtils.randomString(5));
+    Assertions.assertThrows(
+        IllegalArgumentException.class,
+        () -> Creation.of("", CommonUtils.randomString(5), CommonUtils.randomString(5)));
   }
 
-  @Test(expected = NullPointerException.class)
+  @Test
   public void nullKey() {
-    Creation.of(CommonUtils.randomString(5), null, CommonUtils.randomString(5));
+    Assertions.assertThrows(
+        NullPointerException.class,
+        () -> Creation.of(CommonUtils.randomString(5), null, CommonUtils.randomString(5)));
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   public void emptyKey() {
-    Creation.of(CommonUtils.randomString(5), "", CommonUtils.randomString(5));
+    Assertions.assertThrows(
+        IllegalArgumentException.class,
+        () -> Creation.of(CommonUtils.randomString(5), "", CommonUtils.randomString(5)));
   }
 
-  @Test(expected = NullPointerException.class)
+  @Test
   public void nullValue() {
-    Creation.of(CommonUtils.randomString(5), CommonUtils.randomString(5), null);
+    Assertions.assertThrows(
+        NullPointerException.class,
+        () -> Creation.of(CommonUtils.randomString(5), CommonUtils.randomString(5), null));
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   public void emptyValue() {
-    Creation.of(CommonUtils.randomString(5), CommonUtils.randomString(5), "");
+    Assertions.assertThrows(
+        IllegalArgumentException.class,
+        () -> Creation.of(CommonUtils.randomString(5), CommonUtils.randomString(5), ""));
   }
 
   @Test
@@ -84,8 +96,8 @@ public class TestCreation extends OharaTest {
     String key = CommonUtils.randomString(5);
     String value = CommonUtils.randomString(5);
     Creation creation = Creation.of(name, key, value);
-    Assert.assertTrue(creation.toString().contains(name));
-    Assert.assertTrue(creation.toString().contains(key));
-    Assert.assertTrue(creation.toString().contains(value));
+    Assertions.assertTrue(creation.toString().contains(name));
+    Assertions.assertTrue(creation.toString().contains(key));
+    Assertions.assertTrue(creation.toString().contains(value));
   }
 }

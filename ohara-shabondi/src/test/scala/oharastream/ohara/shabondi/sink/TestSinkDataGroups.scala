@@ -23,7 +23,7 @@ import akka.http.scaladsl.testkit.RouteTestTimeout
 import oharastream.ohara.common.setting.ObjectKey
 import oharastream.ohara.common.util.Releasable
 import oharastream.ohara.shabondi.{BasicShabondiTest, KafkaSupport}
-import org.junit.{After, Test}
+import org.junit.jupiter.api.{AfterEach, Test}
 
 import scala.compat.java8.DurationConverters
 import scala.concurrent.{Await, ExecutionContext, ExecutionContextExecutorService}
@@ -36,7 +36,7 @@ final class TestSinkDataGroups extends BasicShabondiTest {
   // org.scalatest.exceptions.TestFailedException: Request was neither completed nor rejected within 1 second
   implicit val routeTestTimeout: RouteTestTimeout = RouteTestTimeout(Duration(5, TimeUnit.SECONDS))
 
-  @After
+  @AfterEach
   override def tearDown(): Unit = {
     super.tearDown()
   }

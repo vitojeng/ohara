@@ -30,9 +30,9 @@ import oharastream.ohara.kafka.TopicAdmin;
 import oharastream.ohara.stream.config.StreamDefUtils;
 import oharastream.ohara.stream.examples.PageViewRegionExample;
 import oharastream.ohara.testing.WithBroker;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class TestPageViewRegionExample extends WithBroker {
 
@@ -119,7 +119,7 @@ public class TestPageViewRegionExample extends WithBroker {
           PageViewRegionExample.joinTopicKey,
           joinTableTopic.topicNameOnKafka());
 
-  @Before
+  @BeforeEach
   public void setup() {
     final int partitions = 1;
     final short replications = 1;
@@ -150,7 +150,7 @@ public class TestPageViewRegionExample extends WithBroker {
     StreamTestUtils.assertResult(client, toTopic, expected, 20);
   }
 
-  @After
+  @AfterEach
   public void cleanUp() {
     producer.close();
     client.close();

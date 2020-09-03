@@ -14,10 +14,17 @@
  * limitations under the License.
  */
 
-package oharastream.ohara.it.category;
+package oharastream.ohara.kafka.connector.csv;
 
-/**
- * the category is used to group IT to enable QA run a part of IT. Noted that the full name of
- * category is used by it/build.gradle so make sure both side have consistent information.
- */
-public interface CollieGroup {}
+import oharastream.ohara.kafka.connector.TaskSetting;
+import oharastream.ohara.kafka.connector.storage.FileSystem;
+
+class MockCsvSourceTask extends CsvSourceTask {
+  public static final String MOCK_HOST_NAME_KEY = "mock.hostname";
+
+  @Override
+  public FileSystem fileSystem(TaskSetting settings) {
+    settings.stringValue(MOCK_HOST_NAME_KEY); // For get config test
+    return new MockCsvSourceFileSystem();
+  }
+}

@@ -28,8 +28,8 @@ import oharastream.ohara.common.setting.TopicKey;
 import oharastream.ohara.common.setting.WithDefinitions;
 import org.apache.kafka.common.Node;
 import org.apache.kafka.common.PartitionInfo;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class TestRowPartitioner extends OharaTest {
 
@@ -44,22 +44,22 @@ public class TestRowPartitioner extends OharaTest {
         new org.apache.kafka.common.Cluster(
             "aa", Arrays.asList(nodes), List.of(partitionInfo), Set.of(), Set.of());
     custom.partition(key.topicNameOnKafka(), "sss", "sss".getBytes(), null, null, cluster);
-    Assert.assertEquals(0, custom.count.get());
+    Assertions.assertEquals(0, custom.count.get());
 
     Row row = Row.of(Cell.of("a", "b"));
     custom.partition(key.topicNameOnKafka(), row, Serializer.ROW.to(row), null, null, cluster);
-    Assert.assertEquals(1, custom.count.get());
+    Assertions.assertEquals(1, custom.count.get());
   }
 
   @Test
   public void testKind() {
-    Assert.assertEquals(
+    Assertions.assertEquals(
         ClassType.PARTITIONER.key(),
         new RowDefaultPartitioner()
             .settingDefinitions()
             .get(WithDefinitions.KIND_KEY)
             .defaultString());
-    Assert.assertEquals(
+    Assertions.assertEquals(
         ClassType.PARTITIONER.key(),
         new CountRowPartitioner()
             .settingDefinitions()

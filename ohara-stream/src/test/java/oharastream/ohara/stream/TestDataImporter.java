@@ -25,13 +25,13 @@ import oharastream.ohara.kafka.TopicAdmin;
 import oharastream.ohara.testing.With3Brokers;
 import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class TestDataImporter extends With3Brokers {
 
-  private TopicAdmin client = TopicAdmin.of(testUtil().brokersConnProps());
-  private List<String> TOPICS = Arrays.asList("carriers", "plane", "airport", "flight");
+  private final TopicAdmin client = TopicAdmin.of(testUtil().brokersConnProps());
+  private final List<String> TOPICS = Arrays.asList("carriers", "plane", "airport", "flight");
 
   @Test
   public void testImportAirlineData() {
@@ -41,14 +41,12 @@ public class TestDataImporter extends With3Brokers {
     TOPICS.forEach(
         topic -> {
           Consumer<String, String> consumer = createKafkaConsumer(client.connectionProps());
-          consumer.subscribe(List.of(topic));
 
-          try {
+          try (consumer) {
+            consumer.subscribe(List.of(topic));
             ConsumerRecords<String, String> messages = consumer.poll(Duration.ofMillis(10000));
             consumer.commitAsync();
-            Assert.assertTrue(messages.count() > 0);
-          } finally {
-            consumer.close();
+            Assertions.assertTrue(messages.count() > 0);
           }
         });
   }

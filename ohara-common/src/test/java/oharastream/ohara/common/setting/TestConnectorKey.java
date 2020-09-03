@@ -23,8 +23,8 @@ import java.io.Serializable;
 import oharastream.ohara.common.json.JsonUtils;
 import oharastream.ohara.common.rule.OharaTest;
 import oharastream.ohara.common.util.CommonUtils;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class TestConnectorKey extends OharaTest {
 
@@ -32,7 +32,7 @@ public class TestConnectorKey extends OharaTest {
   public void testEqual() throws IOException {
     ConnectorKey key = ConnectorKey.of(CommonUtils.randomString(5), CommonUtils.randomString(5));
     ObjectMapper mapper = JsonUtils.objectMapper();
-    Assert.assertEquals(
+    Assertions.assertEquals(
         key, mapper.readValue(mapper.writeValueAsString(key), new TypeReference<KeyImpl>() {}));
   }
 
@@ -41,28 +41,32 @@ public class TestConnectorKey extends OharaTest {
     String group = CommonUtils.randomString(5);
     String name = CommonUtils.randomString(5);
     ConnectorKey key = ConnectorKey.of(group, name);
-    Assert.assertEquals(group, key.group());
-    Assert.assertEquals(name, key.name());
+    Assertions.assertEquals(group, key.group());
+    Assertions.assertEquals(name, key.name());
   }
 
-  @Test(expected = NullPointerException.class)
+  @Test
   public void nullGroup() {
-    ConnectorKey.of(null, CommonUtils.randomString(5));
+    Assertions.assertThrows(
+        NullPointerException.class, () -> ConnectorKey.of(null, CommonUtils.randomString(5)));
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   public void emptyGroup() {
-    ConnectorKey.of("", CommonUtils.randomString(5));
+    Assertions.assertThrows(
+        IllegalArgumentException.class, () -> ConnectorKey.of("", CommonUtils.randomString(5)));
   }
 
-  @Test(expected = NullPointerException.class)
+  @Test
   public void nullName() {
-    ConnectorKey.of(CommonUtils.randomString(5), null);
+    Assertions.assertThrows(
+        NullPointerException.class, () -> ConnectorKey.of(CommonUtils.randomString(5), null));
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   public void emptyName() {
-    ConnectorKey.of(CommonUtils.randomString(5), "");
+    Assertions.assertThrows(
+        IllegalArgumentException.class, () -> ConnectorKey.of(CommonUtils.randomString(5), ""));
   }
 
   @Test
@@ -70,16 +74,16 @@ public class TestConnectorKey extends OharaTest {
     String group = CommonUtils.randomString(5);
     String name = CommonUtils.randomString(5);
     ConnectorKey key = ConnectorKey.of(group, name);
-    Assert.assertTrue(key.toString().contains(group));
-    Assert.assertTrue(key.toString().contains(name));
+    Assertions.assertTrue(key.toString().contains(group));
+    Assertions.assertTrue(key.toString().contains(name));
   }
 
   @Test
   public void testSerialization() {
-    Assert.assertTrue(
+    Assertions.assertTrue(
         ConnectorKey.of(CommonUtils.randomString(5), CommonUtils.randomString(5))
             instanceof Serializable);
-    Assert.assertTrue(
+    Assertions.assertTrue(
         ConnectorKey.toConnectorKey(
                 ConnectorKey.toJsonString(
                     ConnectorKey.of(CommonUtils.randomString(5), CommonUtils.randomString(5))))
@@ -90,8 +94,8 @@ public class TestConnectorKey extends OharaTest {
   public void testEqualToOtherKindsOfKey() {
     String group = CommonUtils.randomString();
     String name = CommonUtils.randomString();
-    Assert.assertEquals(ObjectKey.of(group, name), ConnectorKey.of(group, name));
-    Assert.assertEquals(TopicKey.of(group, name), ConnectorKey.of(group, name));
-    Assert.assertEquals(ConnectorKey.of(group, name), ConnectorKey.of(group, name));
+    Assertions.assertEquals(ObjectKey.of(group, name), ConnectorKey.of(group, name));
+    Assertions.assertEquals(TopicKey.of(group, name), ConnectorKey.of(group, name));
+    Assertions.assertEquals(ConnectorKey.of(group, name), ConnectorKey.of(group, name));
   }
 }

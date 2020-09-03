@@ -19,11 +19,7 @@ package oharastream.ohara.kafka.connector;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
-import oharastream.ohara.common.data.Cell;
-import oharastream.ohara.common.data.Column;
-import oharastream.ohara.common.data.DataType;
-import oharastream.ohara.common.data.Row;
-import oharastream.ohara.common.data.Serializer;
+import oharastream.ohara.common.data.*;
 import oharastream.ohara.common.rule.OharaTest;
 import oharastream.ohara.common.setting.ConnectorKey;
 import oharastream.ohara.common.setting.SettingDef;
@@ -31,8 +27,8 @@ import oharastream.ohara.common.setting.TopicKey;
 import oharastream.ohara.common.util.CommonUtils;
 import oharastream.ohara.kafka.connector.json.ConnectorFormatter;
 import org.apache.kafka.connect.sink.SinkRecord;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class TestConnectorProps extends OharaTest {
 
@@ -53,13 +49,13 @@ public class TestConnectorProps extends OharaTest {
   @Test
   public void emptyInStartingSourceTask() {
     DumbSourceTask task = new DumbSourceTask();
-    Assert.assertThrows(NoSuchElementException.class, () -> task.start(Map.of()));
+    Assertions.assertThrows(NoSuchElementException.class, () -> task.start(Map.of()));
   }
 
   @Test
   public void emptyInStartingSinkTask() {
     DumbSinkTask task = new DumbSinkTask();
-    Assert.assertThrows(NoSuchElementException.class, () -> task.start(Map.of()));
+    Assertions.assertThrows(NoSuchElementException.class, () -> task.start(Map.of()));
   }
 
   @Test
@@ -80,20 +76,20 @@ public class TestConnectorProps extends OharaTest {
             .column(column)
             .raw());
     try {
-      Assert.assertNotNull(task.messageNumberCounter);
-      Assert.assertNotNull(task.messageSizeCounter);
-      Assert.assertNotNull(task.ignoredMessageSizeCounter);
-      Assert.assertNotNull(task.ignoredMessageNumberCounter);
+      Assertions.assertNotNull(task.messageNumberCounter);
+      Assertions.assertNotNull(task.messageSizeCounter);
+      Assertions.assertNotNull(task.ignoredMessageSizeCounter);
+      Assertions.assertNotNull(task.ignoredMessageNumberCounter);
 
-      Assert.assertEquals(task.messageNumberCounter.key(), connectorKey);
-      Assert.assertEquals(task.messageSizeCounter.key(), connectorKey);
-      Assert.assertEquals(task.ignoredMessageSizeCounter.key(), connectorKey);
-      Assert.assertEquals(task.ignoredMessageNumberCounter.key(), connectorKey);
+      Assertions.assertEquals(task.messageNumberCounter.key(), connectorKey);
+      Assertions.assertEquals(task.messageSizeCounter.key(), connectorKey);
+      Assertions.assertEquals(task.ignoredMessageSizeCounter.key(), connectorKey);
+      Assertions.assertEquals(task.ignoredMessageNumberCounter.key(), connectorKey);
 
-      Assert.assertEquals(task.messageNumberCounter.getValue(), 0);
-      Assert.assertEquals(task.messageSizeCounter.getValue(), 0);
-      Assert.assertEquals(task.ignoredMessageSizeCounter.getValue(), 0);
-      Assert.assertEquals(task.ignoredMessageNumberCounter.getValue(), 0);
+      Assertions.assertEquals(task.messageNumberCounter.getValue(), 0);
+      Assertions.assertEquals(task.messageSizeCounter.getValue(), 0);
+      Assertions.assertEquals(task.ignoredMessageSizeCounter.getValue(), 0);
+      Assertions.assertEquals(task.ignoredMessageNumberCounter.getValue(), 0);
 
       // add legal data
       task.put(
@@ -106,10 +102,10 @@ public class TestConnectorProps extends OharaTest {
                   null,
                   null,
                   10)));
-      Assert.assertEquals(task.messageNumberCounter.getValue(), 1);
-      Assert.assertNotEquals(task.messageSizeCounter.getValue(), 0);
-      Assert.assertEquals(task.ignoredMessageNumberCounter.getValue(), 0);
-      Assert.assertEquals(task.ignoredMessageSizeCounter.getValue(), 0);
+      Assertions.assertEquals(task.messageNumberCounter.getValue(), 1);
+      Assertions.assertNotEquals(task.messageSizeCounter.getValue(), 0);
+      Assertions.assertEquals(task.ignoredMessageNumberCounter.getValue(), 0);
+      Assertions.assertEquals(task.ignoredMessageSizeCounter.getValue(), 0);
 
       // add illegal data
       task.put(
@@ -122,17 +118,17 @@ public class TestConnectorProps extends OharaTest {
                   null,
                   null,
                   10)));
-      Assert.assertEquals(task.messageNumberCounter.getValue(), 1);
-      Assert.assertNotEquals(task.messageSizeCounter.getValue(), 0);
-      Assert.assertEquals(task.ignoredMessageNumberCounter.getValue(), 1);
-      Assert.assertNotEquals(task.ignoredMessageSizeCounter.getValue(), 0);
+      Assertions.assertEquals(task.messageNumberCounter.getValue(), 1);
+      Assertions.assertNotEquals(task.messageSizeCounter.getValue(), 0);
+      Assertions.assertEquals(task.ignoredMessageNumberCounter.getValue(), 1);
+      Assertions.assertNotEquals(task.ignoredMessageSizeCounter.getValue(), 0);
 
     } finally {
       task.stop();
-      Assert.assertTrue(task.messageNumberCounter.isClosed());
-      Assert.assertTrue(task.messageSizeCounter.isClosed());
-      Assert.assertTrue(task.ignoredMessageSizeCounter.isClosed());
-      Assert.assertTrue(task.ignoredMessageNumberCounter.isClosed());
+      Assertions.assertTrue(task.messageNumberCounter.isClosed());
+      Assertions.assertTrue(task.messageSizeCounter.isClosed());
+      Assertions.assertTrue(task.ignoredMessageSizeCounter.isClosed());
+      Assertions.assertTrue(task.ignoredMessageNumberCounter.isClosed());
     }
 
     RowSinkTask task2 = new DumbSinkTask();
@@ -144,7 +140,7 @@ public class TestConnectorProps extends OharaTest {
               .checkRule(SettingDef.CheckRule.ENFORCING)
               .column(column)
               .raw());
-      Assert.assertThrows(
+      Assertions.assertThrows(
           IllegalArgumentException.class,
           () ->
               task2.put(
@@ -198,40 +194,40 @@ public class TestConnectorProps extends OharaTest {
             .column(column)
             .raw());
     try {
-      Assert.assertNotNull(task.messageNumberCounter);
-      Assert.assertNotNull(task.messageSizeCounter);
-      Assert.assertNotNull(task.ignoredMessageNumberCounter);
-      Assert.assertNotNull(task.ignoredMessageSizeCounter);
+      Assertions.assertNotNull(task.messageNumberCounter);
+      Assertions.assertNotNull(task.messageSizeCounter);
+      Assertions.assertNotNull(task.ignoredMessageNumberCounter);
+      Assertions.assertNotNull(task.ignoredMessageSizeCounter);
 
-      Assert.assertEquals(task.messageNumberCounter.key(), connectorKey);
-      Assert.assertEquals(task.messageSizeCounter.key(), connectorKey);
-      Assert.assertEquals(task.ignoredMessageNumberCounter.key(), connectorKey);
-      Assert.assertEquals(task.ignoredMessageSizeCounter.key(), connectorKey);
+      Assertions.assertEquals(task.messageNumberCounter.key(), connectorKey);
+      Assertions.assertEquals(task.messageSizeCounter.key(), connectorKey);
+      Assertions.assertEquals(task.ignoredMessageNumberCounter.key(), connectorKey);
+      Assertions.assertEquals(task.ignoredMessageSizeCounter.key(), connectorKey);
 
-      Assert.assertEquals(task.messageNumberCounter.getValue(), 0);
-      Assert.assertEquals(task.messageSizeCounter.getValue(), 0);
-      Assert.assertEquals(task.ignoredMessageNumberCounter.getValue(), 0);
-      Assert.assertEquals(task.ignoredMessageSizeCounter.getValue(), 0);
+      Assertions.assertEquals(task.messageNumberCounter.getValue(), 0);
+      Assertions.assertEquals(task.messageSizeCounter.getValue(), 0);
+      Assertions.assertEquals(task.ignoredMessageNumberCounter.getValue(), 0);
+      Assertions.assertEquals(task.ignoredMessageSizeCounter.getValue(), 0);
 
       task.poll();
-      Assert.assertEquals(task.messageNumberCounter.getValue(), 1);
-      Assert.assertNotEquals(task.messageSizeCounter.getValue(), 0);
-      Assert.assertEquals(task.ignoredMessageNumberCounter.getValue(), 0);
-      Assert.assertEquals(task.ignoredMessageSizeCounter.getValue(), 0);
+      Assertions.assertEquals(task.messageNumberCounter.getValue(), 1);
+      Assertions.assertNotEquals(task.messageSizeCounter.getValue(), 0);
+      Assertions.assertEquals(task.ignoredMessageNumberCounter.getValue(), 0);
+      Assertions.assertEquals(task.ignoredMessageSizeCounter.getValue(), 0);
 
       // this poll generates bad data
       task.poll();
-      Assert.assertEquals(task.messageNumberCounter.getValue(), 1);
-      Assert.assertNotEquals(task.messageSizeCounter.getValue(), 0);
-      Assert.assertEquals(task.ignoredMessageNumberCounter.getValue(), 1);
-      Assert.assertNotEquals(task.ignoredMessageSizeCounter.getValue(), 0);
+      Assertions.assertEquals(task.messageNumberCounter.getValue(), 1);
+      Assertions.assertNotEquals(task.messageSizeCounter.getValue(), 0);
+      Assertions.assertEquals(task.ignoredMessageNumberCounter.getValue(), 1);
+      Assertions.assertNotEquals(task.ignoredMessageSizeCounter.getValue(), 0);
 
     } finally {
       task.stop();
-      Assert.assertTrue(task.messageNumberCounter.isClosed());
-      Assert.assertTrue(task.messageSizeCounter.isClosed());
-      Assert.assertTrue(task.ignoredMessageNumberCounter.isClosed());
-      Assert.assertTrue(task.ignoredMessageSizeCounter.isClosed());
+      Assertions.assertTrue(task.messageNumberCounter.isClosed());
+      Assertions.assertTrue(task.messageSizeCounter.isClosed());
+      Assertions.assertTrue(task.ignoredMessageNumberCounter.isClosed());
+      Assertions.assertTrue(task.ignoredMessageSizeCounter.isClosed());
     }
 
     RowSourceTask task2 =
@@ -255,7 +251,7 @@ public class TestConnectorProps extends OharaTest {
               .column(column)
               .raw());
       // this poll generates bad data and the check rule is "enforcing"
-      Assert.assertThrows(IllegalArgumentException.class, task2::poll);
+      Assertions.assertThrows(IllegalArgumentException.class, task2::poll);
     } finally {
       task2.stop();
     }
@@ -282,10 +278,10 @@ public class TestConnectorProps extends OharaTest {
               .raw());
       // this poll generates bad data and the check rule is "enforcing"
       task3.poll();
-      Assert.assertEquals(task3.messageNumberCounter.getValue(), 1);
-      Assert.assertNotEquals(task3.messageSizeCounter.getValue(), 0);
-      Assert.assertEquals(task3.ignoredMessageNumberCounter.getValue(), 0);
-      Assert.assertEquals(task3.ignoredMessageSizeCounter.getValue(), 0);
+      Assertions.assertEquals(task3.messageNumberCounter.getValue(), 1);
+      Assertions.assertNotEquals(task3.messageSizeCounter.getValue(), 0);
+      Assertions.assertEquals(task3.ignoredMessageNumberCounter.getValue(), 0);
+      Assertions.assertEquals(task3.ignoredMessageSizeCounter.getValue(), 0);
     } finally {
       task3.stop();
     }
@@ -301,64 +297,67 @@ public class TestConnectorProps extends OharaTest {
   @Test
   public void testInternalTaskConfigOfSource() {
     RowSourceConnector connector = new DumbSource();
-    Assert.assertNull(connector.taskSetting);
+    Assertions.assertNull(connector.taskSetting);
     connector.start(ConnectorFormatter.of().connectorKey(ConnectorKey.of("g", "n")).raw());
-    Assert.assertNotNull(connector.taskSetting);
+    Assertions.assertNotNull(connector.taskSetting);
   }
 
   @Test
   public void testInternalTaskConfigOfSourceTask() {
     RowSourceTask task = new DumbSourceTask();
-    Assert.assertNull(task.taskSetting);
+    Assertions.assertNull(task.taskSetting);
 
     task.start(ConnectorFormatter.of().connectorKey(ConnectorKey.of("g", "n")).raw());
-    Assert.assertNotNull(task.taskSetting);
+    Assertions.assertNotNull(task.taskSetting);
   }
 
   @Test
   public void testInternalObjectKeyOfSourceTask() {
     RowSourceTask task = new DumbSourceTask();
-    Assert.assertNull(task.keyInBytes);
+    Assertions.assertNull(task.keyInBytes);
 
     task.start(ConnectorFormatter.of().connectorKey(ConnectorKey.of("g", "n")).raw());
-    Assert.assertNotNull(task.keyInBytes);
+    Assertions.assertNotNull(task.keyInBytes);
   }
 
   @Test
   public void testInternalTaskConfigOfSink() {
     RowSinkConnector connector = new DumbSink();
-    Assert.assertNull(connector.taskSetting);
+    Assertions.assertNull(connector.taskSetting);
 
     connector.start(ConnectorFormatter.of().connectorKey(ConnectorKey.of("g", "n")).raw());
-    Assert.assertNotNull(connector.taskSetting);
+    Assertions.assertNotNull(connector.taskSetting);
   }
 
   @Test
   public void testInternalTaskConfigOfSinkTask() {
     RowSinkTask task = new DumbSinkTask();
-    Assert.assertNull(task.taskSetting);
+    Assertions.assertNull(task.taskSetting);
 
     task.start(ConnectorFormatter.of().connectorKey(ConnectorKey.of("g", "n")).raw());
-    Assert.assertNotNull(task.taskSetting);
+    Assertions.assertNotNull(task.taskSetting);
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   public void failToCallCounterBuilderBeforeStartingSource() {
-    new DumbSource().counterBuilder();
+    Assertions.assertThrows(
+        IllegalArgumentException.class, () -> new DumbSource().counterBuilder());
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   public void failToCallCounterBuilderBeforeStartingSink() {
-    new DumbSink().counterBuilder();
+    Assertions.assertThrows(IllegalArgumentException.class, () -> new DumbSink().counterBuilder());
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   public void failToCallCounterBuilderBeforeStartingSourceTask() {
-    new DumbSourceTask().counterBuilder();
+    Assertions.assertThrows(
+        IllegalArgumentException.class, () -> new DumbSourceTask().counterBuilder());
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   public void failToCallCounterBuilderBeforeStartingSinkTask() {
-    new DumbSinkTask().counterBuilder();
+    Assertions.assertThrows(
+        IllegalArgumentException.class, () -> new DumbSinkTask().counterBuilder());
   }
 }

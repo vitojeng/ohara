@@ -30,7 +30,7 @@ import oharastream.ohara.kafka.TopicAdmin;
 import oharastream.ohara.stream.config.StreamDefUtils;
 import oharastream.ohara.stream.examples.SumExample;
 import oharastream.ohara.testing.WithBroker;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class TestSumExample extends WithBroker {
 

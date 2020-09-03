@@ -16,32 +16,12 @@
 
 package oharastream.ohara.common.rule;
 
-import org.junit.AssumptionViolatedException;
-import org.junit.ClassRule;
-import org.junit.Rule;
-import org.junit.rules.Timeout;
+import java.util.concurrent.TimeUnit;
+import org.junit.jupiter.api.Timeout;
 
 /**
  * OharaTest carries the basic information to junit to set our tests. All ohara tests must extend
  * it. TestTestCases (in ohara-it) is able to pick up the invalidated classes for us :)
  */
-public abstract class OharaTest {
-
-  /**
-   * the timeout to whole test class. Consider splitting test class if it is too large to be
-   * completed before timeout.
-   */
-  @ClassRule public static final Timeout GLOBAL_TIMEOUT = Timeout.seconds(600);
-
-  /** the timeout to test case. */
-  @Rule public final Timeout timeout = Timeout.seconds(120);
-
-  /**
-   * Skip all remaining test cases after calling this method.
-   *
-   * @param message why you want to skip all test cases?
-   */
-  protected void skipTest(String message) {
-    throw new AssumptionViolatedException(message);
-  }
-}
+@Timeout(value = 5, unit = TimeUnit.MINUTES)
+public abstract class OharaTest {}

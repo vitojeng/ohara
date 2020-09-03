@@ -35,10 +35,10 @@ import oharastream.ohara.stream.Stream;
 import oharastream.ohara.stream.config.StreamDefUtils;
 import oharastream.ohara.stream.config.StreamSetting;
 import oharastream.ohara.testing.With3Brokers;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -58,7 +58,7 @@ public class TestPurchaseAnalysis extends With3Brokers {
           .valueSerializer(Serializer.BYTES)
           .build();
 
-  @Before
+  @BeforeEach
   public void setup() {
     int partitions = 3;
     short replications = 1;
@@ -121,7 +121,7 @@ public class TestPurchaseAnalysis extends With3Brokers {
                 TopicKey.toJsonString(List.of(resultTopic))));
   }
 
-  @After
+  @AfterEach
   public void cleanUp() {
     producer.close();
     client.close();
@@ -212,8 +212,7 @@ public class TestPurchaseAnalysis extends With3Brokers {
           row ->
               LOG.debug(
                   "final result : " + (row.key().isPresent() ? row.key().get().toString() : null)));
-      Assert.assertEquals(
-          "the result will get \"accumulation\" ; hence we will get 4 records.", 4, records.size());
+      Assertions.assertEquals(4, records.size());
 
       Map<String, Double[]> actualResultMap =
           Map.of(
@@ -229,8 +228,7 @@ public class TestPurchaseAnalysis extends With3Brokers {
                       .filter(cell -> cell.name().equals("amount"))
                       .map(cell -> Double.valueOf(cell.value().toString()))
                       .findFirst();
-              Assert.assertTrue(
-                  "the result should be contain in actualResultMap",
+              Assertions.assertTrue(
                   actualResultMap.containsKey(record.key().get().cell("gender").value().toString())
                       && actualResultMap.values().stream()
                           .flatMap(Arrays::stream)
@@ -323,7 +321,7 @@ public class TestPurchaseAnalysis extends With3Brokers {
 
     List<Consumer.Record<Row, byte[]>> records =
         consumer.poll(Duration.ofSeconds(30), expectedSize);
-    Assert.assertEquals(expectedSize, records.size());
+    Assertions.assertEquals(expectedSize, records.size());
     consumer.close();
   }
 }

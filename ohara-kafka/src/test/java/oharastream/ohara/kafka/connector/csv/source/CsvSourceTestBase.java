@@ -16,7 +16,11 @@
 
 package oharastream.ohara.kafka.connector.csv.source;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import oharastream.ohara.common.data.Cell;
@@ -29,7 +33,7 @@ import oharastream.ohara.common.util.CommonUtils;
 import oharastream.ohara.kafka.connector.RowSourceContext;
 import oharastream.ohara.kafka.connector.RowSourceRecord;
 import oharastream.ohara.kafka.connector.csv.CsvConnectorDefinitions;
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 
 public abstract class CsvSourceTestBase extends OharaTest {
   protected static final TopicKey TOPIC = TopicKey.of("test", "topic");
@@ -85,17 +89,17 @@ public abstract class CsvSourceTestBase extends OharaTest {
   }
 
   protected void verifyRecords(List<RowSourceRecord> records) {
-    Assert.assertEquals(VERIFICATION_DATA.size(), records.size());
+    Assertions.assertEquals(VERIFICATION_DATA.size(), records.size());
     for (RowSourceRecord record : records) {
-      Assert.assertEquals(TOPIC, record.topicKey());
+      Assertions.assertEquals(TOPIC, record.topicKey());
     }
     verifyRows(VERIFICATION_DATA, extractRow(records));
   }
 
   protected void verifyRows(List<Row> expected, List<Row> actual) {
-    Assert.assertEquals(expected.size(), actual.size());
+    Assertions.assertEquals(expected.size(), actual.size());
     for (int index = 0; index < expected.size(); index++) {
-      Assert.assertEquals(expected.get(index), actual.get(index));
+      Assertions.assertEquals(expected.get(index), actual.get(index));
     }
   }
 

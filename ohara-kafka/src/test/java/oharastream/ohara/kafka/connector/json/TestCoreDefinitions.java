@@ -22,8 +22,8 @@ import oharastream.ohara.common.setting.WithDefinitions;
 import oharastream.ohara.common.util.CommonUtils;
 import oharastream.ohara.kafka.connector.DumbSink;
 import org.apache.kafka.common.config.ConfigDef;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class TestCoreDefinitions extends OharaTest {
 
@@ -32,11 +32,11 @@ public class TestCoreDefinitions extends OharaTest {
     DumbSink sink = new DumbSink();
     ConfigDef.ConfigKey key =
         sink.config().configKeys().get(ConnectorDefUtils.CONNECTOR_CLASS_DEFINITION.key());
-    Assert.assertEquals(ConnectorDefUtils.CONNECTOR_CLASS_DEFINITION.key(), key.name);
-    Assert.assertEquals(
+    Assertions.assertEquals(ConnectorDefUtils.CONNECTOR_CLASS_DEFINITION.key(), key.name);
+    Assertions.assertEquals(
         ConnectorDefUtils.CONNECTOR_CLASS_DEFINITION.orderInGroup(), key.orderInGroup);
-    Assert.assertEquals(ConnectorDefUtils.CONNECTOR_CLASS_DEFINITION.group(), key.group);
-    Assert.assertEquals(
+    Assertions.assertEquals(ConnectorDefUtils.CONNECTOR_CLASS_DEFINITION.group(), key.group);
+    Assertions.assertEquals(
         ConnectorDefUtils.CONNECTOR_CLASS_DEFINITION.valueType().name(), key.type.name());
   }
 
@@ -45,10 +45,11 @@ public class TestCoreDefinitions extends OharaTest {
     DumbSink sink = new DumbSink();
     ConfigDef.ConfigKey key =
         sink.config().configKeys().get(ConnectorDefUtils.TOPIC_NAMES_DEFINITION.key());
-    Assert.assertEquals(ConnectorDefUtils.TOPIC_NAMES_DEFINITION.key(), key.name);
-    Assert.assertEquals(ConnectorDefUtils.TOPIC_NAMES_DEFINITION.orderInGroup(), key.orderInGroup);
-    Assert.assertEquals(ConnectorDefUtils.TOPIC_NAMES_DEFINITION.group(), key.group);
-    Assert.assertEquals(
+    Assertions.assertEquals(ConnectorDefUtils.TOPIC_NAMES_DEFINITION.key(), key.name);
+    Assertions.assertEquals(
+        ConnectorDefUtils.TOPIC_NAMES_DEFINITION.orderInGroup(), key.orderInGroup);
+    Assertions.assertEquals(ConnectorDefUtils.TOPIC_NAMES_DEFINITION.group(), key.group);
+    Assertions.assertEquals(
         ConnectorDefUtils.TOPIC_NAMES_DEFINITION.valueType(), SettingDef.Type.ARRAY);
   }
 
@@ -57,11 +58,11 @@ public class TestCoreDefinitions extends OharaTest {
     DumbSink sink = new DumbSink();
     ConfigDef.ConfigKey key =
         sink.config().configKeys().get(ConnectorDefUtils.NUMBER_OF_TASKS_DEFINITION.key());
-    Assert.assertEquals(ConnectorDefUtils.NUMBER_OF_TASKS_DEFINITION.key(), key.name);
-    Assert.assertEquals(
+    Assertions.assertEquals(ConnectorDefUtils.NUMBER_OF_TASKS_DEFINITION.key(), key.name);
+    Assertions.assertEquals(
         ConnectorDefUtils.NUMBER_OF_TASKS_DEFINITION.orderInGroup(), key.orderInGroup);
-    Assert.assertEquals(ConnectorDefUtils.NUMBER_OF_TASKS_DEFINITION.group(), key.group);
-    Assert.assertEquals(
+    Assertions.assertEquals(ConnectorDefUtils.NUMBER_OF_TASKS_DEFINITION.group(), key.group);
+    Assertions.assertEquals(
         ConnectorDefUtils.NUMBER_OF_TASKS_DEFINITION.valueType().name(),
         SettingDef.Type.POSITIVE_INT.name());
   }
@@ -71,10 +72,10 @@ public class TestCoreDefinitions extends OharaTest {
     DumbSink sink = new DumbSink();
     ConfigDef.ConfigKey key =
         sink.config().configKeys().get(ConnectorDefUtils.WORKER_CLUSTER_KEY_DEFINITION.key());
-    Assert.assertEquals(ConnectorDefUtils.WORKER_CLUSTER_KEY_DEFINITION.key(), key.name);
-    Assert.assertEquals(
+    Assertions.assertEquals(ConnectorDefUtils.WORKER_CLUSTER_KEY_DEFINITION.key(), key.name);
+    Assertions.assertEquals(
         ConnectorDefUtils.WORKER_CLUSTER_KEY_DEFINITION.orderInGroup(), key.orderInGroup);
-    Assert.assertEquals(ConnectorDefUtils.WORKER_CLUSTER_KEY_DEFINITION.group(), key.group);
+    Assertions.assertEquals(ConnectorDefUtils.WORKER_CLUSTER_KEY_DEFINITION.group(), key.group);
   }
 
   @Test
@@ -82,35 +83,35 @@ public class TestCoreDefinitions extends OharaTest {
     DumbSink sink = new DumbSink();
     ConfigDef.ConfigKey key =
         sink.config().configKeys().get(ConnectorDefUtils.COLUMNS_DEFINITION.key());
-    Assert.assertEquals(ConnectorDefUtils.COLUMNS_DEFINITION.key(), key.name);
-    Assert.assertEquals(ConnectorDefUtils.COLUMNS_DEFINITION.orderInGroup(), key.orderInGroup);
-    Assert.assertEquals(ConnectorDefUtils.COLUMNS_DEFINITION.group(), key.group);
+    Assertions.assertEquals(ConnectorDefUtils.COLUMNS_DEFINITION.key(), key.name);
+    Assertions.assertEquals(ConnectorDefUtils.COLUMNS_DEFINITION.orderInGroup(), key.orderInGroup);
+    Assertions.assertEquals(ConnectorDefUtils.COLUMNS_DEFINITION.group(), key.group);
     // the TABLE is mapped to STRING
-    Assert.assertEquals(SettingDef.Type.STRING.name(), key.type.name());
+    Assertions.assertEquals(SettingDef.Type.STRING.name(), key.type.name());
   }
 
   @Test
   public void testVersionDefinition() {
     DumbSink sink = new DumbSink();
     ConfigDef.ConfigKey key = sink.config().configKeys().get(WithDefinitions.VERSION_KEY);
-    Assert.assertEquals(WithDefinitions.VERSION_KEY, key.name);
-    Assert.assertEquals(WithDefinitions.VERSION_ORDER, key.orderInGroup);
+    Assertions.assertEquals(WithDefinitions.VERSION_KEY, key.name);
+    Assertions.assertEquals(WithDefinitions.VERSION_ORDER, key.orderInGroup);
   }
 
   @Test
   public void testRevisionDefinition() {
     DumbSink sink = new DumbSink();
     ConfigDef.ConfigKey key = sink.config().configKeys().get(WithDefinitions.REVISION_KEY);
-    Assert.assertEquals(WithDefinitions.REVISION_KEY, key.name);
-    Assert.assertEquals(WithDefinitions.REVISION_ORDER, key.orderInGroup);
+    Assertions.assertEquals(WithDefinitions.REVISION_KEY, key.name);
+    Assertions.assertEquals(WithDefinitions.REVISION_ORDER, key.orderInGroup);
   }
 
   @Test
   public void testAuthorDefinition() {
     DumbSink sink = new DumbSink();
     ConfigDef.ConfigKey key = sink.config().configKeys().get(WithDefinitions.AUTHOR_KEY);
-    Assert.assertEquals(WithDefinitions.AUTHOR_KEY, key.name);
-    Assert.assertEquals(WithDefinitions.AUTHOR_ORDER, key.orderInGroup);
+    Assertions.assertEquals(WithDefinitions.AUTHOR_KEY, key.name);
+    Assertions.assertEquals(WithDefinitions.AUTHOR_ORDER, key.orderInGroup);
   }
 
   @Test
@@ -118,11 +119,11 @@ public class TestCoreDefinitions extends OharaTest {
     DumbSink sink = new DumbSink();
     ConfigDef.ConfigKey key =
         sink.config().configKeys().get(ConnectorDefUtils.CONNECTOR_NAME_DEFINITION.key());
-    Assert.assertEquals(ConnectorDefUtils.CONNECTOR_NAME_DEFINITION.key(), key.name);
-    Assert.assertEquals(
+    Assertions.assertEquals(ConnectorDefUtils.CONNECTOR_NAME_DEFINITION.key(), key.name);
+    Assertions.assertEquals(
         ConnectorDefUtils.CONNECTOR_NAME_DEFINITION.orderInGroup(), key.orderInGroup);
-    Assert.assertEquals(ConnectorDefUtils.CONNECTOR_NAME_DEFINITION.group(), key.group);
-    Assert.assertEquals(
+    Assertions.assertEquals(ConnectorDefUtils.CONNECTOR_NAME_DEFINITION.group(), key.group);
+    Assertions.assertEquals(
         ConnectorDefUtils.CONNECTOR_NAME_DEFINITION.valueType().name(), key.type.name());
   }
 
@@ -130,45 +131,69 @@ public class TestCoreDefinitions extends OharaTest {
   public void testConnectorType() {
     DumbSink sink = new DumbSink();
     ConfigDef.ConfigKey key = sink.config().configKeys().get(WithDefinitions.KIND_KEY);
-    Assert.assertEquals(WithDefinitions.KIND_KEY, key.name);
-    Assert.assertEquals(WithDefinitions.KIND_ORDER, key.orderInGroup);
-    Assert.assertEquals(WithDefinitions.META_GROUP, key.group);
-    Assert.assertEquals(SettingDef.Type.STRING.name(), key.type.name());
+    Assertions.assertEquals(WithDefinitions.KIND_KEY, key.name);
+    Assertions.assertEquals(WithDefinitions.KIND_ORDER, key.orderInGroup);
+    Assertions.assertEquals(WithDefinitions.META_GROUP, key.group);
+    Assertions.assertEquals(SettingDef.Type.STRING.name(), key.type.name());
   }
 
-  @Test(expected = NullPointerException.class)
+  @Test
   public void nullVersionInSource() {
-    new SourceWithNullableSetting(null, CommonUtils.randomString(), CommonUtils.randomString())
-        .config();
+    Assertions.assertThrows(
+        NullPointerException.class,
+        () ->
+            new SourceWithNullableSetting(
+                    null, CommonUtils.randomString(), CommonUtils.randomString())
+                .config());
   }
 
-  @Test(expected = NullPointerException.class)
+  @Test
   public void nullRevisionInSource() {
-    new SourceWithNullableSetting(CommonUtils.randomString(), null, CommonUtils.randomString())
-        .config();
+    Assertions.assertThrows(
+        NullPointerException.class,
+        () ->
+            new SourceWithNullableSetting(
+                    CommonUtils.randomString(), null, CommonUtils.randomString())
+                .config());
   }
 
-  @Test(expected = NullPointerException.class)
+  @Test
   public void nullAuthorInSource() {
-    new SourceWithNullableSetting(CommonUtils.randomString(), CommonUtils.randomString(), null)
-        .config();
+    Assertions.assertThrows(
+        NullPointerException.class,
+        () ->
+            new SourceWithNullableSetting(
+                    CommonUtils.randomString(), CommonUtils.randomString(), null)
+                .config());
   }
 
-  @Test(expected = NullPointerException.class)
+  @Test
   public void nullVersionInSink() {
-    new SourceWithNullableSetting(null, CommonUtils.randomString(), CommonUtils.randomString())
-        .config();
+    Assertions.assertThrows(
+        NullPointerException.class,
+        () ->
+            new SourceWithNullableSetting(
+                    null, CommonUtils.randomString(), CommonUtils.randomString())
+                .config());
   }
 
-  @Test(expected = NullPointerException.class)
+  @Test
   public void nullRevisionInSink() {
-    new SinkWithNullableSetting(CommonUtils.randomString(), null, CommonUtils.randomString())
-        .config();
+    Assertions.assertThrows(
+        NullPointerException.class,
+        () ->
+            new SinkWithNullableSetting(
+                    CommonUtils.randomString(), null, CommonUtils.randomString())
+                .config());
   }
 
-  @Test(expected = NullPointerException.class)
+  @Test
   public void nullAuthorInSink() {
-    new SinkWithNullableSetting(CommonUtils.randomString(), CommonUtils.randomString(), null)
-        .config();
+    Assertions.assertThrows(
+        NullPointerException.class,
+        () ->
+            new SinkWithNullableSetting(
+                    CommonUtils.randomString(), CommonUtils.randomString(), null)
+                .config());
   }
 }

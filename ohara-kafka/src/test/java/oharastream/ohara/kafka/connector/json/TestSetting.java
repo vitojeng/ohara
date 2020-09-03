@@ -24,8 +24,8 @@ import oharastream.ohara.common.json.JsonUtils;
 import oharastream.ohara.common.rule.OharaTest;
 import oharastream.ohara.common.setting.SettingDef;
 import oharastream.ohara.common.util.CommonUtils;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class TestSetting extends OharaTest {
   @Test
@@ -35,7 +35,7 @@ public class TestSetting extends OharaTest {
             SettingDef.builder().key(CommonUtils.randomString()).build(),
             SettingValue.of(CommonUtils.randomString(), CommonUtils.randomString(), List.of()));
     ObjectMapper mapper = JsonUtils.objectMapper();
-    Assert.assertEquals(
+    Assertions.assertEquals(
         config,
         mapper.readValue(mapper.writeValueAsString(config), new TypeReference<Setting>() {}));
   }
@@ -46,18 +46,25 @@ public class TestSetting extends OharaTest {
     SettingValue value =
         SettingValue.of(CommonUtils.randomString(), CommonUtils.randomString(), List.of());
     Setting config = Setting.of(def, value);
-    Assert.assertEquals(def, config.definition());
-    Assert.assertEquals(value, config.value());
+    Assertions.assertEquals(def, config.definition());
+    Assertions.assertEquals(value, config.value());
   }
 
-  @Test(expected = NullPointerException.class)
+  @Test
   public void nullDefinition() {
-    Setting.of(
-        null, SettingValue.of(CommonUtils.randomString(), CommonUtils.randomString(), List.of()));
+    Assertions.assertThrows(
+        NullPointerException.class,
+        () ->
+            Setting.of(
+                null,
+                SettingValue.of(
+                    CommonUtils.randomString(), CommonUtils.randomString(), List.of())));
   }
 
-  @Test(expected = NullPointerException.class)
+  @Test
   public void nullValue() {
-    Setting.of(SettingDef.builder().key(CommonUtils.randomString()).build(), null);
+    Assertions.assertThrows(
+        NullPointerException.class,
+        () -> Setting.of(SettingDef.builder().key(CommonUtils.randomString()).build(), null));
   }
 }

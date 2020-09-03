@@ -29,7 +29,7 @@ import oharastream.ohara.kafka.Consumer;
 import oharastream.ohara.kafka.Producer;
 import oharastream.ohara.kafka.TopicAdmin;
 import org.apache.log4j.Logger;
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 
 @VisibleForTesting
 public class StreamTestUtils {
@@ -52,7 +52,7 @@ public class StreamTestUtils {
           try {
             producer.sender().key(row).value(new byte[0]).topicKey(topicKey).send().get();
           } catch (InterruptedException | ExecutionException e) {
-            Assert.fail(e.getMessage());
+            Assertions.fail(e.getMessage());
           }
         });
   }
@@ -73,11 +73,11 @@ public class StreamTestUtils {
         consumer.poll(Duration.ofSeconds(30), expectedSize);
     records.forEach(
         record -> log.info(String.format("record: %s", record.key().orElse(Row.EMPTY).toString())));
-    Assert.assertTrue(
+    Assertions.assertTrue(
         records.stream()
             .map(
                 record -> {
-                  Assert.assertTrue(record.key().isPresent());
+                  Assertions.assertTrue(record.key().isPresent());
                   return record.key().get();
                 })
             .collect(Collectors.toUnmodifiableList())

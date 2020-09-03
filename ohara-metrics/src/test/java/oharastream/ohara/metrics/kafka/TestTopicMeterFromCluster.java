@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
 import oharastream.ohara.common.util.CommonUtils;
 import oharastream.ohara.metrics.BeanChannel;
 import oharastream.ohara.testing.WithBrokerWorker;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /** Worker instance will create three topics on broker so we can use it to test our APIs. */
 public class TestTopicMeterFromCluster extends WithBrokerWorker {

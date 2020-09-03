@@ -156,7 +156,6 @@ subprojects {
   // -------------------------------------------------[jUnit configs]-------------------------------------------------//
   if (it.name != 'ohara-manager') {
     apply plugin: 'org.gradle.test-retry'
-
     int numberOfForks = it.name == 'ohara-it' ? 1 :
             project.hasProperty('maxParallelForks') ? maxParallelForks.toInteger() :
                     Math.max((int) (Runtime.runtime.availableProcessors() / 2), 1)
@@ -165,42 +164,13 @@ subprojects {
     int numberOfRetries = project.hasProperty('maxTestRetries') ? maxTestRetries.toInteger() : 0
     int numberOfFailures = project.hasProperty('maxTestFailures') ? maxTestFailures.toInteger() : 1
 
-    // generate custom test tasks
-    if (it.name == 'ohara-it') {
-
-      def groups = [collieIT   : "oharastream.ohara.it.category.CollieGroup",
-                    connectorIT: "oharastream.ohara.it.category.ConnectorGroup",
-                    clientIT   : "oharastream.ohara.it.category.ClientGroup",
-                    streamIT   : "oharastream.ohara.it.category.StreamGroup",
-                    performance: "oharastream.ohara.it.category.PerformanceGroup"
-      ]
-
-      groups.each {
-        entry ->
-          String taskName = entry.key
-          tasks.create(name: taskName, type: Test) {
-            useJUnit {
-              includeCategories entry.value
-              excludeCategories = Set.of()
-            }
-          }
-      }
-
-      task otherIT(type: Test) {
-        useJUnit {
-          excludeCategories = groups.values().toSet()
-        }
-      }
-
-      // exclude all tests depending on specify env so user can run ```gradle clean test``` to execute all normal tests
-      // If users want to run true IT, they have to call specify test task with required env settings. That is what our
-      // QA (jenkins) is doing.
-      test {
-        useJUnit {
-          excludeCategories = groups.values().toSet()
-        }
-      }
-    }
+    def integrationTags = [
+      collieIT   : "integration-test-collie",
+      connectorIT: "integration-test-connector",
+      clientIT   : "integration-test-client",
+      streamIT   : "integration-test-stream",
+      performance: "performance"
+    ]
 
     tasks.withType(Test) {
       if (project.name == 'ohara-it') {
@@ -217,6 +187,8 @@ subprojects {
         }
       }
 
+      useJUnitPlatform()
+
       retry {
         maxRetries = numberOfRetries
         maxFailures = numberOfFailures
@@ -229,6 +201,34 @@ subprojects {
       testLogging {
         events "PASSED", "STARTED", "FAILED", "SKIPPED"
         exceptionFormat = 'full'
+      }
+    }
+
+    // generate custom test tasks
+    if (it.name == 'ohara-it') {
+      integrationTags.each {
+        entry ->
+          String taskName = entry.key
+          tasks.create(name: taskName, type: Test) {
+            useJUnitPlatform {
+              includeTags entry.value
+            }
+          }
+      }
+
+      task otherIT(type: Test) {
+        useJUnitPlatform {
+          excludeTags = integrationTags.values().toSet()
+        }
+      }
+
+      test {
+        useJUnitPlatform {
+          // exclude all tests depending on specify env so user can run ```gradle clean test``` to execute all normal tests
+          // If users want to run true IT, they have to call specify test task with required env settings. That is what our
+          // QA (jenkins) is doing.
+          excludeTags = integrationTags.values().toSet()
+        }
       }
     }
   }

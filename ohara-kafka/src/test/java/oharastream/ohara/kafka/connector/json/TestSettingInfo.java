@@ -25,8 +25,8 @@ import oharastream.ohara.common.rule.OharaTest;
 import oharastream.ohara.common.setting.SettingDef;
 import oharastream.ohara.common.util.CommonUtils;
 import org.apache.kafka.connect.runtime.rest.entities.ConfigInfos;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 public class TestSettingInfo extends OharaTest {
@@ -40,7 +40,7 @@ public class TestSettingInfo extends OharaTest {
                     SettingValue.of(
                         CommonUtils.randomString(), CommonUtils.randomString(), List.of()))));
     ObjectMapper mapper = JsonUtils.objectMapper();
-    Assert.assertEquals(
+    Assertions.assertEquals(
         settingInfo,
         mapper.readValue(
             mapper.writeValueAsString(settingInfo), new TypeReference<SettingInfo>() {}));
@@ -54,30 +54,30 @@ public class TestSettingInfo extends OharaTest {
             SettingValue.of(CommonUtils.randomString(), CommonUtils.randomString(), List.of()));
     String name = CommonUtils.randomString();
     SettingInfo settingInfo = SettingInfo.of(List.of(setting));
-    Assert.assertEquals(1, settingInfo.settings().size());
-    Assert.assertEquals(setting, settingInfo.settings().get(0));
+    Assertions.assertEquals(1, settingInfo.settings().size());
+    Assertions.assertEquals(setting, settingInfo.settings().get(0));
   }
 
-  @Test(expected = NullPointerException.class)
+  @Test
   public void nullSettings() {
-    SettingInfo.of((List<Setting>) null);
+    Assertions.assertThrows(NullPointerException.class, () -> SettingInfo.of((List<Setting>) null));
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   public void emptySettings() {
-    SettingInfo.of(List.of());
+    Assertions.assertThrows(IllegalArgumentException.class, () -> SettingInfo.of(List.of()));
   }
 
-  @Test(expected = NullPointerException.class)
+  @Test
   public void nullConfigInfos() {
-    SettingInfo.of((ConfigInfos) null);
+    Assertions.assertThrows(NullPointerException.class, () -> SettingInfo.of((ConfigInfos) null));
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   public void emptyConfigInfos() {
     ConfigInfos infos = Mockito.mock(ConfigInfos.class);
     Mockito.when(infos.values()).thenReturn(List.of());
-    SettingInfo.of(infos);
+    Assertions.assertThrows(IllegalArgumentException.class, () -> SettingInfo.of(infos));
   }
 
   @Test
@@ -90,6 +90,6 @@ public class TestSettingInfo extends OharaTest {
                 CommonUtils.randomString(),
                 List.of(CommonUtils.randomString())));
 
-    Assert.assertEquals(1, SettingInfo.of(List.of(setting)).errorCount());
+    Assertions.assertEquals(1, SettingInfo.of(List.of(setting)).errorCount());
   }
 }

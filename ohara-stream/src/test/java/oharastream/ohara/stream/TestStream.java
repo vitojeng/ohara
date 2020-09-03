@@ -27,8 +27,8 @@ import oharastream.ohara.common.setting.WithDefinitions;
 import oharastream.ohara.common.util.CommonUtils;
 import oharastream.ohara.stream.config.StreamDefUtils;
 import oharastream.ohara.stream.config.StreamSetting;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class TestStream extends OharaTest {
 
@@ -53,7 +53,7 @@ public class TestStream extends OharaTest {
   @Test
   public void testKind() {
     CustomStream app = new CustomStream();
-    Assert.assertEquals(
+    Assertions.assertEquals(
         ClassType.STREAM.key(),
         app.settingDefinitions().get(WithDefinitions.KIND_KEY).defaultString());
   }
@@ -65,14 +65,14 @@ public class TestStream extends OharaTest {
     public void init() {
       int res = counter.incrementAndGet();
       // Stream should call init() first
-      Assert.assertEquals(1, res);
+      Assertions.assertEquals(1, res);
     }
 
     @Override
     public void start(OStream<Row> ostream, StreamSetting streamSetting) {
       int res = counter.incrementAndGet();
       // Stream should call start() after init()
-      Assert.assertEquals(2, res);
+      Assertions.assertEquals(2, res);
     }
   }
 }

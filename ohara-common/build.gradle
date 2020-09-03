@@ -26,7 +26,8 @@ dependencies {
   // we import the jackson from kafka
   implementation libs.kafkaConnectJson
   testImplementation libs.mockitoAll
-  testImplementation libs.junit
+  testImplementation libs.junitApi
+  testRuntimeOnly libs.junitEngine
 }
 
 private String exec(String[] args) {

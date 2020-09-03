@@ -16,11 +16,6 @@
 
 package oharastream.ohara.testing.service;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertTrue;
-
 import java.io.File;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
@@ -31,73 +26,84 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import oharastream.ohara.common.rule.OharaTest;
 import oharastream.ohara.common.util.CommonUtils;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class TestFtpServer extends OharaTest {
 
-  @Test(expected = NullPointerException.class)
+  @Test
   public void nullUser() {
-    FtpServer.builder().user(null).build();
+    Assertions.assertThrows(
+        NullPointerException.class, () -> FtpServer.builder().user(null).build());
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   public void emptyUser() {
-    FtpServer.builder().user("").build();
+    Assertions.assertThrows(
+        IllegalArgumentException.class, () -> FtpServer.builder().user("").build());
   }
 
-  @Test(expected = NullPointerException.class)
+  @Test
   public void nullPassword() {
-    FtpServer.builder().password(null).build();
+    Assertions.assertThrows(
+        NullPointerException.class, () -> FtpServer.builder().password(null).build());
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   public void emptyPassword() {
-    FtpServer.builder().password("").build();
+    Assertions.assertThrows(
+        IllegalArgumentException.class, () -> FtpServer.builder().password("").build());
   }
 
-  @Test(expected = NullPointerException.class)
+  @Test
   public void nullDataPorts() {
-    FtpServer.builder().dataPorts(null).build();
+    Assertions.assertThrows(
+        NullPointerException.class, () -> FtpServer.builder().dataPorts(null).build());
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   public void emptyDataPorts() {
-    FtpServer.builder().dataPorts(List.of()).build();
+    Assertions.assertThrows(
+        IllegalArgumentException.class, () -> FtpServer.builder().dataPorts(List.of()).build());
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   public void negativeControlPort() {
-    FtpServer.builder().controlPort(-1).build();
+    Assertions.assertThrows(
+        IllegalArgumentException.class, () -> FtpServer.builder().controlPort(-1).build());
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   public void negativeDataPort() {
-    FtpServer.builder().dataPorts(List.of(-1)).build();
+    Assertions.assertThrows(
+        IllegalArgumentException.class, () -> FtpServer.builder().dataPorts(List.of(-1)).build());
   }
 
-  @Test(expected = NullPointerException.class)
+  @Test
   public void nullAdvertisedHostname() {
-    FtpServer.builder().advertisedHostname(null).build();
+    Assertions.assertThrows(
+        NullPointerException.class, () -> FtpServer.builder().advertisedHostname(null).build());
   }
 
-  @Test(expected = NullPointerException.class)
+  @Test
   public void nullHomeFolder() {
-    FtpServer.builder().homeFolder(null).build();
+    Assertions.assertThrows(
+        NullPointerException.class, () -> FtpServer.builder().homeFolder(null).build());
   }
 
   @Test
   public void testSpecificDataPort() {
     int port = CommonUtils.availablePort();
     try (FtpServer ftpServer = FtpServer.builder().dataPorts(List.of(port)).build()) {
-      assertEquals(port, (int) ftpServer.dataPorts().get(0));
+      Assertions.assertEquals(port, (int) ftpServer.dataPorts().get(0));
     }
   }
 
   @Test
   public void testRandomDataPort() {
     try (FtpServer ftpServer = FtpServer.builder().build()) {
-      assertFalse(ftpServer.dataPorts().isEmpty());
-      ftpServer.dataPorts().forEach(p -> assertNotEquals(0, (long) p));
+      Assertions.assertFalse(ftpServer.dataPorts().isEmpty());
+      ftpServer.dataPorts().forEach(p -> Assertions.assertNotEquals(0, (long) p));
     }
   }
 
@@ -105,7 +111,7 @@ public class TestFtpServer extends OharaTest {
   public void testSpecificControlPort() {
     int port = CommonUtils.availablePort();
     try (FtpServer ftpServer = FtpServer.builder().controlPort(port).build()) {
-      assertEquals(port, ftpServer.port());
+      Assertions.assertEquals(port, ftpServer.port());
     }
   }
 
@@ -113,7 +119,7 @@ public class TestFtpServer extends OharaTest {
   public void testRandomControlPort() {
     List<Integer> dataPorts = List.of(0);
     try (FtpServer ftpServer = FtpServer.builder().controlPort(0).dataPorts(dataPorts).build()) {
-      assertNotEquals(0, ftpServer.port());
+      Assertions.assertNotEquals(0, ftpServer.port());
     }
   }
 
@@ -138,7 +144,7 @@ public class TestFtpServer extends OharaTest {
           });
     } finally {
       es.shutdown();
-      assertTrue(es.awaitTermination(ttl * 2, TimeUnit.SECONDS));
+      Assertions.assertTrue(es.awaitTermination(ttl * 2, TimeUnit.SECONDS));
     }
   }
 
@@ -159,7 +165,7 @@ public class TestFtpServer extends OharaTest {
               throw new RuntimeException(e);
             }
           });
-      assertTrue(latch.await(10, TimeUnit.SECONDS));
+      Assertions.assertTrue(latch.await(10, TimeUnit.SECONDS));
     } finally {
       es.shutdownNow();
     }
@@ -191,10 +197,10 @@ public class TestFtpServer extends OharaTest {
                     FtpServer.TTL, String.valueOf(ttl)
                   },
                   ftp -> {
-                    assertEquals(ftp.user(), user);
-                    assertEquals(ftp.password(), password);
-                    assertEquals(ftp.port(), controlPort);
-                    assertEquals(ftp.dataPorts(), dataPorts);
+                    Assertions.assertEquals(ftp.user(), user);
+                    Assertions.assertEquals(ftp.password(), password);
+                    Assertions.assertEquals(ftp.port(), controlPort);
+                    Assertions.assertEquals(ftp.dataPorts(), dataPorts);
                   });
             } catch (InterruptedException e) {
               throw new RuntimeException(e);
@@ -202,7 +208,7 @@ public class TestFtpServer extends OharaTest {
           });
     } finally {
       es.shutdown();
-      assertTrue(es.awaitTermination(ttl * 2, TimeUnit.SECONDS));
+      Assertions.assertTrue(es.awaitTermination(ttl * 2, TimeUnit.SECONDS));
     }
   }
 
@@ -235,10 +241,10 @@ public class TestFtpServer extends OharaTest {
                     String.valueOf(ttl)
                   },
                   ftp -> {
-                    assertEquals(ftp.user(), user);
-                    assertEquals(ftp.password(), password);
-                    assertEquals(ftp.port(), controlPort);
-                    assertEquals(ftp.dataPorts(), dataPorts);
+                    Assertions.assertEquals(ftp.user(), user);
+                    Assertions.assertEquals(ftp.password(), password);
+                    Assertions.assertEquals(ftp.port(), controlPort);
+                    Assertions.assertEquals(ftp.dataPorts(), dataPorts);
                   });
             } catch (InterruptedException e) {
               throw new RuntimeException(e);
@@ -246,7 +252,7 @@ public class TestFtpServer extends OharaTest {
           });
     } finally {
       es.shutdown();
-      assertTrue(es.awaitTermination(ttl * 2, TimeUnit.SECONDS));
+      Assertions.assertTrue(es.awaitTermination(ttl * 2, TimeUnit.SECONDS));
     }
   }
 
@@ -254,19 +260,19 @@ public class TestFtpServer extends OharaTest {
   public void testHomeFolder() {
     String prefix = CommonUtils.randomString(5);
     File f = CommonUtils.createTempFolder(prefix);
-    assertTrue(f.delete());
-    assertFalse(f.exists());
+    Assertions.assertTrue(f.delete());
+    Assertions.assertFalse(f.exists());
     try (FtpServer ftpServer = FtpServer.builder().homeFolder(f).build()) {
-      assertTrue(ftpServer.isLocal());
-      assertTrue(f.exists());
-      assertEquals(ftpServer.absolutePath(), f.getAbsolutePath());
+      Assertions.assertTrue(ftpServer.isLocal());
+      Assertions.assertTrue(f.exists());
+      Assertions.assertEquals(ftpServer.absolutePath(), f.getAbsolutePath());
     }
   }
 
   @Test
   public void testPortOfLocal() {
     try (FtpServer ftpServer = FtpServer.local()) {
-      assertNotEquals(0, ftpServer.port());
+      Assertions.assertNotEquals(0, ftpServer.port());
     }
   }
 }

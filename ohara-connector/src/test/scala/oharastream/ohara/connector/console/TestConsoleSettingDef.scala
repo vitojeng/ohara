@@ -17,7 +17,7 @@
 package oharastream.ohara.connector.console
 
 import oharastream.ohara.common.rule.OharaTest
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import org.scalatest.matchers.should.Matchers._
 
 class TestConsoleSettingDef extends OharaTest {

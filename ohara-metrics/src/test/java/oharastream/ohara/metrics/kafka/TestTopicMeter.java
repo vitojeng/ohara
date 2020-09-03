@@ -19,129 +19,153 @@ package oharastream.ohara.metrics.kafka;
 import java.util.concurrent.TimeUnit;
 import oharastream.ohara.common.rule.OharaTest;
 import oharastream.ohara.common.util.CommonUtils;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class TestTopicMeter extends OharaTest {
 
-  @Test(expected = NullPointerException.class)
+  @Test
   public void nullTopicName() {
-    new TopicMeter(
-        null,
-        TopicMeter.Catalog.BytesInPerSec,
-        CommonUtils.current(),
-        CommonUtils.randomString(),
-        (double) CommonUtils.current(),
-        (double) CommonUtils.current(),
-        (double) CommonUtils.current(),
-        (double) CommonUtils.current(),
-        TimeUnit.DAYS,
-        CommonUtils.current());
+    Assertions.assertThrows(
+        NullPointerException.class,
+        () ->
+            new TopicMeter(
+                null,
+                TopicMeter.Catalog.BytesInPerSec,
+                CommonUtils.current(),
+                CommonUtils.randomString(),
+                (double) CommonUtils.current(),
+                (double) CommonUtils.current(),
+                (double) CommonUtils.current(),
+                (double) CommonUtils.current(),
+                TimeUnit.DAYS,
+                CommonUtils.current()));
   }
 
-  @Test(expected = NullPointerException.class)
+  @Test
   public void nullTopicNameInBuilder() {
-    TopicMeter.builder().topicName(null).build();
+    Assertions.assertThrows(
+        NullPointerException.class, () -> TopicMeter.builder().topicName(null).build());
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   public void emptyTopicName() {
-    new TopicMeter(
-        "",
-        TopicMeter.Catalog.BytesInPerSec,
-        CommonUtils.current(),
-        CommonUtils.randomString(),
-        (double) CommonUtils.current(),
-        (double) CommonUtils.current(),
-        (double) CommonUtils.current(),
-        (double) CommonUtils.current(),
-        TimeUnit.DAYS,
-        CommonUtils.current());
+    Assertions.assertThrows(
+        IllegalArgumentException.class,
+        () ->
+            new TopicMeter(
+                "",
+                TopicMeter.Catalog.BytesInPerSec,
+                CommonUtils.current(),
+                CommonUtils.randomString(),
+                (double) CommonUtils.current(),
+                (double) CommonUtils.current(),
+                (double) CommonUtils.current(),
+                (double) CommonUtils.current(),
+                TimeUnit.DAYS,
+                CommonUtils.current()));
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   public void emptyTopicNameInBuilder() {
-    TopicMeter.builder().topicName("").build();
+    Assertions.assertThrows(
+        IllegalArgumentException.class, () -> TopicMeter.builder().topicName("").build());
   }
 
-  @Test(expected = NullPointerException.class)
+  @Test
   public void nullCatalog() {
-    new TopicMeter(
-        CommonUtils.randomString(),
-        null,
-        CommonUtils.current(),
-        CommonUtils.randomString(),
-        (double) CommonUtils.current(),
-        (double) CommonUtils.current(),
-        (double) CommonUtils.current(),
-        (double) CommonUtils.current(),
-        TimeUnit.DAYS,
-        CommonUtils.current());
+    Assertions.assertThrows(
+        NullPointerException.class,
+        () ->
+            new TopicMeter(
+                CommonUtils.randomString(),
+                null,
+                CommonUtils.current(),
+                CommonUtils.randomString(),
+                (double) CommonUtils.current(),
+                (double) CommonUtils.current(),
+                (double) CommonUtils.current(),
+                (double) CommonUtils.current(),
+                TimeUnit.DAYS,
+                CommonUtils.current()));
   }
 
-  @Test(expected = NullPointerException.class)
+  @Test
   public void nullCatalogInBuilder() {
-    TopicMeter.builder().catalog(null).build();
+    Assertions.assertThrows(
+        NullPointerException.class, () -> TopicMeter.builder().catalog(null).build());
   }
 
-  @Test(expected = NullPointerException.class)
+  @Test
   public void nullEventType() {
-    new TopicMeter(
-        CommonUtils.randomString(),
-        TopicMeter.Catalog.BytesInPerSec,
-        CommonUtils.current(),
-        null,
-        (double) CommonUtils.current(),
-        (double) CommonUtils.current(),
-        (double) CommonUtils.current(),
-        (double) CommonUtils.current(),
-        TimeUnit.DAYS,
-        CommonUtils.current());
+    Assertions.assertThrows(
+        NullPointerException.class,
+        () ->
+            new TopicMeter(
+                CommonUtils.randomString(),
+                TopicMeter.Catalog.BytesInPerSec,
+                CommonUtils.current(),
+                null,
+                (double) CommonUtils.current(),
+                (double) CommonUtils.current(),
+                (double) CommonUtils.current(),
+                (double) CommonUtils.current(),
+                TimeUnit.DAYS,
+                CommonUtils.current()));
   }
 
-  @Test(expected = NullPointerException.class)
+  @Test
   public void nullEventTypeInBuilder() {
-    TopicMeter.builder().eventType(null).build();
+    Assertions.assertThrows(
+        NullPointerException.class, () -> TopicMeter.builder().eventType(null).build());
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   public void emptyEventType() {
-    new TopicMeter(
-        CommonUtils.randomString(),
-        TopicMeter.Catalog.BytesInPerSec,
-        CommonUtils.current(),
-        "",
-        (double) CommonUtils.current(),
-        (double) CommonUtils.current(),
-        (double) CommonUtils.current(),
-        (double) CommonUtils.current(),
-        TimeUnit.DAYS,
-        CommonUtils.current());
+    Assertions.assertThrows(
+        IllegalArgumentException.class,
+        () ->
+            new TopicMeter(
+                CommonUtils.randomString(),
+                TopicMeter.Catalog.BytesInPerSec,
+                CommonUtils.current(),
+                "",
+                (double) CommonUtils.current(),
+                (double) CommonUtils.current(),
+                (double) CommonUtils.current(),
+                (double) CommonUtils.current(),
+                TimeUnit.DAYS,
+                CommonUtils.current()));
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   public void emptyEventTypeInBuilder() {
-    TopicMeter.builder().eventType("").build();
+    Assertions.assertThrows(
+        IllegalArgumentException.class, () -> TopicMeter.builder().eventType("").build());
   }
 
-  @Test(expected = NullPointerException.class)
+  @Test
   public void nullTimeUnit() {
-    new TopicMeter(
-        CommonUtils.randomString(),
-        TopicMeter.Catalog.BytesInPerSec,
-        CommonUtils.current(),
-        CommonUtils.randomString(),
-        (double) CommonUtils.current(),
-        (double) CommonUtils.current(),
-        (double) CommonUtils.current(),
-        (double) CommonUtils.current(),
-        null,
-        CommonUtils.current());
+    Assertions.assertThrows(
+        NullPointerException.class,
+        () ->
+            new TopicMeter(
+                CommonUtils.randomString(),
+                TopicMeter.Catalog.BytesInPerSec,
+                CommonUtils.current(),
+                CommonUtils.randomString(),
+                (double) CommonUtils.current(),
+                (double) CommonUtils.current(),
+                (double) CommonUtils.current(),
+                (double) CommonUtils.current(),
+                null,
+                CommonUtils.current()));
   }
 
-  @Test(expected = NullPointerException.class)
+  @Test
   public void nullTimeUnitInBuilder() {
-    TopicMeter.builder().rateUnit(null).build();
+    Assertions.assertThrows(
+        NullPointerException.class, () -> TopicMeter.builder().rateUnit(null).build());
   }
 
   @Test
@@ -168,14 +192,14 @@ public class TestTopicMeter extends OharaTest {
             rateUnit,
             CommonUtils.current());
 
-    Assert.assertEquals(topicName, meter.topicName());
-    Assert.assertEquals(catalog, meter.catalog());
-    Assert.assertEquals(count, meter.count());
-    Assert.assertEquals(eventType, meter.eventType());
-    Assert.assertEquals(fifteenMinuteRate, meter.fifteenMinuteRate(), 0);
-    Assert.assertEquals(fiveMinuteRate, meter.fiveMinuteRate(), 0);
-    Assert.assertEquals(meanRate, meter.meanRate(), 0);
-    Assert.assertEquals(oneMinuteRate, meter.oneMinuteRate(), 0);
-    Assert.assertEquals(rateUnit, meter.rateUnit());
+    Assertions.assertEquals(topicName, meter.topicName());
+    Assertions.assertEquals(catalog, meter.catalog());
+    Assertions.assertEquals(count, meter.count());
+    Assertions.assertEquals(eventType, meter.eventType());
+    Assertions.assertEquals(fifteenMinuteRate, meter.fifteenMinuteRate(), 0);
+    Assertions.assertEquals(fiveMinuteRate, meter.fiveMinuteRate(), 0);
+    Assertions.assertEquals(meanRate, meter.meanRate(), 0);
+    Assertions.assertEquals(oneMinuteRate, meter.oneMinuteRate(), 0);
+    Assertions.assertEquals(rateUnit, meter.rateUnit());
   }
 }

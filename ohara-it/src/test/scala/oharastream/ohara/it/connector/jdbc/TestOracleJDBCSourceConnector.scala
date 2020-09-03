@@ -16,23 +16,20 @@
 
 package oharastream.ohara.it.connector.jdbc
 import oharastream.ohara.common.util.CommonUtils
-import oharastream.ohara.it.ContainerPlatform
-import org.junit.AssumptionViolatedException
+import org.junit.jupiter.api.condition.EnabledIfEnvironmentVariable
 
-class TestOracleJDBCSourceConnector(platform: ContainerPlatform)
-    extends BasicTestConnectorCollie(platform: ContainerPlatform) {
+@EnabledIfEnvironmentVariable(named = "ohara.it.oracle.db.url", matches = ".*")
+@EnabledIfEnvironmentVariable(named = "ohara.it.oracle.db.username", matches = ".*")
+@EnabledIfEnvironmentVariable(named = "ohara.it.oracle.db.password", matches = ".*")
+class TestOracleJDBCSourceConnector extends BasicTestConnectorCollie {
   private[this] val DB_URL_KEY: String       = "ohara.it.oracle.db.url"
   private[this] val DB_USER_NAME_KEY: String = "ohara.it.oracle.db.username"
   private[this] val DB_PASSWORD_KEY: String  = "ohara.it.oracle.db.password"
+  override protected def dbUrl: String       = sys.env(DB_URL_KEY)
 
-  override protected def dbUrl: String =
-    sys.env.getOrElse(DB_URL_KEY, throw new AssumptionViolatedException(s"$DB_URL_KEY does not exists!!!"))
+  override protected def dbUserName: String = sys.env(DB_USER_NAME_KEY)
 
-  override protected def dbUserName: String =
-    sys.env.getOrElse(DB_USER_NAME_KEY, throw new AssumptionViolatedException(s"$DB_USER_NAME_KEY does not exists!!!"))
-
-  override protected def dbPassword: String =
-    sys.env.getOrElse(DB_PASSWORD_KEY, throw new AssumptionViolatedException(s"$DB_PASSWORD_KEY does not exists!!!"))
+  override protected def dbPassword: String = sys.env(DB_PASSWORD_KEY)
 
   override protected def dbName: String = "oracle"
 

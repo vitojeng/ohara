@@ -23,5 +23,6 @@ dependencies {
   testImplementation project(':ohara-common').sourceSets.test.output
   testImplementation project(':ohara-testing-util')
   testImplementation project(path: ':ohara-testing-util', configuration: 'testRuntime')
-  testImplementation libs.junit
+  testImplementation libs.junitApi
+  testRuntimeOnly libs.junitEngine
 }

@@ -23,7 +23,7 @@ import oharastream.ohara.common.setting.{ConnectorKey, TopicKey}
 import oharastream.ohara.common.util.CommonUtils
 import oharastream.ohara.metrics.BeanChannel
 import oharastream.ohara.testing.WithBrokerWorker
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import org.scalatest.matchers.should.Matchers._
 
 import scala.jdk.CollectionConverters._

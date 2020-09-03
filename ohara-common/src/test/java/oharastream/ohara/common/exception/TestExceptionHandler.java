@@ -18,58 +18,73 @@ package oharastream.ohara.common.exception;
 
 import java.io.IOException;
 import oharastream.ohara.common.rule.OharaTest;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class TestExceptionHandler extends OharaTest {
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   public void addDuplicateFunction() {
-    ExceptionHandler.builder()
-        .with(IOException.class, Exception::new)
-        .with(IOException.class, Exception::new);
+    Assertions.assertThrows(
+        IllegalArgumentException.class,
+        () ->
+            ExceptionHandler.builder()
+                .with(IOException.class, Exception::new)
+                .with(IOException.class, Exception::new));
   }
 
-  @Test(expected = NullPointerException.class)
+  @Test
   public void nullClass() {
-    ExceptionHandler.builder().with(null, Exception::new);
+    Assertions.assertThrows(
+        NullPointerException.class, () -> ExceptionHandler.builder().with(null, Exception::new));
   }
 
-  @Test(expected = NullPointerException.class)
+  @Test
   public void nullFunction() {
-    ExceptionHandler.builder().with(IOException.class, null);
+    Assertions.assertThrows(
+        NullPointerException.class, () -> ExceptionHandler.builder().with(IOException.class, null));
   }
 
-  @Test(expected = TimeoutException.class)
+  @Test
   public void testHandle() {
-    ExceptionHandler.builder()
-        .with(IOException.class, TimeoutException::new)
-        .build()
-        .handle(
-            () -> {
-              throw new IOException("HELLO WORLD");
-            });
+    Assertions.assertThrows(
+        TimeoutException.class,
+        () ->
+            ExceptionHandler.builder()
+                .with(IOException.class, TimeoutException::new)
+                .build()
+                .handle(
+                    () -> {
+                      throw new IOException("HELLO WORLD");
+                    }));
   }
 
-  @Test(expected = Exception.class)
+  @Test
   public void testDefaultHandle() {
-    ExceptionHandler.builder()
-        .with(IOException.class, TimeoutException::new)
-        .build()
-        .handle(
-            () -> {
-              throw new java.lang.InterruptedException("HELLO WORLD");
-            });
+    Assertions.assertThrows(
+        Exception.class,
+        () ->
+            ExceptionHandler.builder()
+                .with(IOException.class, TimeoutException::new)
+                .build()
+                .handle(
+                    () -> {
+                      throw new java.lang.InterruptedException("HELLO WORLD");
+                    }));
   }
 
-  @Test(expected = TimeoutException.class)
+  @Test
   public void testManyHandlers() {
-    ExceptionHandler.builder()
-        .with(java.lang.InterruptedException.class, TimeoutException::new)
-        .with(IOException.class, ExecutionException::new)
-        .build()
-        .handle(
-            () -> {
-              throw new java.lang.InterruptedException("HELLO WORLD");
-            });
+    Assertions.assertThrows(
+        TimeoutException.class,
+        () ->
+            ExceptionHandler.builder()
+                .with(java.lang.InterruptedException.class, TimeoutException::new)
+                .with(IOException.class, ExecutionException::new)
+                .build()
+                .handle(
+                    () -> {
+                      throw new java.lang.InterruptedException("HELLO WORLD");
+                    }));
   }
 }

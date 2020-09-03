@@ -24,7 +24,7 @@ import oharastream.ohara.common.setting.SettingDef.Permission
 import oharastream.ohara.common.setting.{ObjectKey, SettingDef, TopicKey}
 import oharastream.ohara.common.util.{CommonUtils, VersionUtils}
 import oharastream.ohara.stream.config.StreamDefUtils
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import org.scalatest.matchers.should.Matchers._
 import spray.json.DefaultJsonProtocol._
 import spray.json._

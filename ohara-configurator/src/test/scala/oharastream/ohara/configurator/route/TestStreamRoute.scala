@@ -25,7 +25,7 @@ import oharastream.ohara.common.rule.OharaTest
 import oharastream.ohara.common.setting.{ObjectKey, TopicKey, WithDefinitions}
 import oharastream.ohara.common.util.{CommonUtils, Releasable, VersionUtils}
 import oharastream.ohara.configurator.Configurator
-import org.junit.{After, Before, Test}
+import org.junit.jupiter.api.{AfterEach, BeforeEach, Test}
 import org.scalatest.matchers.should.Matchers._
 import spray.json.{DeserializationException, JsArray, JsNumber, JsObject, JsString, JsTrue}
 
@@ -54,7 +54,7 @@ class TestStreamRoute extends OharaTest {
   private[this] val file                   = RouteUtils.streamFile
   private[this] var fileInfo: FileInfo     = _
 
-  @Before
+  @BeforeEach
   def setup(): Unit = {
     file.exists() shouldBe true
     fileInfo = result(fileApi.request.file(file).upload())
@@ -971,6 +971,6 @@ class TestStreamRoute extends OharaTest {
         .create()
     ).settings(WithDefinitions.REVISION_KEY).asInstanceOf[JsString].value shouldBe VersionUtils.REVISION
 
-  @After
+  @AfterEach
   def tearDown(): Unit = Releasable.close(configurator)
 }

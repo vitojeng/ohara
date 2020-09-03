@@ -23,44 +23,40 @@ import java.util.concurrent.{Executors, TimeUnit}
 
 import com.typesafe.scalalogging.Logger
 import oharastream.ohara.client.configurator.BrokerApi.BrokerClusterInfo
-import oharastream.ohara.client.configurator.FileInfoApi.FileInfo
 import oharastream.ohara.client.configurator.InspectApi.RdbColumn
 import oharastream.ohara.client.configurator.WorkerApi.WorkerClusterInfo
-import oharastream.ohara.client.configurator.{BrokerApi, ContainerApi, FileInfoApi, WorkerApi, ZookeeperApi}
 import oharastream.ohara.client.database.DatabaseClient
 import oharastream.ohara.client.kafka.ConnectorAdmin
 import oharastream.ohara.common.data.Serializer
-import oharastream.ohara.common.setting.{ConnectorKey, ObjectKey, TopicKey}
+import oharastream.ohara.common.setting.{ConnectorKey, TopicKey}
 import oharastream.ohara.common.util.{CommonUtils, Releasable}
 import oharastream.ohara.connector.jdbc.source.{JDBCSourceConnector, JDBCSourceConnectorConfig}
-import oharastream.ohara.it.category.ConnectorGroup
-import oharastream.ohara.it.{ContainerPlatform, WithRemoteConfigurator}
+import oharastream.ohara.it.ContainerPlatform.ResourceRef
+import oharastream.ohara.it.{ContainerPlatform, IntegrationTest}
 import oharastream.ohara.kafka.Consumer
 import oharastream.ohara.kafka.connector.TaskSetting
-import org.junit.experimental.categories.Category
-import org.junit.{After, AssumptionViolatedException, Test}
+import org.junit.jupiter.api.condition.EnabledIfEnvironmentVariable
+import org.junit.jupiter.api.{AfterEach, Tag}
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.{Arguments, MethodSource}
 import org.scalatest.matchers.should.Matchers._
 
-import scala.jdk.CollectionConverters._
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
+import scala.jdk.CollectionConverters._
 
-@Category(Array(classOf[ConnectorGroup]))
-private[jdbc] abstract class BasicTestConnectorCollie(platform: ContainerPlatform)
-    extends WithRemoteConfigurator(platform: ContainerPlatform) {
+@Tag("integration-test-connector")
+@EnabledIfEnvironmentVariable(named = "ohara.it.jar.folder", matches = ".*")
+@EnabledIfEnvironmentVariable(named = "ohara.it.docker", matches = ".*")
+private[jdbc] abstract class BasicTestConnectorCollie extends IntegrationTest {
   private[this] val log                    = Logger(classOf[BasicTestConnectorCollie])
   private[this] val JAR_FOLDER_KEY: String = "ohara.it.jar.folder"
-  private[this] val jarFolderPath =
-    sys.env.getOrElse(JAR_FOLDER_KEY, throw new AssumptionViolatedException(s"$JAR_FOLDER_KEY does not exists!!!"))
-
+  private[this] val jarFolderPath          = sys.env(JAR_FOLDER_KEY)
   protected def tableName: String
   protected def columnPrefixName: String
   private[this] var timestampColumn: String = _
   private[this] var queryColumn: String     = _
 
   private[this] var client: DatabaseClient = _
-
-  private[this] var jdbcJarFileInfo: FileInfo = _
 
   protected def dbUrl: String
   protected def dbUserName: String
@@ -75,20 +71,9 @@ private[jdbc] abstract class BasicTestConnectorCollie(platform: ContainerPlatfor
     */
   protected def jdbcDriverJarFileName: String
 
-  private[this] def zkApi = ZookeeperApi.access.hostname(configuratorHostname).port(configuratorPort)
-
-  private[this] def bkApi = BrokerApi.access.hostname(configuratorHostname).port(configuratorPort)
-
-  private[this] def wkApi = WorkerApi.access.hostname(configuratorHostname).port(configuratorPort)
-
-  private[this] def containerApi = ContainerApi.access.hostname(configuratorHostname).port(configuratorPort)
-
   private[this] var inputDataThread: Releasable = _
-  private[this] var tableTotalCount: LongAdder  = _
 
-  private[this] def setup(inputDataTime: Long): Unit = {
-    uploadJDBCJarToConfigurator() //For upload JDBC jar
-
+  private[this] def setupDatabase(inputDataTime: Long): LongAdder = {
     // Create database client
     client = DatabaseClient.builder.url(dbUrl).user(dbUserName).password(dbPassword).build
 
@@ -101,7 +86,7 @@ private[jdbc] abstract class BasicTestConnectorCollie(platform: ContainerPlatfor
     val column3 = RdbColumn(columns(2), "integer", false)
     val column4 = RdbColumn(columns(3), BINARY_TYPE_NAME, false)
     client.createTable(tableName, Seq(column1, column2, column3, column4))
-    tableTotalCount = new LongAdder()
+    val tableTotalCount = new LongAdder()
 
     inputDataThread = {
       val pool            = Executors.newSingleThreadExecutor()
@@ -127,187 +112,190 @@ private[jdbc] abstract class BasicTestConnectorCollie(platform: ContainerPlatfor
         pool.awaitTermination(inputDataTime, TimeUnit.SECONDS)
       }
     }
+    tableTotalCount
   }
 
-  @Test
-  def testNormal(): Unit = {
-    val startTestTimestamp = CommonUtils.current()
-    val inputDataTime      = 3000L
-    setup(inputDataTime)
-    val cluster: (BrokerClusterInfo, WorkerClusterInfo) = startCluster()
-    val bkCluster: BrokerClusterInfo                    = cluster._1
-    val wkCluster: WorkerClusterInfo                    = cluster._2
-    val connectorKey: ConnectorKey                      = ConnectorKey.of(CommonUtils.randomString(5), "JDBC-Source-Connector-Test")
-    val topicKey: TopicKey                              = TopicKey.of(CommonUtils.randomString(5), CommonUtils.randomString(5))
-    val connectorAdmin                                  = ConnectorAdmin(wkCluster)
+  @ParameterizedTest(name = "{displayName} with {argumentsWithNames}")
+  @MethodSource(value = Array("parameters"))
+  def testNormal(platform: ContainerPlatform): Unit =
+    close(platform.setup()) { resourceRef =>
+      val startTestTimestamp                     = CommonUtils.current()
+      val inputDataTime                          = 3000L
+      val tableTotalCount                        = setupDatabase(inputDataTime)
+      val (brokerClusterInfo, workerClusterInfo) = startCluster(resourceRef)
+      val connectorKey                           = ConnectorKey.of(CommonUtils.randomString(5), "JDBC-Source-Connector-Test")
+      val topicKey                               = TopicKey.of(CommonUtils.randomString(5), CommonUtils.randomString(5))
+      val connectorAdmin                         = ConnectorAdmin(workerClusterInfo)
 
-    createConnector(connectorAdmin, connectorKey, topicKey)
-    val consumer =
-      Consumer
-        .builder()
-        .topicKey(topicKey)
-        .offsetFromBegin()
-        .connectionProps(bkCluster.connectionProps)
-        .keySerializer(Serializer.ROW)
-        .valueSerializer(Serializer.BYTES)
-        .build()
-    await(() => CommonUtils.current() - startTestTimestamp >= inputDataTime && count() == tableTotalCount.intValue())
+      createConnector(connectorAdmin, connectorKey, topicKey)
+      val consumer =
+        Consumer
+          .builder()
+          .topicKey(topicKey)
+          .offsetFromBegin()
+          .connectionProps(brokerClusterInfo.connectionProps)
+          .keySerializer(Serializer.ROW)
+          .valueSerializer(Serializer.BYTES)
+          .build()
+      await(() => CommonUtils.current() - startTestTimestamp >= inputDataTime && count() == tableTotalCount.intValue())
 
-    val statement = client.connection.createStatement()
-    try {
-      // Check the topic data
-      val result = consumer.poll(java.time.Duration.ofSeconds(60), tableTotalCount.intValue()).asScala
-      tableTotalCount.intValue() shouldBe result.size
+      val statement = client.connection.createStatement()
+      try {
+        // Check the topic data
+        val result = consumer.poll(java.time.Duration.ofSeconds(60), tableTotalCount.intValue()).asScala
+        tableTotalCount.intValue() shouldBe result.size
 
-      val resultSet = statement.executeQuery(s"select * from $tableName order by $queryColumn")
+        val resultSet = statement.executeQuery(s"select * from $tableName order by $queryColumn")
 
-      val tableData: Seq[String] = Iterator.continually(resultSet).takeWhile(_.next()).map(_.getString(2)).toSeq
-      val topicData: Seq[String] = result
-        .map(record => record.key.get.cell(queryColumn).value().toString)
-        .sorted[String]
-        .toSeq
+        val tableData: Seq[String] = Iterator.continually(resultSet).takeWhile(_.next()).map(_.getString(2)).toSeq
+        val topicData: Seq[String] = result
+          .map(record => record.key.get.cell(queryColumn).value().toString)
+          .sorted[String]
+          .toSeq
 
-      checkData(tableData, topicData)
-    } finally {
-      Releasable.close(statement)
-      Releasable.close(consumer)
-      stopWorkerCluster(wkCluster)
-    }
-  }
+        checkData(tableData, topicData)
+      } finally {
+        Releasable.close(statement)
+        Releasable.close(consumer)
+      }
+    }(_ => ())
 
-  @Test
-  def testConnectorStartPauseResumeDelete(): Unit = {
-    val startTestTimestamp = CommonUtils.current()
-    val inputDataTime      = 30000L
-    setup(inputDataTime)
-    val cluster: (BrokerClusterInfo, WorkerClusterInfo) = startCluster()
-    val bkCluster: BrokerClusterInfo                    = cluster._1
-    val wkCluster: WorkerClusterInfo                    = cluster._2
-    val connectorKey: ConnectorKey                      = ConnectorKey.of(CommonUtils.randomString(5), "JDBC-Source-Connector-Test")
-    val topicKey: TopicKey                              = TopicKey.of(CommonUtils.randomString(5), CommonUtils.randomString(5))
-    val connectorAdmin                                  = ConnectorAdmin(wkCluster)
-    createConnector(connectorAdmin, connectorKey, topicKey)
-
-    val consumer =
-      Consumer
-        .builder()
-        .topicKey(topicKey)
-        .offsetFromBegin()
-        .connectionProps(bkCluster.connectionProps)
-        .keySerializer(Serializer.ROW)
-        .valueSerializer(Serializer.BYTES)
-        .build()
-
-    val statement = client.connection.createStatement()
-    try {
-      val result1 = consumer.poll(java.time.Duration.ofSeconds(5), tableTotalCount.intValue()).asScala
-      tableTotalCount.intValue() >= result1.size shouldBe true
-
-      result(connectorAdmin.pause(connectorKey))
-      result(connectorAdmin.resume(connectorKey))
-      TimeUnit.SECONDS.sleep(3)
-
-      consumer.seekToBeginning()
-      val result2 = consumer.poll(java.time.Duration.ofSeconds(5), tableTotalCount.intValue()).asScala
-      result2.size >= result1.size shouldBe true
-
-      result(connectorAdmin.delete(connectorKey))
+  @ParameterizedTest(name = "{displayName} with {argumentsWithNames}")
+  @MethodSource(value = Array("parameters"))
+  def testConnectorStartPauseResumeDelete(platform: ContainerPlatform): Unit =
+    close(platform.setup()) { resourceRef =>
+      val startTestTimestamp                     = CommonUtils.current()
+      val inputDataTime                          = 30000L
+      val tableTotalCount                        = setupDatabase(inputDataTime)
+      val (brokerClusterInfo, workerClusterInfo) = startCluster(resourceRef)
+      val connectorKey                           = ConnectorKey.of(CommonUtils.randomString(5), "JDBC-Source-Connector-Test")
+      val topicKey                               = TopicKey.of(CommonUtils.randomString(5), CommonUtils.randomString(5))
+      val connectorAdmin                         = ConnectorAdmin(workerClusterInfo)
       createConnector(connectorAdmin, connectorKey, topicKey)
 
-      // Check the table and topic data size
-      await(() => CommonUtils.current() - startTestTimestamp >= inputDataTime && count() == tableTotalCount.intValue())
+      val consumer =
+        Consumer
+          .builder()
+          .topicKey(topicKey)
+          .offsetFromBegin()
+          .connectionProps(brokerClusterInfo.connectionProps)
+          .keySerializer(Serializer.ROW)
+          .valueSerializer(Serializer.BYTES)
+          .build()
 
-      consumer.seekToBeginning() //Reset consumer
-      val result3 = consumer.poll(java.time.Duration.ofSeconds(60), tableTotalCount.intValue()).asScala
-      tableTotalCount.intValue() shouldBe result3.size
+      val statement = client.connection.createStatement()
+      try {
+        val result1 = consumer.poll(java.time.Duration.ofSeconds(5), tableTotalCount.intValue()).asScala
+        tableTotalCount.intValue() >= result1.size shouldBe true
 
-      // Check the topic data is equals the database table
-      val resultSet              = statement.executeQuery(s"select * from $tableName order by $queryColumn")
-      val tableData: Seq[String] = Iterator.continually(resultSet).takeWhile(_.next()).map(_.getString(2)).toSeq
-      val topicData: Seq[String] = result3
-        .map(record => record.key.get.cell(queryColumn).value().toString)
-        .sorted[String]
-        .toSeq
-      checkData(tableData, topicData)
-    } finally {
-      Releasable.close(consumer)
-      Releasable.close(statement)
-      stopWorkerCluster(wkCluster)
-    }
-  }
+        result(connectorAdmin.pause(connectorKey))
+        result(connectorAdmin.resume(connectorKey))
+        TimeUnit.SECONDS.sleep(3)
 
-  @Test
-  def testTableInsertUpdateDelete(): Unit = {
-    val startTestTimestamp = CommonUtils.current()
-    val inputDataTime      = 10000L
-    setup(inputDataTime)
-    val cluster: (BrokerClusterInfo, WorkerClusterInfo) = startCluster()
-    val bkCluster: BrokerClusterInfo                    = cluster._1
-    val wkCluster: WorkerClusterInfo                    = cluster._2
-    val connectorKey: ConnectorKey                      = ConnectorKey.of(CommonUtils.randomString(5), "JDBC-Source-Connector-Test")
-    val topicKey: TopicKey                              = TopicKey.of(CommonUtils.randomString(5), CommonUtils.randomString(5))
-    val connectorAdmin                                  = ConnectorAdmin(wkCluster)
-    createConnector(connectorAdmin, connectorKey, topicKey)
+        consumer.seekToBeginning()
+        val result2 = consumer.poll(java.time.Duration.ofSeconds(5), tableTotalCount.intValue()).asScala
+        result2.size >= result1.size shouldBe true
 
-    val consumer =
-      Consumer
-        .builder()
-        .topicKey(topicKey)
-        .offsetFromBegin()
-        .connectionProps(bkCluster.connectionProps)
-        .keySerializer(Serializer.ROW)
-        .valueSerializer(Serializer.BYTES)
-        .build()
-    val insertPreparedStatement =
-      client.connection.prepareStatement(s"INSERT INTO $tableName($timestampColumn, $queryColumn) VALUES(?,?)")
-    val updatePreparedStatement =
-      client.connection.prepareStatement(s"UPDATE $tableName SET $timestampColumn=? WHERE $queryColumn=?")
-    val statement = client.connection.createStatement()
-    try {
-      val resultSet = statement.executeQuery(s"select * from $tableName order by $queryColumn")
-      val queryResult: (Timestamp, String) = Iterator
-        .continually(resultSet)
-        .takeWhile(_.next())
-        .map { x =>
-          (x.getTimestamp(1), x.getString(2))
-        }
-        .toSeq
-        .head
+        result(connectorAdmin.delete(connectorKey))
+        createConnector(connectorAdmin, connectorKey, topicKey)
 
-      statement.executeUpdate(s"DELETE FROM $tableName WHERE $queryColumn='${queryResult._2}'")
+        // Check the table and topic data size
+        await(
+          () => CommonUtils.current() - startTestTimestamp >= inputDataTime && count() == tableTotalCount.intValue()
+        )
 
-      insertPreparedStatement.setTimestamp(1, queryResult._1)
-      insertPreparedStatement.setString(2, queryResult._2)
-      insertPreparedStatement.executeUpdate()
+        consumer.seekToBeginning() //Reset consumer
+        val result3 = consumer.poll(java.time.Duration.ofSeconds(60), tableTotalCount.intValue()).asScala
+        tableTotalCount.intValue() shouldBe result3.size
 
-      await(() => CommonUtils.current() - startTestTimestamp >= inputDataTime && count() == tableTotalCount.intValue())
+        // Check the topic data is equals the database table
+        val resultSet              = statement.executeQuery(s"select * from $tableName order by $queryColumn")
+        val tableData: Seq[String] = Iterator.continually(resultSet).takeWhile(_.next()).map(_.getString(2)).toSeq
+        val topicData: Seq[String] = result3
+          .map(record => record.key.get.cell(queryColumn).value().toString)
+          .sorted[String]
+          .toSeq
+        checkData(tableData, topicData)
+      } finally {
+        Releasable.close(consumer)
+        Releasable.close(statement)
+      }
+    }(_ => ())
 
-      val result = consumer.poll(java.time.Duration.ofSeconds(60), tableTotalCount.intValue()).asScala
-      tableTotalCount.intValue() shouldBe result.size
-      val topicData: Seq[String] = result
-        .map(record => record.key.get.cell(queryColumn).value().toString)
-        .sorted[String]
-        .toSeq
-      val tableResultSet = statement.executeQuery(s"select * from $tableName order by $queryColumn")
-      val resultTableData: Seq[String] =
-        Iterator.continually(tableResultSet).takeWhile(_.next()).map(_.getString(2)).toSeq
-      checkData(resultTableData, topicData)
+  @ParameterizedTest(name = "{displayName} with {argumentsWithNames}")
+  @MethodSource(value = Array("parameters"))
+  def testTableInsertUpdateDelete(platform: ContainerPlatform): Unit =
+    close(platform.setup()) { resourceRef =>
+      val startTestTimestamp                     = CommonUtils.current()
+      val inputDataTime                          = 10000L
+      val tableTotalCount                        = setupDatabase(inputDataTime)
+      val (brokerClusterInfo, workerClusterInfo) = startCluster(resourceRef)
+      val connectorKey                           = ConnectorKey.of(CommonUtils.randomString(5), "JDBC-Source-Connector-Test")
+      val topicKey                               = TopicKey.of(CommonUtils.randomString(5), CommonUtils.randomString(5))
+      val connectorAdmin                         = ConnectorAdmin(workerClusterInfo)
+      createConnector(connectorAdmin, connectorKey, topicKey)
 
-      // Test update data for the table
-      updatePreparedStatement.setTimestamp(1, queryResult._1)
-      updatePreparedStatement.setString(2, queryResult._2)
-      updatePreparedStatement.executeUpdate()
-      TimeUnit.SECONDS.sleep(5)
-      consumer.seekToBeginning()
-      val updateResult = consumer.poll(java.time.Duration.ofSeconds(30), tableTotalCount.intValue()).asScala
-      updateResult.size shouldBe tableTotalCount.intValue()
-    } finally {
-      Releasable.close(insertPreparedStatement)
-      Releasable.close(updatePreparedStatement)
-      Releasable.close(statement)
-      Releasable.close(consumer)
-    }
-  }
+      val consumer =
+        Consumer
+          .builder()
+          .topicKey(topicKey)
+          .offsetFromBegin()
+          .connectionProps(brokerClusterInfo.connectionProps)
+          .keySerializer(Serializer.ROW)
+          .valueSerializer(Serializer.BYTES)
+          .build()
+      val insertPreparedStatement =
+        client.connection.prepareStatement(s"INSERT INTO $tableName($timestampColumn, $queryColumn) VALUES(?,?)")
+      val updatePreparedStatement =
+        client.connection.prepareStatement(s"UPDATE $tableName SET $timestampColumn=? WHERE $queryColumn=?")
+      val statement = client.connection.createStatement()
+      try {
+        val resultSet = statement.executeQuery(s"select * from $tableName order by $queryColumn")
+        val queryResult: (Timestamp, String) = Iterator
+          .continually(resultSet)
+          .takeWhile(_.next())
+          .map { x =>
+            (x.getTimestamp(1), x.getString(2))
+          }
+          .toSeq
+          .head
+
+        statement.executeUpdate(s"DELETE FROM $tableName WHERE $queryColumn='${queryResult._2}'")
+
+        insertPreparedStatement.setTimestamp(1, queryResult._1)
+        insertPreparedStatement.setString(2, queryResult._2)
+        insertPreparedStatement.executeUpdate()
+
+        await(
+          () => CommonUtils.current() - startTestTimestamp >= inputDataTime && count() == tableTotalCount.intValue()
+        )
+
+        val result = consumer.poll(java.time.Duration.ofSeconds(60), tableTotalCount.intValue()).asScala
+        tableTotalCount.intValue() shouldBe result.size
+        val topicData: Seq[String] = result
+          .map(record => record.key.get.cell(queryColumn).value().toString)
+          .sorted[String]
+          .toSeq
+        val tableResultSet = statement.executeQuery(s"select * from $tableName order by $queryColumn")
+        val resultTableData: Seq[String] =
+          Iterator.continually(tableResultSet).takeWhile(_.next()).map(_.getString(2)).toSeq
+        checkData(resultTableData, topicData)
+
+        // Test update data for the table
+        updatePreparedStatement.setTimestamp(1, queryResult._1)
+        updatePreparedStatement.setString(2, queryResult._2)
+        updatePreparedStatement.executeUpdate()
+        TimeUnit.SECONDS.sleep(5)
+        consumer.seekToBeginning()
+        val updateResult = consumer.poll(java.time.Duration.ofSeconds(30), tableTotalCount.intValue()).asScala
+        updateResult.size shouldBe tableTotalCount.intValue()
+      } finally {
+        Releasable.close(insertPreparedStatement)
+        Releasable.close(updatePreparedStatement)
+        Releasable.close(statement)
+        Releasable.close(consumer)
+      }
+    }(_ => ())
 
   private[this] def count(): Int = {
     val prepareStatement = client.connection.prepareStatement(s"SELECT count(*) from $tableName")
@@ -320,68 +308,61 @@ private[jdbc] abstract class BasicTestConnectorCollie(platform: ContainerPlatfor
     } finally Releasable.close(prepareStatement)
   }
 
-  private[this] def startCluster(): (BrokerClusterInfo, WorkerClusterInfo) = {
+  private[this] def startCluster(resourceRef: ResourceRef): (BrokerClusterInfo, WorkerClusterInfo) = {
     log.info("[ZOOKEEPER] start to test zookeeper")
     TimeUnit.SECONDS.sleep(5)
+
     val zkCluster = result(
-      zk_create(
-        clusterKey = serviceKeyHolder.generateClusterKey(),
-        clientPort = CommonUtils.availablePort(),
-        electionPort = CommonUtils.availablePort(),
-        peerPort = CommonUtils.availablePort(),
-        nodeNames = Set(platform.nodeNames.head)
-      )
+      resourceRef.zookeeperApi.request
+        .key(resourceRef.generateObjectKey)
+        .nodeName(resourceRef.nodeNames.head)
+        .create()
     )
-    result(zk_start(zkCluster.key))
-    assertCluster(() => result(zk_clusters()), () => result(zk_containers(zkCluster.key)), zkCluster.key)
+    result(resourceRef.zookeeperApi.start(zkCluster.key))
+    assertCluster(
+      () => result(resourceRef.zookeeperApi.list()),
+      () => result(resourceRef.containerApi.get(zkCluster.key).map(_.flatMap(_.containers))),
+      zkCluster.key
+    )
 
     log.info("[BROKER] start to test broker")
-    val bkCluster = result(
-      bk_create(
-        clusterKey = serviceKeyHolder.generateClusterKey(),
-        clientPort = CommonUtils.availablePort(),
-        jmxPort = CommonUtils.availablePort(),
-        zookeeperClusterKey = zkCluster.key,
-        nodeNames = Set(platform.nodeNames.head)
-      )
+    val brokerClusterInfo = result(
+      resourceRef.brokerApi.request
+        .key(resourceRef.generateObjectKey)
+        .zookeeperClusterKey(zkCluster.key)
+        .nodeName(resourceRef.nodeNames.head)
+        .create()
     )
-    result(bk_start(bkCluster.key))
-    assertCluster(() => result(bk_clusters()), () => result(bk_containers(bkCluster.key)), bkCluster.key)
+    result(resourceRef.brokerApi.start(brokerClusterInfo.key))
+    assertCluster(
+      () => result(resourceRef.brokerApi.list()),
+      () => result(resourceRef.containerApi.get(brokerClusterInfo.key).map(_.flatMap(_.containers))),
+      brokerClusterInfo.key
+    )
 
     log.info("[WORKER] create ...")
-    val wkCluster = result(
-      wk_create(
-        clusterKey = serviceKeyHolder.generateClusterKey(),
-        clientPort = CommonUtils.availablePort(),
-        jmxPort = CommonUtils.availablePort(),
-        brokerClusterKey = bkCluster.key,
-        nodeNames = Set(platform.nodeNames.head)
-      )
+    val fileInfo = result(
+      resourceRef.fileApi.request.file(new File(CommonUtils.path(jarFolderPath, jdbcDriverJarFileName))).upload()
+    )
+
+    val workerClusterInfo = result(
+      resourceRef.workerApi.request
+        .key(resourceRef.generateObjectKey)
+        .brokerClusterKey(brokerClusterInfo.key)
+        .nodeName(resourceRef.nodeNames.head)
+        .sharedJarKeys(Set(fileInfo.key))
+        .create()
     )
     log.info("[WORKER] create done")
-    result(wk_start(wkCluster.key))
+    result(resourceRef.workerApi.start(workerClusterInfo.key))
     log.info("[WORKER] start done")
-    assertCluster(() => result(wk_clusters()), () => result(wk_containers(wkCluster.key)), wkCluster.key)
-    log.info("[WORKER] verify:create done")
-    result(wk_exist(wkCluster.key)) shouldBe true
-    log.info("[WORKER] verify:exist done")
-    // we can't assume the size since other tests may create zk cluster at the same time
-    result(wk_clusters()).isEmpty shouldBe false
-    testConnectors(wkCluster)
-    (bkCluster, wkCluster)
-  }
-
-  private[this] def stopWorkerCluster(wkCluster: WorkerClusterInfo): Unit = {
-    result(wk_stop(wkCluster.key))
-    await(() => {
-      // In configurator mode: clusters() will return the "stopped list" in normal case
-      // In collie mode: clusters() will return the "cluster list except stop one" in normal case
-      // we should consider these two cases by case...
-      val clusters = result(wk_clusters())
-      !clusters.map(_.key).contains(wkCluster.key) || clusters.find(_.key == wkCluster.key).get.state.isEmpty
-    })
-    // the cluster is stopped actually, delete the data
-    wk_delete(wkCluster.key)
+    assertCluster(
+      () => result(resourceRef.workerApi.list()),
+      () => result(resourceRef.containerApi.get(workerClusterInfo.key).map(_.flatMap(_.containers))),
+      workerClusterInfo.key
+    )
+    testConnectors(workerClusterInfo)
+    (brokerClusterInfo, workerClusterInfo)
   }
 
   private[this] def createConnector(
@@ -399,87 +380,6 @@ private[jdbc] abstract class BasicTestConnectorCollie(platform: ContainerPlatfor
         .settings(props().toMap)
         .create()
     )
-
-  private[this] def uploadJDBCJarToConfigurator(): Unit = {
-    val jarApi: FileInfoApi.Access = FileInfoApi.access.hostname(configuratorHostname).port(configuratorPort)
-    val jar                        = new File(CommonUtils.path(jarFolderPath, jdbcDriverJarFileName))
-    jdbcJarFileInfo = result(jarApi.request.file(jar).upload())
-  }
-
-  private[this] def zk_clusters(): Future[Seq[ZookeeperApi.ZookeeperClusterInfo]] =
-    zkApi.list()
-
-  private[this] def zk_containers(clusterKey: ObjectKey): Future[Seq[ContainerApi.ContainerInfo]] =
-    containerApi.get(clusterKey).map(_.flatMap(_.containers))
-
-  private[this] def zk_start(clusterKey: ObjectKey): Future[Unit] = zkApi.start(clusterKey)
-
-  private[this] def zk_create(
-    clusterKey: ObjectKey,
-    clientPort: Int,
-    electionPort: Int,
-    peerPort: Int,
-    nodeNames: Set[String]
-  ): Future[ZookeeperApi.ZookeeperClusterInfo] =
-    zkApi.request
-      .key(clusterKey)
-      .clientPort(clientPort)
-      .electionPort(electionPort)
-      .peerPort(peerPort)
-      .nodeNames(nodeNames)
-      .create()
-
-  private[this] def bk_start(clusterKey: ObjectKey): Future[Unit] = bkApi.start(clusterKey)
-
-  private[this] def bk_clusters(): Future[Seq[BrokerApi.BrokerClusterInfo]] = bkApi.list()
-
-  private[this] def bk_containers(clusterKey: ObjectKey): Future[Seq[ContainerApi.ContainerInfo]] =
-    containerApi.get(clusterKey).map(_.flatMap(_.containers))
-
-  private[this] def bk_create(
-    clusterKey: ObjectKey,
-    clientPort: Int,
-    jmxPort: Int,
-    zookeeperClusterKey: ObjectKey,
-    nodeNames: Set[String]
-  ): Future[BrokerApi.BrokerClusterInfo] =
-    bkApi.request
-      .key(clusterKey)
-      .clientPort(clientPort)
-      .jmxPort(jmxPort)
-      .zookeeperClusterKey(zookeeperClusterKey)
-      .nodeNames(nodeNames)
-      .create()
-
-  private[this] def wk_start(clusterKey: ObjectKey): Future[Unit] = wkApi.start(clusterKey)
-
-  private[this] def wk_stop(clusterKey: ObjectKey): Future[Unit] =
-    wkApi.forceStop(clusterKey).map(_ => ())
-
-  private[this] def wk_containers(clusterKey: ObjectKey): Future[Seq[ContainerApi.ContainerInfo]] =
-    containerApi.get(clusterKey).map(_.flatMap(_.containers))
-
-  private[this] def wk_exist(clusterKey: ObjectKey): Future[Boolean] = wkApi.list().map(_.exists(_.key == clusterKey))
-
-  private[this] def wk_delete(clusterKey: ObjectKey): Future[Unit] = wkApi.delete(clusterKey)
-
-  private[this] def wk_clusters(): Future[Seq[WorkerApi.WorkerClusterInfo]] = wkApi.list()
-
-  private[this] def wk_create(
-    clusterKey: ObjectKey,
-    clientPort: Int,
-    jmxPort: Int,
-    brokerClusterKey: ObjectKey,
-    nodeNames: Set[String]
-  ): Future[WorkerApi.WorkerClusterInfo] =
-    wkApi.request
-      .key(clusterKey)
-      .clientPort(clientPort)
-      .jmxPort(jmxPort)
-      .brokerClusterKey(brokerClusterKey)
-      .nodeNames(nodeNames)
-      .sharedJarKeys(Set(jdbcJarFileInfo.key))
-      .create()
 
   private[this] def testConnectors(cluster: WorkerClusterInfo): Unit =
     await(
@@ -508,12 +408,12 @@ private[jdbc] abstract class BasicTestConnectorCollie(platform: ContainerPlatfor
       )
     )
 
-  private[this] def checkData(tableData: Seq[String], topicData: Seq[String]): Unit = {
+  private[this] def checkData(tableData: Seq[String], topicData: Seq[String]): Unit =
     tableData.foreach { data =>
       topicData.contains(data) shouldBe true
     }
-  }
-  @After
+
+  @AfterEach
   def afterTest(): Unit = {
     Releasable.close(inputDataThread)
     if (client != null) {
@@ -522,4 +422,8 @@ private[jdbc] abstract class BasicTestConnectorCollie(platform: ContainerPlatfor
     }
     Releasable.close(client)
   }
+}
+
+object BasicTestConnectorCollie {
+  def parameters: java.util.stream.Stream[Arguments] = ContainerPlatform.all.map(o => Arguments.of(o)).asJava.stream()
 }

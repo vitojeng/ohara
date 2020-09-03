@@ -24,8 +24,8 @@ import java.util.Map;
 import oharastream.ohara.kafka.connector.RowSinkRecord;
 import oharastream.ohara.kafka.connector.csv.CsvConnectorDefinitions;
 import oharastream.ohara.kafka.connector.csv.WithMockStorage;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class TestTopicPartitionWriter extends WithMockStorage {
   private final Map<String, String> localProps = new HashMap<>();
@@ -59,14 +59,14 @@ public class TestTopicPartitionWriter extends WithMockStorage {
       writer.buffer(record);
     }
     writer.write();
-    Assert.assertEquals(7, writer.getRecordCount());
+    Assertions.assertEquals(7, writer.getRecordCount());
 
     records = createRecords(2);
     for (RowSinkRecord record : records) {
       writer.buffer(record);
     }
     writer.write();
-    Assert.assertEquals(9, writer.getRecordCount());
+    Assertions.assertEquals(9, writer.getRecordCount());
   }
 
   @Test
@@ -82,8 +82,8 @@ public class TestTopicPartitionWriter extends WithMockStorage {
 
     writer.write();
 
-    Assert.assertEquals(1, writer.getRecordCount());
-    Assert.assertEquals(6, writer.getCommittedOffset().intValue());
+    Assertions.assertEquals(1, writer.getRecordCount());
+    Assertions.assertEquals(6, writer.getCommittedOffset().intValue());
   }
 
   @Test
@@ -100,8 +100,8 @@ public class TestTopicPartitionWriter extends WithMockStorage {
 
     writer.write();
 
-    Assert.assertEquals(7, writer.getRecordCount());
-    Assert.assertEquals(null, writer.getCommittedOffset());
+    Assertions.assertEquals(7, writer.getRecordCount());
+    Assertions.assertEquals(null, writer.getCommittedOffset());
 
     Thread.sleep(5000);
 
@@ -112,8 +112,8 @@ public class TestTopicPartitionWriter extends WithMockStorage {
 
     writer.write();
 
-    Assert.assertEquals(5, writer.getRecordCount());
-    Assert.assertEquals(7, writer.getCommittedOffset().intValue());
+    Assertions.assertEquals(5, writer.getRecordCount());
+    Assertions.assertEquals(7, writer.getCommittedOffset().intValue());
   }
 
   @Test
@@ -140,7 +140,7 @@ public class TestTopicPartitionWriter extends WithMockStorage {
 
     var actualFilenames = ImmutableList.copyOf(fs.listFileNames(dir));
     for (String filename : filenames) {
-      Assert.assertTrue(actualFilenames.contains(filename));
+      Assertions.assertTrue(actualFilenames.contains(filename));
     }
   }
 }

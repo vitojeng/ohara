@@ -22,7 +22,7 @@ import java.lang.reflect.{Method, Modifier}
 import oharastream.ohara.common.rule.OharaTest
 import oharastream.ohara.it.IntegrationTest
 import oharastream.ohara.it.code.ClassUtils._
-import org.junit.{After, Before, Test}
+import org.junit.jupiter.api.{AfterEach, BeforeEach, Test}
 import org.scalatest.matchers.should.Matchers._
 
 class TestTestCases extends OharaTest {
@@ -115,8 +115,8 @@ class TestTestCases extends OharaTest {
     val methodNameInObject = classOf[Object].getMethods.map(_.getName)
     val requiredAnnotations = Seq(
       classOf[Test],
-      classOf[Before],
-      classOf[After]
+      classOf[BeforeEach],
+      classOf[AfterEach]
     )
 
     def annotation(m: Method): Seq[Annotation] = if (m.getAnnotations == null) Seq.empty else m.getAnnotations.toSeq

@@ -31,7 +31,7 @@ import oharastream.ohara.kafka.Consumer
 import oharastream.ohara.kafka.connector.TaskSetting
 import oharastream.ohara.testing.With3Brokers3Workers
 import oharastream.ohara.testing.service.Database
-import org.junit.{After, Test}
+import org.junit.jupiter.api.{AfterEach, Test}
 import org.scalatest.matchers.should.Matchers._
 
 import scala.concurrent.{Await, Future}
@@ -340,7 +340,7 @@ class TestJDBCSourceConnectorExactlyOnce extends With3Brokers3Workers {
     } finally Releasable.close(prepareStatement)
   }
 
-  @After
+  @AfterEach
   def after(): Unit = {
     if (client != null) {
       val statement: Statement = client.connection.createStatement()

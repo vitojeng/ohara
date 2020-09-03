@@ -19,7 +19,7 @@ package oharastream.ohara.client.filesystem.ftp
 import java.util.concurrent.TimeUnit
 
 import oharastream.ohara.common.rule.OharaTest
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import org.scalatest.matchers.should.Matchers._
 
 import scala.concurrent.duration.Duration

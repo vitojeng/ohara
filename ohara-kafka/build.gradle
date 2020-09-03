@@ -46,6 +46,7 @@ dependencies {
   testImplementation project(path: ':ohara-testing-util', configuration: 'testRuntime')
   testImplementation project(path: ':ohara-common', configuration: 'testRuntime')
   testImplementation libs.mockitoAll
-  testImplementation libs.junit
+  testImplementation libs.junitApi
+  testRuntimeOnly libs.junitEngine
 }
 

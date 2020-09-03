@@ -19,54 +19,54 @@ package oharastream.ohara.metrics.basic;
 import oharastream.ohara.common.rule.OharaTest;
 import oharastream.ohara.common.setting.ObjectKey;
 import oharastream.ohara.common.util.CommonUtils;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class TestCounterBuilder extends OharaTest {
 
-  @Test(expected = NullPointerException.class)
+  @Test
   public void testNullId() {
-    Counter.builder().id(null);
+    Assertions.assertThrows(NullPointerException.class, () -> Counter.builder().id(null));
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   public void testEmptyId() {
-    Counter.builder().id("");
+    Assertions.assertThrows(IllegalArgumentException.class, () -> Counter.builder().id(""));
   }
 
-  @Test(expected = NullPointerException.class)
+  @Test
   public void testNullGroup() {
-    Counter.builder().key(null);
+    Assertions.assertThrows(NullPointerException.class, () -> Counter.builder().key(null));
   }
 
-  @Test(expected = NullPointerException.class)
+  @Test
   public void testNullName() {
-    Counter.builder().item(null);
+    Assertions.assertThrows(NullPointerException.class, () -> Counter.builder().item(null));
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   public void testEmptyName() {
-    Counter.builder().item("");
+    Assertions.assertThrows(IllegalArgumentException.class, () -> Counter.builder().item(""));
   }
 
-  @Test(expected = NullPointerException.class)
+  @Test
   public void testNullUnit() {
-    Counter.builder().unit(null);
+    Assertions.assertThrows(NullPointerException.class, () -> Counter.builder().unit(null));
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   public void testEmptyUnit() {
-    Counter.builder().unit("");
+    Assertions.assertThrows(IllegalArgumentException.class, () -> Counter.builder().unit(""));
   }
 
-  @Test(expected = NullPointerException.class)
+  @Test
   public void testNullDocument() {
-    Counter.builder().document(null);
+    Assertions.assertThrows(NullPointerException.class, () -> Counter.builder().document(null));
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   public void testEmptyDocument() {
-    Counter.builder().document("");
+    Assertions.assertThrows(IllegalArgumentException.class, () -> Counter.builder().document(""));
   }
 
   @Test
@@ -86,12 +86,12 @@ public class TestCounterBuilder extends OharaTest {
             .document(document)
             .unit(unit)
             .build()) {
-      Assert.assertEquals(key, counter.key());
-      Assert.assertEquals(name, counter.item());
-      Assert.assertEquals(document, counter.getDocument());
-      Assert.assertEquals(value, counter.getValue());
-      Assert.assertEquals(startTime, counter.getStartTime());
-      Assert.assertEquals(unit, counter.getUnit());
+      Assertions.assertEquals(key, counter.key());
+      Assertions.assertEquals(name, counter.item());
+      Assertions.assertEquals(document, counter.getDocument());
+      Assertions.assertEquals(value, counter.getValue());
+      Assertions.assertEquals(startTime, counter.getStartTime());
+      Assertions.assertEquals(unit, counter.getUnit());
     }
   }
 }

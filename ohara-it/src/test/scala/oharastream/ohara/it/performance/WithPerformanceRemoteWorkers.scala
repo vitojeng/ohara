@@ -22,7 +22,7 @@ import oharastream.ohara.client.configurator.{BrokerApi, NodeApi, WorkerApi, Zoo
 import oharastream.ohara.common.setting.ObjectKey
 import oharastream.ohara.common.util.{CommonUtils, Releasable}
 import oharastream.ohara.it.ServiceKeyHolder
-import org.junit.{After, Before}
+import org.junit.jupiter.api.{AfterEach, BeforeEach}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -63,7 +63,7 @@ private[performance] abstract class WithPerformanceRemoteWorkers extends WithPer
 
   protected def sharedJars: Set[ObjectKey] = Set.empty
 
-  @Before
+  @BeforeEach
   def setupWorkers(): Unit = {
     val nodeNames: Seq[String] = nodes.map(_.hostname)
     serviceKeyHolder = ServiceKeyHolder(containerClient)
@@ -82,9 +82,9 @@ private[performance] abstract class WithPerformanceRemoteWorkers extends WithPer
       }
     }
 
-    zkKey = serviceKeyHolder.generateClusterKey()
-    bkKey = serviceKeyHolder.generateClusterKey()
-    wkKey = serviceKeyHolder.generateClusterKey()
+    zkKey = serviceKeyHolder.generateObjectKey()
+    bkKey = serviceKeyHolder.generateObjectKey()
+    wkKey = serviceKeyHolder.generateObjectKey()
 
     // single zk
     result(
@@ -131,7 +131,7 @@ private[performance] abstract class WithPerformanceRemoteWorkers extends WithPer
     await(() => result(wkApi.get(wkKey)).state.isDefined)
   }
 
-  @After
+  @AfterEach
   def releaseService(): Unit = {
     Releasable.close(serviceKeyHolder)
   }

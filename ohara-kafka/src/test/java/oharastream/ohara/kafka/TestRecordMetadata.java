@@ -19,8 +19,8 @@ package oharastream.ohara.kafka;
 import oharastream.ohara.common.rule.OharaTest;
 import oharastream.ohara.common.setting.TopicKey;
 import org.apache.kafka.common.TopicPartition;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class TestRecordMetadata extends OharaTest {
 
@@ -42,11 +42,11 @@ public class TestRecordMetadata extends OharaTest {
                 10L,
                 serializedKeySize,
                 serializedValueSize));
-    Assert.assertEquals(topicKey, record.topicKey());
-    Assert.assertEquals(partition, record.partition());
-    Assert.assertEquals(timestamp, record.timestamp());
-    Assert.assertEquals(offset, record.offset());
-    Assert.assertEquals(serializedKeySize, record.serializedKeySize());
-    Assert.assertEquals(serializedValueSize, record.serializedValueSize());
+    Assertions.assertEquals(topicKey, record.topicKey());
+    Assertions.assertEquals(partition, record.partition());
+    Assertions.assertEquals(timestamp, record.timestamp());
+    Assertions.assertEquals(offset, record.offset());
+    Assertions.assertEquals(serializedKeySize, record.serializedKeySize());
+    Assertions.assertEquals(serializedValueSize, record.serializedValueSize());
   }
 }

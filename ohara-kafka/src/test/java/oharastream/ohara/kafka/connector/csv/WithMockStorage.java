@@ -16,12 +16,16 @@
 
 package oharastream.ohara.kafka.connector.csv;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.file.Files;
 import java.util.Collection;
 import java.util.stream.Collectors;
 import oharastream.ohara.common.exception.Exception;
 import oharastream.ohara.kafka.connector.storage.FileSystem;
-import org.junit.rules.TemporaryFolder;
 
 public abstract class WithMockStorage extends CsvSinkTestBase {
   protected FileSystem fs;
@@ -34,9 +38,7 @@ public abstract class WithMockStorage extends CsvSinkTestBase {
 
   protected File createTemporaryFolder() {
     try {
-      TemporaryFolder folder = new TemporaryFolder();
-      folder.create();
-      return folder.getRoot();
+      return Files.createTempDirectory("createTemporaryFolder").toFile();
     } catch (IOException e) {
       throw new Exception(e);
     }

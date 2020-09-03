@@ -19,49 +19,49 @@ package oharastream.ohara.kafka.connector.json;
 import java.util.Arrays;
 import java.util.List;
 import oharastream.ohara.common.rule.OharaTest;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class TestStringList extends OharaTest {
 
   @Test
   public void testToKafkaString() {
     List<String> list = Arrays.asList("a", "bb", "ccc");
-    Assert.assertEquals(list, StringList.ofKafkaList(StringList.toKafkaString(list)));
+    Assertions.assertEquals(list, StringList.ofKafkaList(StringList.toKafkaString(list)));
   }
 
   @Test
   public void testJsonString() {
     String json = "[\"aaa\", \"cccc\"]";
     List<String> ss = StringList.ofJson(json);
-    Assert.assertEquals(2, ss.size());
-    Assert.assertEquals("aaa", ss.get(0));
-    Assert.assertEquals("cccc", ss.get(1));
+    Assertions.assertEquals(2, ss.size());
+    Assertions.assertEquals("aaa", ss.get(0));
+    Assertions.assertEquals("cccc", ss.get(1));
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   public void testInvalidJsonString() {
     String invalid = StringList.toKafkaString(Arrays.asList("a", "ccc"));
-    StringList.ofJson(invalid);
+    Assertions.assertThrows(IllegalArgumentException.class, () -> StringList.ofJson(invalid));
   }
 
   @Test
   public void testNullJson() {
-    Assert.assertTrue(StringList.ofJson(null).isEmpty());
+    Assertions.assertTrue(StringList.ofJson(null).isEmpty());
   }
 
   @Test
   public void testEmptyJson() {
-    Assert.assertTrue(StringList.ofJson("").isEmpty());
+    Assertions.assertTrue(StringList.ofJson("").isEmpty());
   }
 
   @Test
   public void testNullStringJson() {
-    Assert.assertTrue(StringList.ofJson("NULL").isEmpty());
+    Assertions.assertTrue(StringList.ofJson("NULL").isEmpty());
   }
 
   @Test
   public void testNullStringJson2() {
-    Assert.assertTrue(StringList.ofJson("null").isEmpty());
+    Assertions.assertTrue(StringList.ofJson("null").isEmpty());
   }
 }

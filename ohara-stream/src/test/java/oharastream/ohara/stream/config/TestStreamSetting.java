@@ -18,18 +18,22 @@ package oharastream.ohara.stream.config;
 
 import oharastream.ohara.common.rule.OharaTest;
 import oharastream.ohara.common.util.CommonUtils;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class TestStreamSetting extends OharaTest {
   @Test
   public void testToEnvString() {
     String string = CommonUtils.randomString();
-    Assert.assertEquals(string, StreamSetting.fromEnvString(StreamSetting.toEnvString(string)));
+    Assertions.assertEquals(string, StreamSetting.fromEnvString(StreamSetting.toEnvString(string)));
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   public void failToUseEnvString() {
-    StreamSetting.toEnvString(CommonUtils.randomString() + StreamSetting.INTERNAL_STRING_FOR_ENV);
+    Assertions.assertThrows(
+        IllegalArgumentException.class,
+        () ->
+            StreamSetting.toEnvString(
+                CommonUtils.randomString() + StreamSetting.INTERNAL_STRING_FOR_ENV));
   }
 }

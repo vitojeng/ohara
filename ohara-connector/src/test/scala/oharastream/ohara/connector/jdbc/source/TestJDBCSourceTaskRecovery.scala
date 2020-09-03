@@ -27,7 +27,7 @@ import oharastream.ohara.kafka.connector.{RowSourceRecord, TaskSetting}
 import oharastream.ohara.testing.service.Database
 import org.apache.kafka.connect.source.SourceTaskContext
 import org.apache.kafka.connect.storage.OffsetStorageReader
-import org.junit.{After, Before, Test}
+import org.junit.jupiter.api.{AfterEach, BeforeEach, Test}
 import org.mockito.Mockito
 import org.mockito.Mockito.when
 import org.scalatest.matchers.should.Matchers._
@@ -44,7 +44,7 @@ class TestJDBCSourceTaskRecovery extends OharaTest {
   private[this] val taskSetting: TaskSetting                 = Mockito.mock(classOf[TaskSetting])
   private[this] val offsetStorageReader: OffsetStorageReader = Mockito.mock(classOf[OffsetStorageReader])
 
-  @Before
+  @BeforeEach
   def setup(): Unit = {
     val column1 = RdbColumn(timestampColumnName, "TIMESTAMP(6)", false)
     val column2 = RdbColumn("COLUMN2", "varchar(45)", false)
@@ -263,7 +263,7 @@ class TestJDBCSourceTaskRecovery extends OharaTest {
     partition3Rows.last.row.cell(1).value shouldBe "a81"
   }
 
-  @After
+  @AfterEach
   def tearDown(): Unit = {
     Releasable.close(client)
     Releasable.close(db)

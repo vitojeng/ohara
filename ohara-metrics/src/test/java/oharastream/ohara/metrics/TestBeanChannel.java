@@ -20,21 +20,21 @@ import java.util.Map;
 import java.util.Objects;
 import oharastream.ohara.common.rule.OharaTest;
 import oharastream.ohara.common.util.CommonUtils;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class TestBeanChannel extends OharaTest {
 
   @Test
   public void testLocalFlag() {
     BeanChannel.Builder builder = BeanChannel.builder().hostname("Asdad");
-    Assert.assertFalse(builder.local);
+    Assertions.assertFalse(builder.local);
   }
 
   @Test
   public void listLocal() {
     BeanChannel channel = BeanChannel.local();
-    Assert.assertTrue(channel.iterator().hasNext());
+    Assertions.assertTrue(channel.iterator().hasNext());
     channel.forEach(
         beanObject -> {
           CommonUtils.requireNonEmpty(beanObject.domainName());
@@ -56,14 +56,14 @@ public class TestBeanChannel extends OharaTest {
         .beanObject(new SimpleInfo(value0, value1))
         .run();
 
-    Assert.assertEquals(1, BeanChannel.builder().local().domainName(domain).build().size());
+    Assertions.assertEquals(1, BeanChannel.builder().local().domainName(domain).build().size());
 
     BeanChannel.builder().local().domainName(domain).build().stream()
         .filter(beanObject -> beanObject.domainName().equals(domain))
         .forEach(
             beanObject -> {
-              Assert.assertEquals(value0, (double) beanObject.attributes().get("Value0"), 0);
-              Assert.assertEquals(value1, (double) beanObject.attributes().get("Value1"), 0);
+              Assertions.assertEquals(value0, (double) beanObject.attributes().get("Value0"), 0);
+              Assertions.assertEquals(value1, (double) beanObject.attributes().get("Value1"), 0);
             });
   }
 

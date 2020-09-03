@@ -18,8 +18,8 @@ package oharastream.ohara.testing.service;
 
 import oharastream.ohara.common.rule.OharaTest;
 import oharastream.ohara.common.util.CommonUtils;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class TestZookeepers extends OharaTest {
 
@@ -27,14 +27,14 @@ public class TestZookeepers extends OharaTest {
   public void testSpecificPort() {
     int port = CommonUtils.availablePort();
     try (Zookeepers zk = Zookeepers.local(port)) {
-      Assert.assertEquals(port, Integer.parseInt(zk.connectionProps().split(":")[1]));
+      Assertions.assertEquals(port, Integer.parseInt(zk.connectionProps().split(":")[1]));
     }
   }
 
   @Test
   public void testRandomPort() {
     try (Zookeepers zk = Zookeepers.local(0)) {
-      Assert.assertNotEquals(0, Integer.parseInt(zk.connectionProps().split(":")[1]));
+      Assertions.assertNotEquals(0, Integer.parseInt(zk.connectionProps().split(":")[1]));
     }
   }
 }

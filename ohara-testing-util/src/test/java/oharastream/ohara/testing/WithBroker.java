@@ -19,8 +19,8 @@ package oharastream.ohara.testing;
 import java.util.NoSuchElementException;
 import oharastream.ohara.common.rule.OharaTest;
 import oharastream.ohara.common.util.Releasable;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 
 /**
  * This class create a mini broker cluster with single node. And the cluster will be closed after
@@ -35,7 +35,7 @@ import org.junit.BeforeClass;
 public abstract class WithBroker extends OharaTest {
   protected static OharaTestUtils util;
 
-  @BeforeClass
+  @BeforeAll
   public static void beforeAll() {
     if (util != null)
       throw new NoSuchElementException(
@@ -47,7 +47,7 @@ public abstract class WithBroker extends OharaTest {
     return util;
   }
 
-  @AfterClass
+  @AfterAll
   public static void afterAll() {
     Releasable.close(util);
     // we have to assign null to util since we allow junit to reuse jvm

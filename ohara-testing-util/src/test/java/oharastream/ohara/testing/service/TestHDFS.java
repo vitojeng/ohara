@@ -16,29 +16,27 @@
 
 package oharastream.ohara.testing.service;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-
 import java.io.IOException;
 import oharastream.ohara.testing.WithTestUtils;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class TestHDFS extends WithTestUtils {
 
   @Test
   public void testHDFSLocal() throws IOException {
     Hdfs hdfs = testUtil().hdfs();
-    assertTrue(hdfs.isLocal());
-    assertFalse(hdfs.tmpDirectory().startsWith("/it"));
+    Assertions.assertTrue(hdfs.isLocal());
+    Assertions.assertFalse(hdfs.tmpDirectory().startsWith("/it"));
 
     Configuration config = new Configuration();
     config.set("fs.defaultFS", hdfs.hdfsURL());
     FileSystem.get(config).listFiles(new Path("/"), false);
 
     hdfs.fileSystem().listFiles(new Path("/"), false);
-    assertTrue(hdfs.fileSystem().getHomeDirectory().toString().startsWith("file:"));
+    Assertions.assertTrue(hdfs.fileSystem().getHomeDirectory().toString().startsWith("file:"));
   }
 }

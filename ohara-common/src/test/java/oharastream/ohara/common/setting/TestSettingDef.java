@@ -19,89 +19,90 @@ package oharastream.ohara.common.setting;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.time.Duration;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import oharastream.ohara.common.data.Serializer;
 import oharastream.ohara.common.exception.ConfigException;
 import oharastream.ohara.common.json.JsonUtils;
 import oharastream.ohara.common.rule.OharaTest;
 import oharastream.ohara.common.util.CommonUtils;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class TestSettingDef extends OharaTest {
 
-  @Test(expected = NullPointerException.class)
+  @Test
   public void nullKey() {
-    SettingDef.builder().key(null);
+    Assertions.assertThrows(NullPointerException.class, () -> SettingDef.builder().key(null));
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   public void emptyKey() {
-    SettingDef.builder().key("");
+    Assertions.assertThrows(IllegalArgumentException.class, () -> SettingDef.builder().key(""));
   }
 
-  @Test(expected = NullPointerException.class)
+  @Test
   public void nullDefaultWithString() {
-    SettingDef.builder().optional((String) null);
+    Assertions.assertThrows(
+        NullPointerException.class, () -> SettingDef.builder().optional((String) null));
   }
 
-  @Test(expected = NullPointerException.class)
+  @Test
   public void nullDefaultWithDuration() {
-    SettingDef.builder().optional((Duration) null);
+    Assertions.assertThrows(
+        NullPointerException.class, () -> SettingDef.builder().optional((Duration) null));
   }
 
-  @Test(expected = NullPointerException.class)
+  @Test
   public void nullDocumentation() {
-    SettingDef.builder().documentation(null);
+    Assertions.assertThrows(
+        NullPointerException.class, () -> SettingDef.builder().documentation(null));
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   public void emptyDocumentation() {
-    SettingDef.builder().documentation("");
+    Assertions.assertThrows(
+        IllegalArgumentException.class, () -> SettingDef.builder().documentation(""));
   }
 
-  @Test(expected = NullPointerException.class)
+  @Test
   public void nullReference() {
-    SettingDef.builder().reference(null);
+    Assertions.assertThrows(NullPointerException.class, () -> SettingDef.builder().reference(null));
   }
 
-  @Test(expected = NullPointerException.class)
+  @Test
   public void nullGroup() {
-    SettingDef.builder().group(null);
+    Assertions.assertThrows(NullPointerException.class, () -> SettingDef.builder().group(null));
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   public void emptyGroup() {
-    SettingDef.builder().group("");
+    Assertions.assertThrows(IllegalArgumentException.class, () -> SettingDef.builder().group(""));
   }
 
-  @Test(expected = NullPointerException.class)
+  @Test
   public void nullDisplay() {
-    SettingDef.builder().displayName(null);
+    Assertions.assertThrows(
+        NullPointerException.class, () -> SettingDef.builder().displayName(null));
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   public void emptyDisplay() {
-    SettingDef.builder().displayName("");
+    Assertions.assertThrows(
+        IllegalArgumentException.class, () -> SettingDef.builder().displayName(""));
   }
 
   @Test
   public void testOnlyKey() {
     String key = CommonUtils.randomString(5);
     SettingDef def = SettingDef.builder().key(key).build();
-    Assert.assertEquals(key, def.key());
-    Assert.assertNotNull(def.displayName());
-    Assert.assertNotNull(def.documentation());
-    Assert.assertNotNull(def.valueType());
-    Assert.assertNotNull(def.group());
-    Assert.assertNotNull(def.reference());
+    Assertions.assertEquals(key, def.key());
+    Assertions.assertNotNull(def.displayName());
+    Assertions.assertNotNull(def.documentation());
+    Assertions.assertNotNull(def.valueType());
+    Assertions.assertNotNull(def.group());
+    Assertions.assertNotNull(def.reference());
     // yep. the default value should be null
-    Assert.assertFalse(def.hasDefault());
+    Assertions.assertFalse(def.hasDefault());
   }
 
   @Test
@@ -124,16 +125,16 @@ public class TestSettingDef extends OharaTest {
             .documentation(documentation)
             .build();
 
-    Assert.assertEquals(key, def.key());
-    Assert.assertEquals(SettingDef.Type.STRING, def.valueType());
-    Assert.assertEquals(displayName, def.displayName());
-    Assert.assertEquals(group, def.group());
-    Assert.assertEquals(reference, def.reference());
-    Assert.assertEquals(orderInGroup, def.orderInGroup());
-    Assert.assertEquals(valueDefault, def.defaultString());
-    Assert.assertEquals(documentation, def.documentation());
-    Assert.assertEquals(def.necessary(), SettingDef.Necessary.OPTIONAL);
-    Assert.assertFalse(def.internal());
+    Assertions.assertEquals(key, def.key());
+    Assertions.assertEquals(SettingDef.Type.STRING, def.valueType());
+    Assertions.assertEquals(displayName, def.displayName());
+    Assertions.assertEquals(group, def.group());
+    Assertions.assertEquals(reference, def.reference());
+    Assertions.assertEquals(orderInGroup, def.orderInGroup());
+    Assertions.assertEquals(valueDefault, def.defaultString());
+    Assertions.assertEquals(documentation, def.documentation());
+    Assertions.assertEquals(def.necessary(), SettingDef.Necessary.OPTIONAL);
+    Assertions.assertFalse(def.internal());
   }
 
   @Test
@@ -158,16 +159,16 @@ public class TestSettingDef extends OharaTest {
             .internal()
             .build();
 
-    Assert.assertEquals(key, def.key());
-    Assert.assertEquals(type, def.valueType());
-    Assert.assertEquals(displayName, def.displayName());
-    Assert.assertEquals(group, def.group());
-    Assert.assertEquals(reference, def.reference());
-    Assert.assertEquals(orderInGroup, def.orderInGroup());
-    Assert.assertFalse(def.hasDefault());
-    Assert.assertEquals(documentation, def.documentation());
-    Assert.assertEquals(def.necessary(), SettingDef.Necessary.REQUIRED);
-    Assert.assertTrue(def.internal());
+    Assertions.assertEquals(key, def.key());
+    Assertions.assertEquals(type, def.valueType());
+    Assertions.assertEquals(displayName, def.displayName());
+    Assertions.assertEquals(group, def.group());
+    Assertions.assertEquals(reference, def.reference());
+    Assertions.assertEquals(orderInGroup, def.orderInGroup());
+    Assertions.assertFalse(def.hasDefault());
+    Assertions.assertEquals(documentation, def.documentation());
+    Assertions.assertEquals(def.necessary(), SettingDef.Necessary.REQUIRED);
+    Assertions.assertTrue(def.internal());
   }
 
   @Test
@@ -186,11 +187,11 @@ public class TestSettingDef extends OharaTest {
     // there is default value so null is ok
     settingDef.checker().accept(null);
     // illegal format
-    Assert.assertThrows(ConfigException.class, () -> settingDef.checker().accept(123));
+    Assertions.assertThrows(ConfigException.class, () -> settingDef.checker().accept(123));
     // illegal format
-    Assert.assertThrows(ConfigException.class, () -> settingDef.checker().accept(List.of()));
+    Assertions.assertThrows(ConfigException.class, () -> settingDef.checker().accept(List.of()));
     // neglect column "b"
-    Assert.assertThrows(
+    Assertions.assertThrows(
         ConfigException.class, () -> settingDef.checker().accept(List.of(Map.of("a", "c"))));
 
     // too many items
@@ -199,7 +200,7 @@ public class TestSettingDef extends OharaTest {
 
     Map<String, String> illegalColumnMap = new HashMap<>(goodMap);
     illegalColumnMap.put("dddd", "fff");
-    Assert.assertThrows(
+    Assertions.assertThrows(
         ConfigException.class,
         () -> settingDef.checker().accept(PropGroup.of(List.of(illegalColumnMap)).toJsonString()));
   }
@@ -211,9 +212,9 @@ public class TestSettingDef extends OharaTest {
             .key(CommonUtils.randomString())
             .required(SettingDef.Type.DURATION)
             .build();
-    Assert.assertThrows(ConfigException.class, () -> settingDef.checker().accept(null));
-    Assert.assertThrows(ConfigException.class, () -> settingDef.checker().accept(123));
-    Assert.assertThrows(ConfigException.class, () -> settingDef.checker().accept(List.of()));
+    Assertions.assertThrows(ConfigException.class, () -> settingDef.checker().accept(null));
+    Assertions.assertThrows(ConfigException.class, () -> settingDef.checker().accept(123));
+    Assertions.assertThrows(ConfigException.class, () -> settingDef.checker().accept(List.of()));
     settingDef.checker().accept(Duration.ofHours(3).toString());
     settingDef.checker().accept("10 MILLISECONDS");
     settingDef.checker().accept("10 SECONDS");
@@ -228,7 +229,7 @@ public class TestSettingDef extends OharaTest {
             .key(CommonUtils.randomString())
             .required(SettingDef.Type.STRING)
             .build();
-    Assert.assertEquals(displayName, settingDef.displayName());
+    Assertions.assertEquals(displayName, settingDef.displayName());
   }
 
   @Test
@@ -237,9 +238,9 @@ public class TestSettingDef extends OharaTest {
         SettingDef.builder().required(SettingDef.Type.REMOTE_PORT).key("port.key").build();
     // pass
     s.checker().accept(100);
-    Assert.assertThrows(ConfigException.class, () -> s.checker().accept(-1));
-    Assert.assertThrows(ConfigException.class, () -> s.checker().accept(0));
-    Assert.assertThrows(ConfigException.class, () -> s.checker().accept(100000000));
+    Assertions.assertThrows(ConfigException.class, () -> s.checker().accept(-1));
+    Assertions.assertThrows(ConfigException.class, () -> s.checker().accept(0));
+    Assertions.assertThrows(ConfigException.class, () -> s.checker().accept(100000000));
   }
 
   @Test
@@ -250,10 +251,10 @@ public class TestSettingDef extends OharaTest {
     s.checker().accept("{\"123\":456}");
     s.checker().accept(List.of());
     // not a jsonObject
-    Assert.assertThrows(
+    Assertions.assertThrows(
         ConfigException.class, () -> s.checker().accept(CommonUtils.randomString()));
-    Assert.assertThrows(ConfigException.class, () -> s.checker().accept("{abc}"));
-    Assert.assertThrows(ConfigException.class, () -> s.checker().accept("{\"123\"}"));
+    Assertions.assertThrows(ConfigException.class, () -> s.checker().accept("{abc}"));
+    Assertions.assertThrows(ConfigException.class, () -> s.checker().accept("{\"123\"}"));
   }
 
   @Test
@@ -261,7 +262,7 @@ public class TestSettingDef extends OharaTest {
     SettingDef setting =
         SettingDef.builder().required(SettingDef.Type.TAGS).key("tags.key").build();
     SettingDef copy = (SettingDef) Serializer.OBJECT.from(Serializer.OBJECT.to(setting));
-    Assert.assertEquals(setting, copy);
+    Assertions.assertEquals(setting, copy);
   }
 
   @Test
@@ -277,11 +278,11 @@ public class TestSettingDef extends OharaTest {
             JsonUtils.toString(
                 Set.of(TopicKey.of(CommonUtils.randomString(), CommonUtils.randomString()))));
     // empty array is illegal
-    Assert.assertThrows(ConfigException.class, () -> def.checker().accept("[]"));
-    Assert.assertThrows(ConfigException.class, () -> def.checker().accept("{}"));
-    Assert.assertThrows(
+    Assertions.assertThrows(ConfigException.class, () -> def.checker().accept("[]"));
+    Assertions.assertThrows(ConfigException.class, () -> def.checker().accept("{}"));
+    Assertions.assertThrows(
         ConfigException.class, () -> def.checker().accept(CommonUtils.randomString()));
-    Assert.assertThrows(ConfigException.class, () -> def.checker().accept(100000000));
+    Assertions.assertThrows(ConfigException.class, () -> def.checker().accept(100000000));
   }
 
   @Test
@@ -289,16 +290,17 @@ public class TestSettingDef extends OharaTest {
     Duration duration = Duration.ofHours(10);
     SettingDef def =
         SettingDef.builder().key(CommonUtils.randomString()).optional(duration).build();
-    Assert.assertEquals(def.defaultDuration(), duration);
-    Assert.assertTrue(
-        def.toJsonString(),
+    Assertions.assertEquals(def.defaultDuration(), duration);
+    Assertions.assertTrue(
         def.toJsonString()
             .contains("\"defaultValue\":" + "\"" + duration.toMillis() + " milliseconds\""));
   }
 
-  @Test(expected = ConfigException.class)
+  @Test
   public void testRejectNullValue() {
-    SettingDef.builder().key(CommonUtils.randomString()).build().checker().accept(null);
+    Assertions.assertThrows(
+        ConfigException.class,
+        () -> SettingDef.builder().key(CommonUtils.randomString()).build().checker().accept(null));
   }
 
   @Test
@@ -331,9 +333,9 @@ public class TestSettingDef extends OharaTest {
             .required(SettingDef.Type.BOOLEAN)
             .build();
     // only accept "true" or "false"
-    Assert.assertThrows(ConfigException.class, () -> def.checker().accept("aaa"));
-    Assert.assertThrows(ConfigException.class, () -> def.checker().accept(123));
-    Assert.assertThrows(ConfigException.class, () -> def.checker().accept(null));
+    Assertions.assertThrows(ConfigException.class, () -> def.checker().accept("aaa"));
+    Assertions.assertThrows(ConfigException.class, () -> def.checker().accept(123));
+    Assertions.assertThrows(ConfigException.class, () -> def.checker().accept(null));
     def.checker().accept(false);
     def.checker().accept("true");
     // case in-sensitive
@@ -346,8 +348,8 @@ public class TestSettingDef extends OharaTest {
             .optional(SettingDef.Type.BOOLEAN)
             .build();
     // only accept "true" or "false"
-    Assert.assertThrows(ConfigException.class, () -> defOption.checker().accept("aaa"));
-    Assert.assertThrows(ConfigException.class, () -> defOption.checker().accept(123));
+    Assertions.assertThrows(ConfigException.class, () -> defOption.checker().accept("aaa"));
+    Assertions.assertThrows(ConfigException.class, () -> defOption.checker().accept(123));
     // since we don't have any default value, the "null" will be passed since it is optional
     defOption.checker().accept(null);
     defOption.checker().accept(false);
@@ -380,7 +382,7 @@ public class TestSettingDef extends OharaTest {
     // required with recommended values(default is null)
     SettingDef settingDef1 =
         SettingDef.builder().key(CommonUtils.randomString()).required(recommendedValues).build();
-    Assert.assertEquals(settingDef1.recommendedValues(), recommendedValues);
+    Assertions.assertEquals(settingDef1.recommendedValues(), recommendedValues);
   }
 
   @Test
@@ -393,10 +395,10 @@ public class TestSettingDef extends OharaTest {
 
     def.checker().accept(111);
 
-    Assert.assertThrows(ConfigException.class, () -> def.checker().accept(""));
-    Assert.assertThrows(ConfigException.class, () -> def.checker().accept("abc"));
-    Assert.assertThrows(ConfigException.class, () -> def.checker().accept(11111111111L));
-    Assert.assertThrows(ConfigException.class, () -> def.checker().accept(2.2));
+    Assertions.assertThrows(ConfigException.class, () -> def.checker().accept(""));
+    Assertions.assertThrows(ConfigException.class, () -> def.checker().accept("abc"));
+    Assertions.assertThrows(ConfigException.class, () -> def.checker().accept(11111111111L));
+    Assertions.assertThrows(ConfigException.class, () -> def.checker().accept(2.2));
   }
 
   @Test
@@ -406,10 +408,10 @@ public class TestSettingDef extends OharaTest {
 
     def.checker().accept(111);
 
-    Assert.assertThrows(ConfigException.class, () -> def.checker().accept(""));
-    Assert.assertThrows(ConfigException.class, () -> def.checker().accept("abc"));
-    Assert.assertThrows(ConfigException.class, () -> def.checker().accept(11111111111L));
-    Assert.assertThrows(ConfigException.class, () -> def.checker().accept(2.2));
+    Assertions.assertThrows(ConfigException.class, () -> def.checker().accept(""));
+    Assertions.assertThrows(ConfigException.class, () -> def.checker().accept("abc"));
+    Assertions.assertThrows(ConfigException.class, () -> def.checker().accept(11111111111L));
+    Assertions.assertThrows(ConfigException.class, () -> def.checker().accept(2.2));
   }
 
   @Test
@@ -420,9 +422,9 @@ public class TestSettingDef extends OharaTest {
     def.checker().accept(111);
     def.checker().accept(11111111111L);
 
-    Assert.assertThrows(ConfigException.class, () -> def.checker().accept(""));
-    Assert.assertThrows(ConfigException.class, () -> def.checker().accept("abc"));
-    Assert.assertThrows(ConfigException.class, () -> def.checker().accept(2.2));
+    Assertions.assertThrows(ConfigException.class, () -> def.checker().accept(""));
+    Assertions.assertThrows(ConfigException.class, () -> def.checker().accept("abc"));
+    Assertions.assertThrows(ConfigException.class, () -> def.checker().accept(2.2));
   }
 
   @Test
@@ -437,8 +439,8 @@ public class TestSettingDef extends OharaTest {
     def.checker().accept(11111111111L);
     def.checker().accept(2.2);
 
-    Assert.assertThrows(ConfigException.class, () -> def.checker().accept("abc"));
-    Assert.assertThrows(ConfigException.class, () -> def.checker().accept(""));
+    Assertions.assertThrows(ConfigException.class, () -> def.checker().accept("abc"));
+    Assertions.assertThrows(ConfigException.class, () -> def.checker().accept(""));
   }
 
   @Test
@@ -489,7 +491,8 @@ public class TestSettingDef extends OharaTest {
 
     int port = CommonUtils.availablePort();
     try (ServerSocket server = new ServerSocket(port)) {
-      Assert.assertThrows(ConfigException.class, () -> def.checker().accept(server.getLocalPort()));
+      Assertions.assertThrows(
+          ConfigException.class, () -> def.checker().accept(server.getLocalPort()));
     }
     def.checker().accept(port);
   }
@@ -497,18 +500,19 @@ public class TestSettingDef extends OharaTest {
   @Test
   public void doubleUnderScoreIsIllegal() {
     SettingDef.builder().key("aaa").build();
-    Assert.assertThrows(
+    Assertions.assertThrows(
         IllegalArgumentException.class, () -> SettingDef.builder().key("aaa__").build());
   }
 
-  @Test(expected = NullPointerException.class)
+  @Test
   public void nullRecommendedValues() {
-    SettingDef.builder().optional((Set<String>) null);
+    Assertions.assertThrows(
+        NullPointerException.class, () -> SettingDef.builder().optional((Set<String>) null));
   }
 
-  @Test(expected = NullPointerException.class)
+  @Test
   public void nullDenyList() {
-    SettingDef.builder().denyList(null);
+    Assertions.assertThrows(NullPointerException.class, () -> SettingDef.builder().denyList(null));
   }
 
   @Test
@@ -524,7 +528,7 @@ public class TestSettingDef extends OharaTest {
         SettingDef.builder().key(CommonUtils.randomString()).optional(defaultValue).build();
     SettingDef copy = SettingDef.ofJson(settingDef.toString());
     // jackson convert the number to int or long only
-    Assert.assertEquals(copy.defaultShort(), defaultValue);
+    Assertions.assertEquals(copy.defaultShort(), defaultValue);
   }
 
   @Test
@@ -533,7 +537,7 @@ public class TestSettingDef extends OharaTest {
     SettingDef settingDef =
         SettingDef.builder().key(CommonUtils.randomString()).optional(defaultValue).build();
     SettingDef copy = SettingDef.ofJson(settingDef.toString());
-    Assert.assertEquals(copy.defaultInt(), defaultValue);
+    Assertions.assertEquals(copy.defaultInt(), defaultValue);
   }
 
   @Test
@@ -542,7 +546,7 @@ public class TestSettingDef extends OharaTest {
     SettingDef settingDef =
         SettingDef.builder().key(CommonUtils.randomString()).optional(defaultValue).build();
     SettingDef copy = SettingDef.ofJson(settingDef.toString());
-    Assert.assertEquals(copy.defaultLong(), defaultValue);
+    Assertions.assertEquals(copy.defaultLong(), defaultValue);
   }
 
   @Test
@@ -551,7 +555,7 @@ public class TestSettingDef extends OharaTest {
     SettingDef settingDef =
         SettingDef.builder().key(CommonUtils.randomString()).optional(defaultValue).build();
     SettingDef copy = SettingDef.ofJson(settingDef.toString());
-    Assert.assertEquals(copy.defaultDouble(), defaultValue, 0);
+    Assertions.assertEquals(copy.defaultDouble(), defaultValue, 0);
   }
 
   @Test
@@ -560,7 +564,7 @@ public class TestSettingDef extends OharaTest {
     SettingDef settingDef =
         SettingDef.builder().key(CommonUtils.randomString()).optional(defaultValue).build();
     SettingDef copy = SettingDef.ofJson(settingDef.toString());
-    Assert.assertEquals(copy.defaultString(), defaultValue);
+    Assertions.assertEquals(copy.defaultString(), defaultValue);
   }
 
   @Test
@@ -569,7 +573,7 @@ public class TestSettingDef extends OharaTest {
     SettingDef settingDef =
         SettingDef.builder().key(CommonUtils.randomString()).optional(defaultValue).build();
     SettingDef copy = SettingDef.ofJson(settingDef.toString());
-    Assert.assertEquals(copy.defaultDuration(), defaultValue);
+    Assertions.assertEquals(copy.defaultDuration(), defaultValue);
   }
 
   @Test
@@ -578,12 +582,14 @@ public class TestSettingDef extends OharaTest {
     SettingDef settingDef =
         SettingDef.builder().key(CommonUtils.randomString()).optional(defaultValue).build();
     SettingDef copy = SettingDef.ofJson(settingDef.toString());
-    Assert.assertEquals(copy.defaultBoolean(), defaultValue);
+    Assertions.assertEquals(copy.defaultBoolean(), defaultValue);
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   public void testEmptyRecommendedValuesTest() {
-    SettingDef.builder().key(CommonUtils.randomString()).optional(Set.of()).build();
+    Assertions.assertThrows(
+        IllegalArgumentException.class,
+        () -> SettingDef.builder().key(CommonUtils.randomString()).optional(Set.of()).build());
   }
 
   @Test
@@ -596,23 +602,23 @@ public class TestSettingDef extends OharaTest {
                 CommonUtils.randomString()));
     SettingDef settingDef =
         SettingDef.builder().key(CommonUtils.randomString()).optional(recommendedValues).build();
-    Assert.assertEquals(settingDef.recommendedValues(), recommendedValues);
-    Assert.assertEquals(settingDef.defaultString(), recommendedValues.iterator().next());
+    Assertions.assertEquals(settingDef.recommendedValues(), recommendedValues);
+    Assertions.assertEquals(settingDef.defaultString(), recommendedValues.iterator().next());
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   public void testSpaceInKey() {
-    SettingDef.builder().key(" ");
+    Assertions.assertThrows(IllegalArgumentException.class, () -> SettingDef.builder().key(" "));
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   public void testEqualInKey() {
-    SettingDef.builder().key("=");
+    Assertions.assertThrows(IllegalArgumentException.class, () -> SettingDef.builder().key("="));
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   public void testQuoteInKey() {
-    SettingDef.builder().key("\"");
+    Assertions.assertThrows(IllegalArgumentException.class, () -> SettingDef.builder().key("\""));
   }
 
   @Test
@@ -632,7 +638,7 @@ public class TestSettingDef extends OharaTest {
 
   @Test
   public void testDefaultDuration() {
-    Assert.assertEquals(
+    Assertions.assertEquals(
         SettingDef.builder()
             .key(CommonUtils.randomString())
             .optional(Duration.ofMillis(10))
@@ -641,7 +647,7 @@ public class TestSettingDef extends OharaTest {
             .get(),
         "10 milliseconds");
 
-    Assert.assertEquals(
+    Assertions.assertEquals(
         SettingDef.builder()
             .key(CommonUtils.randomString())
             .optional(Duration.ofMillis(1))
@@ -655,51 +661,51 @@ public class TestSettingDef extends OharaTest {
   public void testOptionalPort() {
     SettingDef def =
         SettingDef.builder().key(CommonUtils.randomString()).optionalPort(12345).build();
-    Assert.assertEquals(def.valueType(), SettingDef.Type.REMOTE_PORT);
-    Assert.assertEquals(def.defaultPort(), 12345);
+    Assertions.assertEquals(def.valueType(), SettingDef.Type.REMOTE_PORT);
+    Assertions.assertEquals(def.defaultPort(), 12345);
   }
 
   @Test
   public void testOptionalBindingPort() {
     SettingDef def =
         SettingDef.builder().key(CommonUtils.randomString()).optionalBindingPort(12345).build();
-    Assert.assertEquals(def.valueType(), SettingDef.Type.BINDING_PORT);
-    Assert.assertEquals(def.defaultPort(), 12345);
+    Assertions.assertEquals(def.valueType(), SettingDef.Type.BINDING_PORT);
+    Assertions.assertEquals(def.defaultPort(), 12345);
   }
 
   @Test
   public void testNameStringRegex() {
-    Assert.assertFalse("_".matches(SettingDef.NAME_STRING_REGEX));
-    Assert.assertFalse("-".matches(SettingDef.NAME_STRING_REGEX));
+    Assertions.assertFalse("_".matches(SettingDef.NAME_STRING_REGEX));
+    Assertions.assertFalse("-".matches(SettingDef.NAME_STRING_REGEX));
     // upper case is illegal
-    Assert.assertFalse("A".matches(SettingDef.NAME_STRING_REGEX));
+    Assertions.assertFalse("A".matches(SettingDef.NAME_STRING_REGEX));
     // dot is illegal
-    Assert.assertTrue("a.".matches(SettingDef.NAME_STRING_REGEX));
+    Assertions.assertTrue("a.".matches(SettingDef.NAME_STRING_REGEX));
     // the length limit is 25
-    Assert.assertFalse(CommonUtils.randomString(100).matches(SettingDef.NAME_STRING_REGEX));
+    Assertions.assertFalse(CommonUtils.randomString(100).matches(SettingDef.NAME_STRING_REGEX));
   }
 
   @Test
   public void testGroupStringRegex() {
-    Assert.assertFalse("_".matches(SettingDef.GROUP_STRING_REGEX));
-    Assert.assertFalse("-".matches(SettingDef.GROUP_STRING_REGEX));
+    Assertions.assertFalse("_".matches(SettingDef.GROUP_STRING_REGEX));
+    Assertions.assertFalse("-".matches(SettingDef.GROUP_STRING_REGEX));
     // upper case is illegal
-    Assert.assertFalse("A".matches(SettingDef.GROUP_STRING_REGEX));
+    Assertions.assertFalse("A".matches(SettingDef.GROUP_STRING_REGEX));
     // dot is illegal
-    Assert.assertTrue("a.".matches(SettingDef.GROUP_STRING_REGEX));
+    Assertions.assertTrue("a.".matches(SettingDef.GROUP_STRING_REGEX));
     // the length limit is 25
-    Assert.assertFalse(CommonUtils.randomString(100).matches(SettingDef.GROUP_STRING_REGEX));
+    Assertions.assertFalse(CommonUtils.randomString(100).matches(SettingDef.GROUP_STRING_REGEX));
   }
 
   @Test
   public void testHostnameRegex() {
-    Assert.assertTrue("aAbB-".matches(SettingDef.HOSTNAME_REGEX));
+    Assertions.assertTrue("aAbB-".matches(SettingDef.HOSTNAME_REGEX));
     // dash is illegal
-    Assert.assertFalse("a_".matches(SettingDef.HOSTNAME_REGEX));
+    Assertions.assertFalse("a_".matches(SettingDef.HOSTNAME_REGEX));
     // dot is legal
-    Assert.assertTrue("a.".matches(SettingDef.HOSTNAME_REGEX));
+    Assertions.assertTrue("a.".matches(SettingDef.HOSTNAME_REGEX));
     // the length limit is 25
-    Assert.assertFalse(CommonUtils.randomString(100).matches(SettingDef.HOSTNAME_REGEX));
+    Assertions.assertFalse(CommonUtils.randomString(100).matches(SettingDef.HOSTNAME_REGEX));
   }
 
   @Test
@@ -714,15 +720,14 @@ public class TestSettingDef extends OharaTest {
   }
 
   private static void checkNullField(SettingDef def) {
-    Assert.assertFalse(def.toJsonString(), def.toJsonString().contains(SettingDef.REGEX_KEY));
-    Assert.assertFalse(
-        def.toJsonString(), def.toJsonString().contains(SettingDef.DEFAULT_VALUE_KEY));
-    Assert.assertFalse(def.toJsonString(), def.toJsonString().contains(SettingDef.PREFIX_KEY));
+    Assertions.assertFalse(def.toJsonString().contains(SettingDef.REGEX_KEY));
+    Assertions.assertFalse(def.toJsonString().contains(SettingDef.DEFAULT_VALUE_KEY));
+    Assertions.assertFalse(def.toJsonString().contains(SettingDef.PREFIX_KEY));
   }
 
   @Test
   public void testDefaultShortOnBindingPort() {
-    Assert.assertEquals(
+    Assertions.assertEquals(
         12345,
         SettingDef.builder()
             .key(CommonUtils.randomString())
@@ -733,7 +738,7 @@ public class TestSettingDef extends OharaTest {
 
   @Test
   public void testDefaultShortOnRemotePort() {
-    Assert.assertEquals(
+    Assertions.assertEquals(
         12345,
         SettingDef.builder()
             .key(CommonUtils.randomString())

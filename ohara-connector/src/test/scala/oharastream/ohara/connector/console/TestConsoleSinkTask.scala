@@ -24,7 +24,7 @@ import oharastream.ohara.common.setting.{ConnectorKey, TopicKey}
 import oharastream.ohara.common.util.CommonUtils
 import oharastream.ohara.kafka.connector.json.ConnectorDefUtils
 import org.apache.kafka.connect.sink.SinkRecord
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import org.scalatest.matchers.should.Matchers._
 
 import scala.concurrent.duration.Duration

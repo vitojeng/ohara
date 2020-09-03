@@ -19,7 +19,7 @@ package oharastream.ohara.configurator
 import oharastream.ohara.common.rule.OharaTest
 import oharastream.ohara.common.setting.WithDefinitions
 import oharastream.ohara.shabondi.{ShabondiSink, ShabondiSource}
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import org.scalatest.matchers.should.Matchers._
 
 /**

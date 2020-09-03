@@ -29,7 +29,7 @@ import oharastream.ohara.shabondi.common.ShabondiUtils
 import oharastream.ohara.shabondi.sink.SinkConfig
 import oharastream.ohara.shabondi.source.SourceConfig
 import oharastream.ohara.testing.WithBroker
-import org.junit.After
+import org.junit.jupiter.api.AfterEach
 
 import scala.collection.{immutable, mutable}
 import scala.concurrent.{ExecutionContext, Future}
@@ -110,8 +110,6 @@ private[shabondi] abstract class BasicShabondiTest extends WithBroker {
   protected def multipleRows(rowSize: Int): immutable.Iterable[Row] =
     KafkaSupport.multipleRows(rowSize)
 
-  @After
-  def tearDown(): Unit = {
-    Releasable.close(topicAdmin)
-  }
+  @AfterEach
+  def tearDown(): Unit = Releasable.close(topicAdmin)
 }

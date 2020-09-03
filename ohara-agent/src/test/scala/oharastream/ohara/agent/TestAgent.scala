@@ -19,8 +19,9 @@ package oharastream.ohara.agent
 import oharastream.ohara.common.rule.OharaTest
 import oharastream.ohara.common.util.Releasable
 import oharastream.ohara.testing.service.SshdServer
-import org.junit.{After, Test}
+import org.junit.jupiter.api.{AfterEach, Test}
 import org.scalatest.matchers.should.Matchers._
+
 import scala.jdk.CollectionConverters._
 
 class TestAgent extends OharaTest {
@@ -86,6 +87,6 @@ class TestAgent extends OharaTest {
   @Test
   def nullCharset(): Unit = an[NullPointerException] should be thrownBy Agent.builder.charset(null)
 
-  @After
+  @AfterEach
   def tearDown(): Unit = Releasable.close(server)
 }

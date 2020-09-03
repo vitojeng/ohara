@@ -21,7 +21,7 @@ import oharastream.ohara.common.rule.OharaTest
 import oharastream.ohara.common.setting.ObjectKey
 import oharastream.ohara.common.util.{CommonUtils, Releasable}
 import oharastream.ohara.configurator.Configurator
-import org.junit.{After, Before, Test}
+import org.junit.jupiter.api.{AfterEach, BeforeEach, Test}
 import org.scalatest.matchers.should.Matchers._
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -41,7 +41,7 @@ class TestContainerRoute extends OharaTest {
   private[this] val nodeNames: Set[String] = Set("n0", "n1")
 
   private[this] def result[T](f: Future[T]): T = Await.result(f, Duration("20 seconds"))
-  @Before
+  @BeforeEach
   def setup(): Unit = {
     val nodeApi = NodeApi.access.hostname(configurator.hostname).port(configurator.port)
 
@@ -91,6 +91,6 @@ class TestContainerRoute extends OharaTest {
     })
   }
 
-  @After
+  @AfterEach
   def tearDown(): Unit = Releasable.close(configurator)
 }

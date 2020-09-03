@@ -18,7 +18,7 @@ package oharastream.ohara.connector.hdfs.sink
 
 import oharastream.ohara.common.rule.OharaTest
 import oharastream.ohara.kafka.connector.TaskSetting
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import org.scalatest.matchers.should.Matchers._
 
 import scala.jdk.CollectionConverters._

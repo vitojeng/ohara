@@ -29,8 +29,8 @@ import oharastream.ohara.stream.config.StreamDefUtils;
 import oharastream.ohara.stream.config.StreamSetting;
 import oharastream.ohara.stream.data.Poneglyph;
 import oharastream.ohara.stream.data.Stele;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class TestStreamTopology extends OharaTest {
   private static TopicKey fromKey =
@@ -68,14 +68,13 @@ public class TestStreamTopology extends OharaTest {
               .getPoneglyph();
 
       // It should have four "steles", i.e., four process topology
-      Assert.assertEquals(4, poneglyph.size());
+      Assertions.assertEquals(4, poneglyph.size());
 
       // Topics should be contained in topologies
       Arrays.asList(fromKey.topicNameOnKafka(), toKey.topicNameOnKafka(), join)
           .forEach(
               topic ->
-                  Assert.assertTrue(
-                      "all used topics should be contained in topologies",
+                  Assertions.assertTrue(
                       poneglyph.stream()
                           .flatMap(p -> p.getSteles().stream())
                           .filter(s -> s.getKind().equals("Source") || s.getKind().equals("Sink"))

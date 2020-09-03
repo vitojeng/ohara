@@ -19,29 +19,32 @@ package oharastream.ohara.it.performance
 import java.io.{BufferedWriter, OutputStreamWriter}
 import java.util.concurrent.atomic.LongAdder
 
+import oharastream.ohara.client.filesystem.FileSystem
 import oharastream.ohara.common.data.Row
 import oharastream.ohara.common.util.{CommonUtils, Releasable}
-import org.junit.AssumptionViolatedException
+import org.junit.jupiter.api.condition.EnabledIfEnvironmentVariable
 import spray.json.{JsNumber, JsString, JsValue}
 
-import scala.jdk.CollectionConverters._
-import oharastream.ohara.client.filesystem.FileSystem
-
 import scala.concurrent.duration.Duration
+import scala.jdk.CollectionConverters._
 
+@EnabledIfEnvironmentVariable(named = "ohara.it.performance.ftp.hostname", matches = ".*")
+@EnabledIfEnvironmentVariable(named = "ohara.it.performance.ftp.port", matches = ".*")
+@EnabledIfEnvironmentVariable(named = "ohara.it.performance.ftp.user", matches = ".*")
+@EnabledIfEnvironmentVariable(named = "ohara.it.performance.ftp.password", matches = ".*")
 private[performance] abstract class BasicTestPerformance4Ftp extends BasicTestPerformance {
-  private[this] val ftpHostname = value(PerformanceTestingUtils.FTP_HOSTNAME_KEY)
-    .getOrElse(throw new AssumptionViolatedException(s"${PerformanceTestingUtils.FTP_HOSTNAME_KEY} is required"))
+  private[this] val FTP_HOSTNAME_KEY: String = "ohara.it.performance.ftp.hostname"
+  private[this] val FTP_PORT_KEY: String     = "ohara.it.performance.ftp.port"
+  private[this] val FTP_USER_KEY: String     = "ohara.it.performance.ftp.user"
+  private[this] val FTP_PASSWORD_KEY: String = "ohara.it.performance.ftp.password"
 
-  private[this] val ftpPort = value(PerformanceTestingUtils.FTP_PORT_KEY)
-    .getOrElse(throw new AssumptionViolatedException(s"${PerformanceTestingUtils.FTP_PORT_KEY} is required"))
-    .toInt
+  private[this] val ftpHostname = sys.env(FTP_HOSTNAME_KEY)
 
-  private[this] val ftpUser = value(PerformanceTestingUtils.FTP_USER_KEY)
-    .getOrElse(throw new AssumptionViolatedException(s"${PerformanceTestingUtils.FTP_USER_KEY} is required"))
+  private[this] val ftpPort = sys.env(FTP_PORT_KEY).toInt
 
-  private[this] val ftpPassword = value(PerformanceTestingUtils.FTP_PASSWORD_KEY)
-    .getOrElse(throw new AssumptionViolatedException(s"${PerformanceTestingUtils.FTP_PASSWORD_KEY} is required"))
+  private[this] val ftpUser = sys.env(FTP_USER_KEY)
+
+  private[this] val ftpPassword = sys.env(FTP_PASSWORD_KEY)
 
   /**
     * add the route for ftp hostname to avoid the hostname error from remote services...

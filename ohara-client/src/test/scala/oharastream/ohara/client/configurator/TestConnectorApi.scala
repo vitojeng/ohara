@@ -24,7 +24,7 @@ import oharastream.ohara.common.setting.SettingDef.Permission
 import oharastream.ohara.common.setting.{ObjectKey, PropGroup, SettingDef, TopicKey}
 import oharastream.ohara.common.util.CommonUtils
 import oharastream.ohara.kafka.connector.json.ConnectorDefUtils
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import org.scalatest.matchers.should.Matchers._
 import spray.json.DefaultJsonProtocol._
 import spray.json.{JsString, _}

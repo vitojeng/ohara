@@ -29,7 +29,7 @@ import oharastream.ohara.kafka.Consumer.Record
 import oharastream.ohara.kafka.connector.TaskSetting
 import oharastream.ohara.testing.With3Brokers3Workers
 import oharastream.ohara.testing.service.Database
-import org.junit.{After, Before, Test}
+import org.junit.jupiter.api.{AfterEach, BeforeEach, Test}
 import org.scalatest.matchers.should.Matchers._
 
 import scala.jdk.CollectionConverters._
@@ -44,7 +44,7 @@ class TestJDBCSourceConnectorDataType extends With3Brokers3Workers {
   private[this] val timestampColumnName = "column1"
   private[this] val connectorAdmin      = ConnectorAdmin(testUtil.workersConnProps)
 
-  @Before
+  @BeforeEach
   def setup(): Unit = {
     val connection = client.connection
     val statement  = connection.createStatement()
@@ -180,7 +180,7 @@ class TestJDBCSourceConnectorDataType extends With3Brokers3Workers {
 
   private[this] def result[T](future: Future[T]): T = Await.result(future, Duration(20, TimeUnit.SECONDS))
 
-  @After
+  @AfterEach
   def tearDown(): Unit = {
     Releasable.close(client)
     Releasable.close(db)

@@ -37,7 +37,7 @@ import oharastream.ohara.configurator.route.RouteUtils
 import oharastream.ohara.kafka.Producer
 import oharastream.ohara.metrics.BeanChannel
 import oharastream.ohara.testing.WithBrokerWorker
-import org.junit.{After, Test}
+import org.junit.jupiter.api.{AfterEach, Test}
 import org.scalatest.matchers.should.Matchers._
 import spray.json.{JsNumber, JsString}
 
@@ -382,6 +382,6 @@ class TestMetrics extends WithBrokerWorker {
     result(request.create())
   }
 
-  @After
+  @AfterEach
   def tearDown(): Unit = Releasable.close(configurator)
 }
