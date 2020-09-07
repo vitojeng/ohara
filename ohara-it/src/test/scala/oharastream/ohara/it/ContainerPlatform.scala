@@ -84,7 +84,9 @@ object ContainerPlatform {
     /**
       * @return the node names exists on Configurator
       */
-    def nodeNames: Set[String]
+    def nodeNames: Set[String] = nodes.map(_.hostname).toSet
+
+    def nodes: Seq[Node]
     //----------------[helpers]----------------//
     def zookeeperApi: ZookeeperApi.Access =
       ZookeeperApi.access.hostname(configuratorHostname).port(configuratorPort)
@@ -218,9 +220,10 @@ object ContainerPlatform {
     */
   private[this] def customMode: Option[ContainerPlatform] = sys.env.get(CUSTOM_CONFIGURATOR_KEY).map(_.split(":")).map {
     case Array(hostname, portString) =>
-      val port  = portString.toInt
-      val nodes = result(NodeApi.access.hostname(hostname).port(port).list())
-      if (nodes.isEmpty) throw new RuntimeException(s"the configurator run on $hostname:$port does not store any nodes")
+      val port   = portString.toInt
+      val _nodes = result(NodeApi.access.hostname(hostname).port(port).list())
+      if (_nodes.isEmpty)
+        throw new RuntimeException(s"the configurator run on $hostname:$port does not store any nodes")
       val info = result(InspectApi.access.hostname(hostname).port(port).configuratorInfo())
       val clientCreator = Configurator.Mode.forName(info.mode) match {
         case Configurator.Mode.K8S =>
@@ -228,10 +231,10 @@ object ContainerPlatform {
             K8SClient.builder
               .serverURL(info.k8sUrls.get.coordinatorUrl)
               .metricsServerURL(info.k8sUrls.get.metricsUrl.orNull)
-              .remoteFolderHandler(RemoteFolderHandler(DataCollie(nodes)))
+              .remoteFolderHandler(RemoteFolderHandler(DataCollie(_nodes)))
               .build()
         case Configurator.Mode.DOCKER =>
-          () => DockerClient(DataCollie(nodes))
+          () => DockerClient(DataCollie(_nodes))
         case _ =>
           throw new RuntimeException(s"${info.mode} is not supported!!!!")
       }
@@ -246,11 +249,11 @@ object ContainerPlatform {
             Releasable.close(serviceKeyHolder)
           }
           override val containerClient: ContainerClient = clientCreator()
-          override def nodeNames: Set[String]           = nodes.map(_.hostname).toSet
+          override def nodes: Seq[Node]                 = _nodes
         }
 
         override def setupContainerClient(): ContainerClient = clientCreator()
-        override def nodeNames: Set[String]                  = nodes.map(_.hostname).toSet
+        override def nodeNames: Set[String]                  = _nodes.map(_.hostname).toSet
         override def toString: String                        = "CUSTOM"
       }
     case _ =>
@@ -397,8 +400,8 @@ object ContainerPlatform {
             }
             override lazy val containerClient: ContainerClient = clientCreator()
 
-            override def nodeNames: Set[String] =
-              CommonUtils.requireNonEmpty(Builder.this.followerNodes.asJava).asScala.map(_.hostname).toSet
+            override def nodes: Seq[Node] =
+              CommonUtils.requireNonEmpty(Builder.this.followerNodes.asJava).asScala.toSeq
           }
         }
 

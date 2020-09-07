@@ -20,20 +20,18 @@ import oharastream.ohara.client.configurator.BrokerApi.BrokerClusterInfo
 import oharastream.ohara.client.configurator.WorkerApi.WorkerClusterInfo
 import oharastream.ohara.client.configurator.{BrokerApi, NodeApi, WorkerApi, ZookeeperApi}
 import oharastream.ohara.common.setting.ObjectKey
-import oharastream.ohara.common.util.{CommonUtils, Releasable}
-import oharastream.ohara.it.ServiceKeyHolder
-import org.junit.jupiter.api.{AfterEach, BeforeEach}
+import oharastream.ohara.common.util.CommonUtils
+import org.junit.jupiter.api.BeforeEach
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
 private[performance] abstract class WithPerformanceRemoteWorkers extends WithPerformanceRemoteConfigurator {
-  private[this] val zkInitHeap                         = sys.env.get("ohara.it.zk.xms").map(_.toInt).getOrElse(1024)
-  private[this] val zkMaxHeap                          = sys.env.get("ohara.it.zk.xmx").map(_.toInt).getOrElse(1024)
-  private[this] val bkInitHeap                         = sys.env.get("ohara.it.bk.xms").map(_.toInt).getOrElse(1024)
-  private[this] val bkMaxHeap                          = sys.env.get("ohara.it.bk.xmx").map(_.toInt).getOrElse(1024)
-  private[this] val wkInitHeap                         = sys.env.get("ohara.it.wk.xms").map(_.toInt).getOrElse(1024)
-  private[this] val wkMaxHeap                          = sys.env.get("ohara.it.wk.xmx").map(_.toInt).getOrElse(1024)
-  private[this] var serviceKeyHolder: ServiceKeyHolder = _
+  private[this] val zkInitHeap = sys.env.get("ohara.it.zk.xms").map(_.toInt).getOrElse(1024)
+  private[this] val zkMaxHeap  = sys.env.get("ohara.it.zk.xmx").map(_.toInt).getOrElse(1024)
+  private[this] val bkInitHeap = sys.env.get("ohara.it.bk.xms").map(_.toInt).getOrElse(1024)
+  private[this] val bkMaxHeap  = sys.env.get("ohara.it.bk.xmx").map(_.toInt).getOrElse(1024)
+  private[this] val wkInitHeap = sys.env.get("ohara.it.wk.xms").map(_.toInt).getOrElse(1024)
+  private[this] val wkMaxHeap  = sys.env.get("ohara.it.wk.xmx").map(_.toInt).getOrElse(1024)
 
   private[this] var zkKey: ObjectKey = _
   private[this] def zkApi =
@@ -65,12 +63,9 @@ private[performance] abstract class WithPerformanceRemoteWorkers extends WithPer
 
   @BeforeEach
   def setupWorkers(): Unit = {
-    val nodeNames: Seq[String] = nodes.map(_.hostname)
-    serviceKeyHolder = ServiceKeyHolder(containerClient)
-
     val nodeApi = NodeApi.access.hostname(configuratorHostname).port(configuratorPort)
 
-    nodes.foreach { node =>
+    resourceRef.nodes.foreach { node =>
       val hostNameList = result(nodeApi.list()).map(_.hostname)
       if (!hostNameList.contains(node.hostname)) {
         nodeApi.request
@@ -82,15 +77,15 @@ private[performance] abstract class WithPerformanceRemoteWorkers extends WithPer
       }
     }
 
-    zkKey = serviceKeyHolder.generateObjectKey()
-    bkKey = serviceKeyHolder.generateObjectKey()
-    wkKey = serviceKeyHolder.generateObjectKey()
+    zkKey = resourceRef.generateObjectKey
+    bkKey = resourceRef.generateObjectKey
+    wkKey = resourceRef.generateObjectKey
 
     // single zk
     result(
       zkApi.request
         .key(zkKey)
-        .nodeName(nodeNames.head)
+        .nodeName(resourceRef.nodes.head.hostname)
         .routes(routes)
         .initHeap(zkInitHeap)
         .maxHeap(zkMaxHeap)
@@ -104,7 +99,7 @@ private[performance] abstract class WithPerformanceRemoteWorkers extends WithPer
       bkApi.request
         .key(bkKey)
         .zookeeperClusterKey(zkKey)
-        .nodeNames(nodeNames.toSet)
+        .nodeNames(resourceRef.nodeNames)
         .routes(routes)
         .initHeap(bkInitHeap)
         .maxHeap(bkMaxHeap)
@@ -118,7 +113,7 @@ private[performance] abstract class WithPerformanceRemoteWorkers extends WithPer
       wkApi.request
         .key(wkKey)
         .brokerClusterKey(bkKey)
-        .nodeNames(nodeNames.toSet)
+        .nodeNames(resourceRef.nodeNames)
         .freePort(CommonUtils.availablePort())
         .routes(routes)
         .sharedJarKeys(sharedJars)
@@ -129,10 +124,5 @@ private[performance] abstract class WithPerformanceRemoteWorkers extends WithPer
         .flatMap(wkApi.start)
     )
     await(() => result(wkApi.get(wkKey)).state.isDefined)
-  }
-
-  @AfterEach
-  def releaseService(): Unit = {
-    Releasable.close(serviceKeyHolder)
   }
 }

@@ -16,10 +16,8 @@
 
 package oharastream.ohara.it.performance
 
-import oharastream.ohara.agent.container.ContainerClient
-import oharastream.ohara.client.configurator.NodeApi.Node
 import oharastream.ohara.common.util.Releasable
-import oharastream.ohara.it.{ContainerPlatform, IntegrationTest, ServiceKeyHolder}
+import oharastream.ohara.it.{ContainerPlatform, IntegrationTest}
 import org.junit.jupiter.api.{AfterEach, Tag}
 
 /**
@@ -28,19 +26,10 @@ import org.junit.jupiter.api.{AfterEach, Tag}
   */
 @Tag("performance")
 private[performance] abstract class WithPerformanceRemoteConfigurator extends IntegrationTest {
-  private[this] val platform                           = ContainerPlatform.default
-  private[this] val resourceRef                        = platform.setup()
-  protected val containerClient: ContainerClient       = resourceRef.containerClient
-  private[this] val serviceKeyHolder: ServiceKeyHolder = ServiceKeyHolder(containerClient)
-  protected val configuratorHostname: String           = resourceRef.configuratorHostname
-  protected val configuratorPort: Int                  = resourceRef.configuratorPort
-
-  protected var nodes: Seq[Node] = _
-
+  private[this] val platform                               = ContainerPlatform.default
+  protected val resourceRef: ContainerPlatform.ResourceRef = platform.setup()
+  protected val configuratorHostname: String               = resourceRef.configuratorHostname
+  protected val configuratorPort: Int                      = resourceRef.configuratorPort
   @AfterEach
-  def releaseConfigurator(): Unit = {
-    Releasable.close(serviceKeyHolder)
-    // the client is used by name holder so we have to close it later
-    Releasable.close(resourceRef)
-  }
+  def releaseConfigurator(): Unit = Releasable.close(resourceRef)
 }
