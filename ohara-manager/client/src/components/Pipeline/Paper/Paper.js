@@ -394,26 +394,31 @@ const Paper = React.forwardRef((props, ref) => {
 
     // Element button events, these are custom event binding down in the
     // element like connector or topic
-    paper.on('element:link:button:pointerclick', (elementView) => {
+    paper.on('element:link:button:pointerclick', (elementView, event) => {
+      if (event.currentTarget.classList.contains('is-disabled')) return;
       paperApi.addLink(elementView.model.get('id'));
     });
 
-    paper.on('element:start:button:pointerclick', (elementView) => {
+    paper.on('element:start:button:pointerclick', (elementView, event) => {
+      if (event.currentTarget.classList.contains('is-disabled')) return;
       onCellStart(paperUtils.getCellData(elementView), paperApi);
       isMetricsOn && elementView.toggleMetrics(true);
     });
 
-    paper.on('element:stop:button:pointerclick', (elementView) => {
+    paper.on('element:stop:button:pointerclick', (elementView, event) => {
+      if (event.currentTarget.classList.contains('is-disabled')) return;
       onCellStop(paperUtils.getCellData(elementView), paperApi);
       elementView.toggleMetrics(false);
     });
 
-    paper.on('element:config:button:pointerclick', (elementView) => {
+    paper.on('element:config:button:pointerclick', (elementView, event) => {
+      if (event.currentTarget.classList.contains('is-disabled')) return;
       onCellConfig(paperUtils.getCellData(elementView), paperApi);
       paperUtils.hideMenu(elementView);
     });
 
-    paper.on('element:remove:button:pointerclick', (elementView) => {
+    paper.on('element:remove:button:pointerclick', (elementView, event) => {
+      if (event.currentTarget.classList.contains('is-disabled')) return;
       onCellRemove(paperUtils.getCellData(elementView), paperApi);
     });
 

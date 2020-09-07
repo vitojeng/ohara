@@ -75,15 +75,13 @@ export const StyledPaper = styled.div(
       z-index: 2;
     }
 
-    .connector,
-    .stream {
-      background-color: white;
+    /* Shared styles for connectors, streams, shabondis and topics */
+    .paper-element {
       position: absolute;
-      border: 1px solid ${theme.palette.divider};
-      border-radius: ${theme.shape.borderRadius}px;
       pointer-events: none;
 
-      &.is-hover {
+      &.is-hover,
+      &.is-active {
         :before {
           content: ' ';
           position: absolute;
@@ -99,23 +97,11 @@ export const StyledPaper = styled.div(
 
       &.is-active {
         :before {
-          content: ' ';
-          position: absolute;
-          z-index: -1;
-          top: -4px;
-          left: -4px;
-          right: -4px;
-          bottom: -4px;
           border: 2px solid ${theme.palette.primary.main};
-          border-radius: ${theme.shape.borderRadius}px;
         }
       }
 
       .menu {
-        margin-top: 5px;
-        display: none;
-        height: 100%;
-
         svg {
           color: ${theme.palette.grey[600]};
         }
@@ -125,11 +111,13 @@ export const StyledPaper = styled.div(
           background-color: transparent;
           border: 0;
           padding: 0;
-          margin-right: ${theme.spacing(1)}px;
 
           &.is-disabled {
-            pointer-events: none;
             opacity: 0.3;
+
+            &:hover {
+              cursor: not-allowed;
+            }
           }
 
           &:hover {
@@ -145,6 +133,19 @@ export const StyledPaper = styled.div(
             outline: 0;
           }
         }
+      }
+    }
+
+    .connector,
+    .stream {
+      background-color: white;
+      border: 1px solid ${theme.palette.divider};
+      border-radius: ${theme.shape.borderRadius}px;
+
+      .menu {
+        margin-top: 5px;
+        display: none;
+        height: 100%;
       }
 
       .header {
@@ -241,41 +242,11 @@ export const StyledPaper = styled.div(
     }
 
     .topic {
-      position: absolute;
-      pointer-events: none;
       background-color: white;
       display: flex;
       flex-direction: column;
       align-items: center;
       padding-top: ${theme.spacing(1)}px;
-
-      &.is-hover {
-        :before {
-          content: ' ';
-          position: absolute;
-          z-index: -1;
-          top: -4px;
-          left: -4px;
-          right: -4px;
-          bottom: -4px;
-          border: 2px solid ${theme.palette.action.active};
-          border-radius: ${theme.shape.borderRadius}px;
-        }
-      }
-
-      &.is-active {
-        :before {
-          content: ' ';
-          position: absolute;
-          z-index: -1;
-          top: -4px;
-          left: -4px;
-          right: -4px;
-          bottom: -4px;
-          border: 2px solid ${theme.palette.primary.main};
-          border-radius: ${theme.shape.borderRadius}px;
-        }
-      }
 
       .display-name {
         font-size: ${theme.typography.h5};
@@ -291,35 +262,6 @@ export const StyledPaper = styled.div(
         width: 100%;
         display: none;
         padding: 5px 0;
-
-        svg {
-          color: ${theme.palette.grey[600]};
-        }
-
-        button {
-          pointer-events: auto;
-          background-color: transparent;
-          border: 0;
-          padding: 0;
-
-          &.is-disabled {
-            pointer-events: none;
-            opacity: 0.3;
-          }
-
-          &:hover {
-            cursor: pointer;
-
-            svg {
-              background-color: ${theme.palette.action.hover};
-              border-radius: ${theme.shape.borderRadius}px;
-            }
-          }
-
-          &:focus {
-            outline: 0;
-          }
-        }
       }
 
       .menu-inner {
