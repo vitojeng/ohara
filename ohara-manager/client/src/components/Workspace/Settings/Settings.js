@@ -108,7 +108,8 @@ const Settings = () => {
 
   return (
     <StyledFullScreenDialog
-      isPageComponent={isPageComponent}
+      $isPageComponent={isPageComponent}
+      className={isPageComponent ? 'has-background' : ''}
       onClose={handleClose}
       open={settingsDialog.isOpen}
       testId="workspace-settings-dialog"

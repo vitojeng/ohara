@@ -15,7 +15,6 @@
  */
 
 import React from 'react';
-import { omit } from 'lodash';
 import PropTypes from 'prop-types';
 import styled, { css } from 'styled-components';
 import Card from '@material-ui/core/Card';
@@ -24,12 +23,12 @@ import CardActionArea from '@material-ui/core/CardActionArea';
 import Typography from '@material-ui/core/Typography';
 import StorageIcon from '@material-ui/icons/Storage';
 
-const StyledNodeCard = styled((props) => <Card {...omit(props, 'sm')} />)(
-  ({ theme, sm }) => css`
+const StyledNodeCard = styled(Card)(
+  ({ theme, $sm }) => css`
     display: flex;
     align-items: center;
     justify-content: center;
-    height: ${sm ? theme.spacing(25) : 240}px;
+    height: ${$sm ? theme.spacing(25) : 240}px;
 
     .MuiCardContent-root {
       display: flex;
@@ -46,14 +45,12 @@ const StyledNodeCard = styled((props) => <Card {...omit(props, 'sm')} />)(
   `,
 );
 
-const StyledCardActionArea = styled((props) => (
-  <CardActionArea {...omit(props, 'sm')} />
-))(
-  ({ theme, sm }) => css`
-    width: ${sm && theme.spacing(33)}px;
-    min-height: ${sm && theme.spacing(25)}px;
-    float: ${sm && 'left'};
-    margin: ${sm && theme.spacing(1.5)}px;
+const StyledCardActionArea = styled(CardActionArea)(
+  ({ theme, $sm }) => css`
+    width: ${$sm && theme.spacing(33)}px;
+    min-height: ${$sm && theme.spacing(25)}px;
+    float: ${$sm && 'left'};
+    margin: ${$sm && theme.spacing(1.5)}px;
   `,
 );
 
@@ -61,8 +58,8 @@ const WorkspaceCard = (props) => {
   const { onClick, sm = false, title, content } = props;
 
   return (
-    <StyledCardActionArea onClick={onClick} sm={sm}>
-      <StyledNodeCard sm={sm}>
+    <StyledCardActionArea $sm={sm} onClick={onClick}>
+      <StyledNodeCard $sm={sm}>
         <CardContent>
           <StorageIcon className="action-icon" color="action" />
           <div className="action-description">

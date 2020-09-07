@@ -15,7 +15,6 @@
  */
 
 import React from 'react';
-import { omit } from 'lodash';
 import PropTypes from 'prop-types';
 import styled, { css } from 'styled-components';
 import Card from '@material-ui/core/Card';
@@ -26,12 +25,12 @@ import Typography from '@material-ui/core/Typography';
 import PowerIcon from '@material-ui/icons/Power';
 import Dropzone from 'react-dropzone';
 
-const StyledPluginsCard = styled((props) => <Card {...omit(props, 'sm')} />)(
-  ({ theme, sm }) => css`
+const StyledPluginsCard = styled(Card)(
+  ({ theme, $sm }) => css`
     display: flex;
     align-items: center;
     justify-content: center;
-    height: ${sm ? theme.spacing(25) : 240}px;
+    height: ${$sm ? theme.spacing(25) : 240}px;
 
     .MuiCardContent-root {
       display: flex;
@@ -52,14 +51,12 @@ const StyledPluginsCard = styled((props) => <Card {...omit(props, 'sm')} />)(
   `,
 );
 
-const StyledCardActionArea = styled((props) => (
-  <CardActionArea {...omit(props, 'sm')} />
-))(
-  ({ theme, sm }) => css`
-    width: ${sm && theme.spacing(33)}px;
-    height: ${sm && theme.spacing(25)}px;
-    float: ${sm && 'left'};
-    margin: ${sm && theme.spacing(1.5)}px;
+const StyledCardActionArea = styled(CardActionArea)(
+  ({ theme, $sm }) => css`
+    width: ${$sm && theme.spacing(33)}px;
+    height: ${$sm && theme.spacing(25)}px;
+    float: ${$sm && 'left'};
+    margin: ${$sm && theme.spacing(1.5)}px;
   `,
 );
 
@@ -67,13 +64,13 @@ const FileCard = (props) => {
   const { handelDrop, sm = false, title, content, values } = props;
 
   return (
-    <StyledCardActionArea sm={sm}>
+    <StyledCardActionArea $sm={sm}>
       <Dropzone onDrop={(file) => handelDrop(file, values)}>
         {({ getRootProps, getInputProps }) => (
           <section>
             <div {...getRootProps()}>
               <input {...getInputProps()} />
-              <StyledPluginsCard sm={sm}>
+              <StyledPluginsCard $sm={sm}>
                 <CardContent>
                   <PowerIcon className="action-icon" color="action" />
                   <div className="action-description">

@@ -14,24 +14,18 @@
  * limitations under the License.
  */
 
-import React from 'react';
-import { omit } from 'lodash';
 import styled, { css } from 'styled-components';
 import { FullScreenDialog } from 'components/common/Dialog';
 
-export const StyledFullScreenDialog = styled((props) => (
-  // Don't pass down props that are meant only used by styled-component.
-  // React also complains about this if these props are not omitted
-  <FullScreenDialog {...omit(props, 'isPageComponent')} />
-))(
-  ({ theme, isPageComponent }) => css`
+export const StyledFullScreenDialog = styled(FullScreenDialog)(
+  ({ theme, $isPageComponent }) => css`
     .MuiDialogContent-root {
       max-width: none;
       width: auto;
       margin: 0;
 
       .dialog-inner {
-        background-color: ${isPageComponent
+        background-color: ${$isPageComponent
           ? theme.palette.background.paper
           : 'none'};
         width: 800px;
