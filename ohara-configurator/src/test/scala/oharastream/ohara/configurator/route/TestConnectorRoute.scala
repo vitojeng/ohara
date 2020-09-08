@@ -25,6 +25,7 @@ import oharastream.ohara.common.rule.OharaTest
 import oharastream.ohara.common.setting.{ConnectorKey, ObjectKey, TopicKey, WithDefinitions}
 import oharastream.ohara.common.util.{CommonUtils, Releasable, VersionUtils}
 import oharastream.ohara.configurator.Configurator
+import oharastream.ohara.connector.perf.PerfSourceProps
 import oharastream.ohara.kafka.RowDefaultPartitioner
 import oharastream.ohara.kafka.connector.csv.CsvConnectorDefinitions
 import org.junit.jupiter.api.{AfterEach, BeforeEach, Test}
@@ -727,10 +728,10 @@ class TestConnectorRoute extends OharaTest {
         .className("oharastream.ohara.connector.perf.PerfSource")
         .workerClusterKey(workerClusterInfo.key)
         .create()
-    ).settings(oharastream.ohara.connector.perf.PERF_FREQUENCY_KEY)
+    ).settings(PerfSourceProps.PERF_FREQUENCY_KEY)
       .asInstanceOf[JsString]
       // the time conversion is based on milliseconds
-      .value shouldBe Duration(oharastream.ohara.connector.perf.PERF_FREQUENCY_DEFAULT.toMillis, TimeUnit.MILLISECONDS)
+      .value shouldBe Duration(PerfSourceProps.PERF_FREQUENCY_DEFAULT.toMillis, TimeUnit.MILLISECONDS)
       .toString()
   }
 

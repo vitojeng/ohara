@@ -135,7 +135,7 @@ class TestPerfSource extends With3Brokers3Workers {
         .numberOfTasks(1)
         .connectorKey(connectorKey)
         .columns(schema)
-        .settings(Map(PERF_FREQUENCY_KEY -> "PT5S"))
+        .settings(Map(PerfSourceProps.PERF_FREQUENCY_KEY -> "PT5S"))
         .create()
     )
 
@@ -169,7 +169,7 @@ class TestPerfSource extends With3Brokers3Workers {
         .numberOfTasks(1)
         .connectorKey(connectorKey)
         .columns(schema)
-        .settings(Map(PERF_BATCH_KEY -> "5"))
+        .settings(Map(PerfSourceProps.PERF_BATCH_KEY -> "5"))
         .create()
     )
 
@@ -237,7 +237,7 @@ class TestPerfSource extends With3Brokers3Workers {
         .numberOfTasks(1)
         .connectorKey(connectorKey)
         .columns(schema)
-        .settings(Map(PERF_FREQUENCY_KEY -> "abcd"))
+        .settings(Map(PerfSourceProps.PERF_FREQUENCY_KEY -> "abcd"))
         .create()
     )
   }
@@ -254,7 +254,7 @@ class TestPerfSource extends With3Brokers3Workers {
         .numberOfTasks(1)
         .connectorKey(connectorKey)
         .columns(schema)
-        .settings(Map(PERF_BATCH_KEY -> "-1"))
+        .settings(Map(PerfSourceProps.PERF_BATCH_KEY -> "-1"))
         .create()
     )
     ConnectorTestUtils.assertFailedConnector(testUtil, connectorKey)

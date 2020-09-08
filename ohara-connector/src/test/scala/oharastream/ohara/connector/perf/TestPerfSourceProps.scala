@@ -82,29 +82,29 @@ class TestPerfSourceProps extends OharaTest {
         .raw()
     )
 
-    task.schema shouldBe DEFAULT_SCHEMA
+    task.schema shouldBe PerfSourceTask.DEFAULT_SCHEMA
   }
 
   @Test
   def testDefaultBatch(): Unit =
-    PerfSourceProps(TaskSetting.of(java.util.Map.of())).batch shouldBe PERF_BATCH_DEFAULT
+    PerfSourceProps(TaskSetting.of(java.util.Map.of())).batch shouldBe PerfSourceProps.PERF_BATCH_DEFAULT
 
   @Test
   def testDefaultFrequency(): Unit =
-    PerfSourceProps(TaskSetting.of(java.util.Map.of())).freq shouldBe PERF_FREQUENCY_DEFAULT
+    PerfSourceProps(TaskSetting.of(java.util.Map.of())).freq shouldBe PerfSourceProps.PERF_FREQUENCY_DEFAULT
 
   @Test
   def testDefaultCellSize(): Unit =
-    PerfSourceProps(TaskSetting.of(java.util.Map.of())).cellSize shouldBe PERF_CELL_LENGTH_DEFAULT
+    PerfSourceProps(TaskSetting.of(java.util.Map.of())).cellSize shouldBe PerfSourceProps.PERF_CELL_LENGTH_DEFAULT
 
   @Test
   def testCellSize(): Unit =
-    PerfSourceProps(TaskSetting.of(java.util.Map.of(PERF_CELL_LENGTH_KEY, "999"))).cellSize shouldBe 999
+    PerfSourceProps(TaskSetting.of(java.util.Map.of(PerfSourceProps.PERF_CELL_LENGTH_KEY, "999"))).cellSize shouldBe 999
 
   @Test
   def testInvalidFrequency(): Unit =
     an[NumberFormatException] should be thrownBy PerfSourceProps(
-      TaskSetting.of(Map(PERF_BATCH_KEY -> "1", PERF_FREQUENCY_KEY -> "abc").asJava)
+      TaskSetting.of(Map(PerfSourceProps.PERF_BATCH_KEY -> "1", PerfSourceProps.PERF_FREQUENCY_KEY -> "abc").asJava)
     )
 
   @Test

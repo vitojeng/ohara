@@ -31,7 +31,7 @@ class TestPerfSourceTask extends OharaTest {
         "{\"group\": \"g\", \"name\": \"n\"}",
         ConnectorDefUtils.TOPIC_KEYS_DEFINITION.key,
         "[{\"group\": \"g\", \"name\": \"n\"}]",
-        PERF_FREQUENCY_KEY,
+        PerfSourceProps.PERF_FREQUENCY_KEY,
         "10 milliseconds"
       )
     )

@@ -15,14 +15,13 @@
  */
 
 package oharastream.ohara.connector.perf
-import java.util.Collections
-
 import oharastream.ohara.common.annotations.VisibleForTesting
-import oharastream.ohara.common.data.{Cell, Column, DataType, Row, Serializer}
+import oharastream.ohara.common.data._
 import oharastream.ohara.common.setting.TopicKey
 import oharastream.ohara.common.util.{ByteUtils, CommonUtils}
 import oharastream.ohara.kafka.connector.{RowSourceRecord, RowSourceTask, TaskSetting}
 
+import scala.collection.mutable
 import scala.jdk.CollectionConverters._
 
 class PerfSourceTask extends RowSourceTask {
@@ -36,39 +35,48 @@ class PerfSourceTask extends RowSourceTask {
     * this is what we push to topics. We don't generate it repeatedly to avoid extra cost in testing.
     */
   private[this] var records: java.util.List[RowSourceRecord] = java.util.List.of()
-  private[this] var rowBytes: Array[Byte]                    = _
+
+  /**
+    * convert object to byte array is expensive so we keep all results.
+    */
+  private[this] val rowCache = mutable.Map[Row, Array[Byte]]()
 
   override protected def run(settings: TaskSetting): Unit = {
     this.props = PerfSourceProps(settings)
     this.topics = settings.topicKeys().asScala.toSet
     this.schema = settings.columns.asScala.toSeq
-    if (schema.isEmpty) schema = DEFAULT_SCHEMA
-    val row = Row.of(
-      schema.sortBy(_.order).map { c =>
-        Cell.of(
-          c.newName,
-          c.dataType match {
-            case DataType.BOOLEAN => false
-            case DataType.BYTE    => ByteUtils.toBytes(CommonUtils.current()).head
-            case DataType.BYTES   => new Array[Byte](props.cellSize)
-            case DataType.SHORT   => CommonUtils.current().toShort
-            case DataType.INT     => CommonUtils.current().toInt
-            case DataType.LONG    => CommonUtils.current()
-            case DataType.FLOAT   => CommonUtils.current().toFloat
-            case DataType.DOUBLE  => CommonUtils.current().toDouble
-            case DataType.STRING  => CommonUtils.randomString(props.cellSize)
-            case _                => CommonUtils.current()
-          }
-        )
-      }: _*
-    )
-    this.rowBytes = Serializer.ROW.to(row)
-    records = Collections.unmodifiableList(
-      (0 until props.batch).flatMap(_ => topics.map(RowSourceRecord.builder().row(row).topicKey(_).build())).asJava
-    )
+    if (schema.isEmpty) schema = PerfSourceTask.DEFAULT_SCHEMA
+    (0 until props.batch).foreach { index =>
+      val value = CommonUtils.current() + index
+      val row = Row.of(
+        schema.sortBy(_.order).map { c =>
+          Cell.of(
+            c.newName,
+            c.dataType match {
+              case DataType.BOOLEAN => false
+              case DataType.BYTE    => ByteUtils.toBytes(value).head
+              case DataType.BYTES   => new Array[Byte](props.cellSize)
+              case DataType.SHORT   => value.toShort
+              case DataType.INT     => value.toInt
+              case DataType.LONG    => value
+              case DataType.FLOAT   => value.toFloat
+              case DataType.DOUBLE  => value.toDouble
+              case DataType.STRING  => CommonUtils.randomString(props.cellSize)
+              case _                => value
+            }
+          )
+        }: _*
+      )
+      rowCache.put(row, Serializer.ROW.to(row))
+    }
+    records = rowCache.keys
+      .flatMap(row => topics.map(RowSourceRecord.builder().row(row).topicKey(_).build()))
+      .toSeq
+      .asJava
   }
 
-  override protected def toBytes(record: RowSourceRecord): Array[Byte] = rowBytes
+  override protected def toBytes(record: RowSourceRecord): Array[Byte] =
+    rowCache.getOrElse(record.row(), Serializer.ROW.to(record.row()))
 
   override protected def terminate(): Unit = {}
 
@@ -79,4 +87,12 @@ class PerfSourceTask extends RowSourceTask {
       records
     } else java.util.List.of()
   }
+}
+
+object PerfSourceTask {
+  private[perf] val DEFAULT_SCHEMA = Seq(
+    Column.builder().name("a").dataType(DataType.STRING).order(0).build(),
+    Column.builder().name("b").dataType(DataType.STRING).order(1).build(),
+    Column.builder().name("c").dataType(DataType.STRING).order(2).build()
+  )
 }

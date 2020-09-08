@@ -15,6 +15,8 @@
  */
 
 package oharastream.ohara.connector.perf
+import java.util.concurrent.atomic.AtomicInteger
+
 import oharastream.ohara.common.annotations.VisibleForTesting
 import oharastream.ohara.common.setting.SettingDef
 import oharastream.ohara.kafka.connector.{RowSourceConnector, RowSourceTask, TaskSetting}
@@ -41,5 +43,35 @@ class PerfSource extends RowSourceConnector {
 
   override protected def terminate(): Unit = {}
 
-  override protected def customSettingDefinitions(): java.util.Map[String, SettingDef] = DEFINITIONS.asJava
+  override protected def customSettingDefinitions(): java.util.Map[String, SettingDef] = PerfSource.DEFINITIONS.asJava
+}
+
+object PerfSource {
+  private[this] val GROUP_COUNT = new AtomicInteger()
+  val DEFINITIONS: Map[String, SettingDef] = Seq(
+    SettingDef
+      .builder()
+      .displayName("Batch")
+      .documentation("The batch of perf")
+      .key(PerfSourceProps.PERF_BATCH_KEY)
+      .optional(PerfSourceProps.PERF_BATCH_DEFAULT)
+      .orderInGroup(GROUP_COUNT.getAndIncrement())
+      .build(),
+    SettingDef
+      .builder()
+      .displayName("Frequency")
+      .documentation("The frequency of perf")
+      .key(PerfSourceProps.PERF_FREQUENCY_KEY)
+      .optional(java.time.Duration.ofMillis(PerfSourceProps.PERF_FREQUENCY_DEFAULT.toMillis))
+      .orderInGroup(GROUP_COUNT.getAndIncrement())
+      .build(),
+    SettingDef
+      .builder()
+      .displayName("cell length")
+      .documentation("increase this value if you prefer to large cell. Noted, it works only for string type")
+      .key(PerfSourceProps.PERF_CELL_LENGTH_KEY)
+      .optional(PerfSourceProps.PERF_CELL_LENGTH_DEFAULT)
+      .orderInGroup(GROUP_COUNT.getAndIncrement())
+      .build()
+  ).map(defintion => defintion.key() -> defintion).toMap
 }
