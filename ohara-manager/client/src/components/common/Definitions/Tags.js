@@ -48,6 +48,7 @@ const Tags = (props) => {
       error={hasError}
       fullWidth
       helperText={hasError ? meta.error : helperText}
+      id={name}
       InputProps={restInput}
       multiline
       name={name}

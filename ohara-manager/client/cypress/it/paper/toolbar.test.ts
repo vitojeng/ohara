@@ -19,10 +19,7 @@ import { NodeRequest } from '../../../src/api/apiInterface/nodeInterface';
 import { KIND, CELL_STATUS } from '../../../src/const';
 import { SOURCE, SINK } from '../../../src/api/apiInterface/connectorInterface';
 import { CELL_ACTION } from '../../support/customCommands';
-import { fetchPipelines } from '../../utils';
 import { ElementParameters } from './../../support/customCommands';
-import { PipelineRequest } from '../../../src/api/apiInterface/pipelineInterface';
-import { ObjectAbstract } from '../../../src/api/apiInterface/pipelineInterface';
 
 describe('Toolbar', () => {
   const node: NodeRequest = {
@@ -633,28 +630,18 @@ describe('Toolbar', () => {
   });
 
   context('Metrics switch', () => {
-    it('should render the Metrics switch UI', () => {
-      // Tool title
-      cy.findByText('Metrics').should('exist');
-
-      // The switch should not have the check class by default
-      cy.findByTestId('metrics-switch')
-        .should('exist')
-        .and('not.have.class', 'Mui-checked');
-    });
-
     it('toggles the switch', () => {
       // Default
-      cy.findByTestId('metrics-switch')
+      cy.findByLabelText(/metrics/i)
         .should('exist')
-        .and('not.have.class', 'Mui-checked')
+        .and('not.be.checked')
         .as('switch');
 
       // On
-      cy.get('@switch').click().should('have.class', 'Mui-checked');
+      cy.get('@switch').click().should('be.checked');
 
       // Off
-      cy.get('@switch').click().should('not.have.class', 'Mui-checked');
+      cy.get('@switch').click().should('not.be.checked');
     });
 
     context('Paper interaction', () => {
@@ -690,15 +677,15 @@ describe('Toolbar', () => {
           .and('not.be.visible');
 
         // Turn on switch
-        cy.findByTestId('metrics-switch')
-          .should('not.have.class', 'Mui-checked')
+        cy.findByLabelText(/metrics/i)
+          .should('not.be.checked')
           .click();
 
         // Should display metrics on Paper elements
         cy.get('#paper .metrics').should('have.length', 1).and('be.visible');
 
         // Reset metrics
-        cy.findByTestId('metrics-switch').click();
+        cy.findByLabelText(/metrics/i).click();
       });
 
       it(`should display metrics when starts a connection with Paper element's start action button`, () => {
@@ -713,17 +700,17 @@ describe('Toolbar', () => {
         );
 
         // Enable metrics
-        cy.findByTestId('metrics-switch')
+        cy.findByLabelText(/metrics/i)
           .click()
-          .should('have.class', 'Mui-checked');
+          .should('be.checked');
 
         // Should display metrics, although we don't have real data here
         cy.findByText('No metrics data available').should('exist');
 
         // Reset metrics
-        cy.findByTestId('metrics-switch')
+        cy.findByLabelText(/metrics/i)
           .click()
-          .should('not.have.class', 'Mui-checked');
+          .should('not.be.checked');
       });
 
       it('should display metrics when starts a connection with start all components action', () => {
@@ -737,9 +724,9 @@ describe('Toolbar', () => {
         );
 
         // Enable metrics
-        cy.findByTestId('metrics-switch')
+        cy.findByLabelText(/metrics/i)
           .click()
-          .should('have.class', 'Mui-checked');
+          .should('be.checked');
 
         // Should display metrics, although we don't have real data here
         cy.findByText('No metrics data available').should('exist');

@@ -125,7 +125,7 @@ describe('App Bar', () => {
       });
       // change the settings to unlimited
       cy.findByTitle('Event logs settings').click();
-      cy.get('input[type="checkbox"]:visible').check();
+      cy.findByLabelText(/Unlimited logs/i).check();
       cy.findAllByText('SAVE').filter(':visible').click();
       cy.findByText('There is only 1 currently').should('exist');
 

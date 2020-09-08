@@ -25,8 +25,10 @@ import { ElementParameters } from './customCommands';
 Cypress.Commands.add('createPipeline', (name = 'pipeline1') => {
   cy.log(`Creating pipeline: ${name}`);
   cy.get('.new-pipeline-button').click();
-  cy.findByTestId('new-pipeline-dialog').find('input').type(name);
-  cy.findByText('ADD').click();
+  cy.findByTestId('new-pipeline-dialog').within(() => {
+    cy.findByLabelText(/pipeline name/i).type(name);
+    cy.findByText('ADD').click();
+  });
 });
 
 Cypress.Commands.add('startPipeline', (name) => {
@@ -178,9 +180,7 @@ Cypress.Commands.add('addElement', ({ name, kind, className }) => {
         .dragAndDrop(x, y);
 
       // type the name and add
-      cy.findByLabelText(`${capitalize(kind)} name`, { exact: false }).type(
-        name,
-      );
+      cy.findByLabelText(new RegExp(`${kind} name`, 'i')).type(name);
       cy.findAllByText('ADD').filter(':visible').click();
     } else if (kind === KIND.topic) {
       const isSharedTopic = !name.startsWith('T');

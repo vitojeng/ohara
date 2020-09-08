@@ -66,6 +66,7 @@ const Duration = (props) => {
       error={hasError}
       fullWidth
       helperText={hasError ? meta.error : helperText}
+      id={name}
       InputProps={{
         ...restInput,
         endAdornment: <InputAdornment position="end">Seconds</InputAdornment>,

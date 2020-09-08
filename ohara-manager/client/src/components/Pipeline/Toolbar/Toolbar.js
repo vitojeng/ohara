@@ -316,7 +316,7 @@ const Toolbar = (props) => {
               <Switch
                 checked={isMetricsOn}
                 color="primary"
-                data-testid="metrics-switch"
+                id="metricsSwitch"
                 onChange={() => {
                   pipelineDispatch({ type: 'toggleMetricsButton' });
                   paperApi.toggleMetrics(!isMetricsOn);
@@ -329,8 +329,9 @@ const Toolbar = (props) => {
                 }}
               />
             }
+            label="Metrics"
+            labelPlacement="bottom"
           />
-          <Typography variant="body2">Metrics</Typography>
         </div>
       )}
 

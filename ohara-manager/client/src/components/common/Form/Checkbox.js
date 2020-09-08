@@ -40,6 +40,7 @@ const MuiCheckbox = ({
             {...rest}
             checked={checked}
             color="primary"
+            id={name}
             inputProps={restInput}
             name={name}
             onChange={onChange}

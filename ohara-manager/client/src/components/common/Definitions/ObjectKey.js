@@ -52,6 +52,7 @@ const ObjectKey = (props) => {
         error={hasError}
         fullWidth
         helperText={hasError ? meta.error : helperText}
+        id={name + 'Name'}
         InputProps={restInput}
         label={label + ' (name)'}
         name={name + 'Name'}
@@ -64,6 +65,7 @@ const ObjectKey = (props) => {
         error={hasError}
         fullWidth
         helperText={hasError ? meta.error : helperText}
+        id={name + 'Name'}
         InputProps={restInput}
         label={label + ' (group)'}
         name={name + 'Group'}

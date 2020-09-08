@@ -52,10 +52,10 @@ describe('Restart workspace', () => {
     cy.findByTitle(/node list/i).click();
     // create a node
     cy.findByTitle(/create node/i).click();
-    cy.get('input[name=hostname]').type(hostname);
-    cy.get('input[name=port]').type(generate.port().toString());
-    cy.get('input[name=user]').type(generate.userName());
-    cy.get('input[name=password]').type(generate.password());
+    cy.findByLabelText(/hostname/i).type(hostname);
+    cy.findByLabelText(/port/i).type(generate.port().toString());
+    cy.findByLabelText(/user/i).type(generate.userName());
+    cy.findByLabelText(/password/i).type(generate.password());
     cy.findByText('CREATE').click();
     cy.findByTestId('nodes-dialog-close-button').click();
 

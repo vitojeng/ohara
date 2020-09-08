@@ -54,7 +54,7 @@ const AddPipelineDialog = ({ isOpen, setIsOpen }) => {
             <Field
               autoFocus
               component={InputField}
-              id="Pipeline name"
+              id="pipelineName"
               label="Pipeline name"
               name="pipelineName"
               placeholder="pipeline1"

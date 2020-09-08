@@ -53,6 +53,7 @@ const NodeEditorDialog = ({ isOpen, node, onClose, onConfirm }) => {
                 defaultValue={node?.hostname}
                 disabled
                 helperText="hostname of the node"
+                id="hostname"
                 label="Hostname"
                 margin="normal"
                 name="hostname"
@@ -63,6 +64,7 @@ const NodeEditorDialog = ({ isOpen, node, onClose, onConfirm }) => {
                 component={InputField}
                 defaultValue={node?.port}
                 helperText="SSH port of the node"
+                id="port"
                 inputProps={{
                   min: 1,
                   max: 65535,
@@ -84,6 +86,7 @@ const NodeEditorDialog = ({ isOpen, node, onClose, onConfirm }) => {
                 defaultValue={node?.user}
                 fullWidth
                 helperText="SSH username"
+                id="user"
                 label="User"
                 margin="normal"
                 name="user"
@@ -95,6 +98,7 @@ const NodeEditorDialog = ({ isOpen, node, onClose, onConfirm }) => {
                 defaultValue={node?.password}
                 fullWidth
                 helperText="SSH password"
+                id="password"
                 label="Password"
                 margin="normal"
                 name="password"

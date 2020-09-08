@@ -57,6 +57,7 @@ const SetupWorkspaceForm = (props) => {
         <Field
           autoFocus
           component={InputField}
+          id="workspaceName"
           label="Workspace name"
           margin="normal"
           name="workspace.name"

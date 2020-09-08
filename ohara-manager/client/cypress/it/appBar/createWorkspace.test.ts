@@ -46,10 +46,10 @@ describe('Create Workspace', () => {
       // add node
       cy.contains('p:visible', 'Click here to select nodes').click();
       cy.findByTitle('Create Node').click();
-      cy.get('input[name=hostname]').type(nodeHost);
-      cy.get('input[name=port]').type(generate.port().toString());
-      cy.get('input[name=user]').type(generate.userName());
-      cy.get('input[name=password]').type(generate.password());
+      cy.findByLabelText(/hostname/i).type(nodeHost);
+      cy.findByLabelText(/port/i).type(generate.port().toString());
+      cy.findByLabelText(/user/i).type(generate.userName());
+      cy.findByLabelText(/password/i).type(generate.password());
       cy.findByText('CREATE').click();
       cy.findByText(nodeHost)
         .siblings('td')
@@ -84,10 +84,11 @@ describe('Create Workspace', () => {
 
       const hostname1 = generate.serviceName();
       cy.findByTitle('Create Node').click();
-      cy.get('input[name=hostname]').type(hostname1);
-      cy.get('input[name=port]').type(generate.port().toString());
-      cy.get('input[name=user]').type(generate.userName());
-      cy.get('input[name=password]').type(generate.password());
+      cy.findByLabelText(/hostname/i).type(hostname1);
+      cy.findByLabelText(/port/i).type(generate.port().toString());
+      cy.findByLabelText(/user/i).type(generate.userName());
+      cy.findByLabelText(/password/i).type(generate.password());
+
       cy.findByText('CREATE').click();
       cy.findByText(hostname1).should('exist');
 
@@ -97,10 +98,10 @@ describe('Create Workspace', () => {
 
       const hostname2 = generate.serviceName();
       cy.findByTitle('Create Node').click();
-      cy.get('input[name=hostname]').type(hostname2);
-      cy.get('input[name=port]').type(generate.port().toString());
-      cy.get('input[name=user]').type(generate.userName());
-      cy.get('input[name=password]').type(generate.password());
+      cy.findByLabelText(/hostname/i).type(hostname2);
+      cy.findByLabelText(/port/i).type(generate.port().toString());
+      cy.findByLabelText(/user/i).type(generate.userName());
+      cy.findByLabelText(/password/i).type(generate.password());
       cy.findByText('CREATE').click();
       cy.findByText(hostname2).should('exist');
 
@@ -110,10 +111,10 @@ describe('Create Workspace', () => {
 
       const hostname3 = `${hostname1}${generate.serviceName()}`;
       cy.findByTitle('Create Node').click();
-      cy.get('input[name=hostname]').type(hostname3);
-      cy.get('input[name=port]').type(generate.port().toString());
-      cy.get('input[name=user]').type(generate.userName());
-      cy.get('input[name=password]').type(generate.password());
+      cy.findByLabelText(/hostname/i).type(hostname3);
+      cy.findByLabelText(/port/i).type(generate.port().toString());
+      cy.findByLabelText(/user/i).type(generate.userName());
+      cy.findByLabelText(/password/i).type(generate.password());
       cy.findByText('CREATE').click();
       cy.findByText(hostname3).should('exist');
 

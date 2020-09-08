@@ -34,6 +34,7 @@ const PositiveDouble = (props) => {
       error={hasError}
       fullWidth
       helperText={hasError ? meta.error : helperText}
+      id={name}
       InputProps={{ inputProps: { min: 0 }, ...restInput }}
       name={name}
       onChange={onChange}

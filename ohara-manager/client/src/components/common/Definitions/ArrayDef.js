@@ -44,6 +44,7 @@ const ArrayDef = (props) => {
     <StyledAutocomplete
       defaultValue={options}
       freeSolo
+      id={name}
       multiple
       onChange={(event, values) => {
         onChange(values);

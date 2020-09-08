@@ -45,6 +45,7 @@ const InputField = (props) => {
         {...rest}
         error={hasError}
         helperText={hasError ? meta.error : helperText}
+        id={name}
         InputProps={restInput}
         name={name}
         onChange={onChange}

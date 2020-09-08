@@ -46,6 +46,7 @@ const ValidateInputField = (props) => {
         {...rest}
         error={hasError}
         helperText={helperText}
+        id={name}
         InputProps={{
           ...restInput,
           endAdornment: (

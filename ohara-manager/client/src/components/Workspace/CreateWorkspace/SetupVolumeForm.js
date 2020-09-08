@@ -94,6 +94,7 @@ const SetupVolumeForm = (props) => {
           disabled={!checked}
           hasError={!isValidate()}
           helperText={helperText()}
+          id="workspaceVolume"
           label="Volume path"
           margin="normal"
           name="volume.path"

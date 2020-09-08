@@ -72,6 +72,7 @@ const Reference = (props) => {
       error={hasError}
       fullWidth
       helperText={hasError ? meta.error : helperText}
+      id={name}
       InputProps={restInput}
       name={name}
       onChange={onChange}

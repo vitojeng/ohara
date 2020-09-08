@@ -209,10 +209,10 @@ Cypress.Commands.add(
     cy.findByRole('table').then(($table) => {
       if ($table.find(`td:contains(${node.hostname})`).length === 0) {
         cy.findByTitle('Create Node').click();
-        cy.get('input[name=hostname]').type(node.hostname);
-        cy.get('input[name=port]').type(`${node.port}`);
-        cy.get('input[name=user]').type(node.user);
-        cy.get('input[name=password]').type(node.password);
+        cy.findByLabelText(/hostname/i).type(node.hostname);
+        cy.findByLabelText(/port/i).type(`${node.port}`);
+        cy.findByLabelText(/user/i).type(node.user);
+        cy.findByLabelText(/password/i).type(node.password);
         cy.findByText('CREATE').click();
       }
     });
@@ -249,10 +249,10 @@ Cypress.Commands.add('addNode', (node = generateNodeIfNeeded) => {
     // the node has not been added yet, added directly
     if ($body.find(`td:contains(${node.hostname})`).length === 0) {
       cy.findByTitle('Create Node').click();
-      cy.get('input[name=hostname]').type(node.hostname);
-      cy.get('input[name=port]').type(String(node.port));
-      cy.get('input[name=user]').type(node.user);
-      cy.get('input[name=password]').type(node.password);
+      cy.findByLabelText(/hostname/i).type(node.hostname);
+      cy.findByLabelText(/port/i).type(String(node.port));
+      cy.findByLabelText(/user/i).type(node.user);
+      cy.findByLabelText(/password/i).type(node.password);
       cy.findByText('CREATE').click();
     }
     cy.findByText(node.hostname)
@@ -288,7 +288,9 @@ Cypress.Commands.add(
 
     // Step1: workspace name
     if (workspaceName) {
-      cy.findByPlaceholderText('workspace1').clear().type(workspaceName);
+      cy.findByLabelText(/workspace name/i)
+        .clear()
+        .type(workspaceName);
     }
 
     cy.findAllByText('NEXT').filter(':visible').click();
@@ -297,7 +299,7 @@ Cypress.Commands.add(
     cy.contains('p:visible', 'Click here to select nodes').click();
     cy.addNode(node);
 
-    // Step3: set volume
+    // Step3: skip volume setup
     cy.findAllByText('NEXT').eq(1).filter(':visible').click();
 
     // Step4: create workspace
@@ -309,9 +311,7 @@ Cypress.Commands.add(
     if (closeOnFailureOrFinish) {
       // if the RETRY button is enabled, the task is stopped and has not been completed
       cy.get('body').then(($body) => {
-        const $retryButton = $body.find(
-          'button[data-testid="stepper-retry-button"]',
-        );
+        const $retryButton = $body.find('[data-testid="stepper-retry-button"]');
         if ($retryButton.filter(':visible').length > 0) {
           // when we refresh the browser, the native alert should prompt
           // TODO: assert the alert should be appears [Tracked by https://github.com/oharastream/ohara/issues/5381]

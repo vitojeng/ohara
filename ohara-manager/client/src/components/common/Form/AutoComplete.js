@@ -93,6 +93,7 @@ const AutoComplete = (props) => {
             error={showError}
             fullWidth={true}
             helperText={showError ? meta.error || meta.submitError : helperText}
+            id={name}
             label={label}
             margin="normal"
             name={name}

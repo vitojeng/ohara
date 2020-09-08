@@ -83,6 +83,10 @@ export const StyledToolbar = styled.div(
     .metrics-controls {
       /* Move this to the very right */
       margin-left: auto;
+
+      .MuiFormControlLabel-label {
+        font-size: ${theme.typography.body2.fontSize};
+      }
     }
   `,
 );

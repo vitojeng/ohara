@@ -92,9 +92,9 @@ describe('Pipeline', () => {
         .should('have.length', 3);
 
       // Toggle metrics switch
-      cy.findByTestId('metrics-switch')
+      cy.findByLabelText(/Metrics/i)
         .click()
-        .should('have.class', 'Mui-checked');
+        .should('be.checked');
 
       // Metrics should be there
       cy.get('@elements')

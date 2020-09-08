@@ -34,6 +34,7 @@ const RemotePort = (props) => {
       error={hasError}
       fullWidth
       helperText={hasError ? meta.error : helperText}
+      id={name}
       InputProps={{ inputProps: { min: 0, max: 65535 }, ...restInput }}
       name={name}
       onChange={onChange}

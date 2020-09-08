@@ -61,6 +61,7 @@ const NodeCreateDialog = ({ isOpen, onClose, onConfirm }) => {
                 autoFocus
                 component={InputField}
                 helperText="hostname of the node"
+                id="hostname"
                 label="Hostname"
                 margin="normal"
                 name="hostname"
@@ -72,6 +73,7 @@ const NodeCreateDialog = ({ isOpen, onClose, onConfirm }) => {
               <Field
                 component={InputField}
                 helperText="SSH port of the node"
+                id="port"
                 inputProps={{
                   min: 1,
                   max: 65535,
@@ -91,6 +93,7 @@ const NodeCreateDialog = ({ isOpen, onClose, onConfirm }) => {
                 component={InputField}
                 fullWidth
                 helperText="SSH username"
+                id="user"
                 label="User"
                 margin="normal"
                 name="user"
@@ -101,6 +104,7 @@ const NodeCreateDialog = ({ isOpen, onClose, onConfirm }) => {
                 component={InputField}
                 fullWidth
                 helperText="SSH password"
+                id="password"
                 label="Password"
                 margin="normal"
                 name="password"

@@ -72,6 +72,7 @@ const Chooser = (props) => {
           error={hasError}
           fullWidth
           helperText={hasError ? error : helperText}
+          id={name}
           label={label}
           name={name}
           placeholder={placeholder}

@@ -40,10 +40,10 @@ describe('App Bar', () => {
       // open again
       cy.findByTitle(/create node/i).click();
       const hostname = generate.serviceName();
-      cy.get('input[name=hostname]').type(hostname);
-      cy.get('input[name=port]').type(generate.port().toString());
-      cy.get('input[name=user]').type(generate.userName());
-      cy.get('input[name=password]').type(generate.password());
+      cy.findByLabelText(/hostname/i).type(hostname);
+      cy.findByLabelText(/port/i).type(generate.port().toString());
+      cy.findByLabelText(/user/i).type(generate.userName());
+      cy.findByLabelText(/password/i).type(generate.password());
       cy.findByText('CREATE').click();
 
       // check the node information
@@ -89,10 +89,10 @@ describe('App Bar', () => {
 
       const hostname1 = generate.serviceName();
       cy.findByTitle('Create Node').should('be.visible').click();
-      cy.get('input[name=hostname]').type(hostname1);
-      cy.get('input[name=port]').type(generate.port().toString());
-      cy.get('input[name=user]').type(generate.userName());
-      cy.get('input[name=password]').type(generate.password());
+      cy.findByLabelText(/hostname/i).type(hostname1);
+      cy.findByLabelText(/port/i).type(generate.port().toString());
+      cy.findByLabelText(/user/i).type(generate.userName());
+      cy.findByLabelText(/password/i).type(generate.password());
       cy.findByText('CREATE').click();
       cy.findByText(hostname1).should('be.visible');
 
@@ -102,10 +102,10 @@ describe('App Bar', () => {
 
       const hostname2 = generate.serviceName();
       cy.findByTitle('Create Node').should('be.visible').click();
-      cy.get('input[name=hostname]').type(hostname2);
-      cy.get('input[name=port]').type(generate.port().toString());
-      cy.get('input[name=user]').type(generate.userName());
-      cy.get('input[name=password]').type(generate.password());
+      cy.findByLabelText(/hostname/i).type(hostname2);
+      cy.findByLabelText(/port/i).type(generate.port().toString());
+      cy.findByLabelText(/user/i).type(generate.userName());
+      cy.findByLabelText(/password/i).type(generate.password());
       cy.findByText('CREATE').click();
       cy.findByText(hostname2).should('be.visible');
 

@@ -47,6 +47,7 @@ const Select = (props) => {
       {...rest}
       error={error}
       helperText={error && meta.error}
+      id={name}
       InputProps={restInput}
       name={name}
       onChange={onChange}

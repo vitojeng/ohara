@@ -131,6 +131,7 @@ const AutofillEditor = (props) => {
               <Field
                 autoFocus
                 component={InputField}
+                id="name"
                 label="name"
                 margin="normal"
                 name="displayName"
@@ -146,6 +147,7 @@ const AutofillEditor = (props) => {
                         className="input"
                         closeIcon={<></>}
                         component={AutoComplete}
+                        id="key"
                         label="key"
                         margin="normal"
                         name={`${name}.key`}
@@ -157,6 +159,7 @@ const AutofillEditor = (props) => {
                       <Field
                         className="input"
                         component={InputField}
+                        id="value"
                         label="value"
                         margin="normal"
                         name={`${name}.value`}

@@ -54,6 +54,7 @@ const EventLogSettings = (props) => {
                   <Field
                     component={InputField}
                     disabled={values.unlimited}
+                    id="limit"
                     label="Scrollback logs"
                     name="limit"
                     placeholder="The maximum amount of logs."
@@ -64,6 +65,7 @@ const EventLogSettings = (props) => {
                 <Grid item>
                   <Field
                     component={Checkbox}
+                    id="unlimited"
                     label="Unlimited logs"
                     name="unlimited"
                     type="checkbox"

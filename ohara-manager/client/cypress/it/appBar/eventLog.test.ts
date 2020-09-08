@@ -39,23 +39,23 @@ describe('App Bar', () => {
   context('Event Log', () => {
     it('should be able to delete event logs', () => {
       cy.createWorkspace({ workspaceName: wkName });
-      const successFulMessage = `Successfully created workspace ${wkName}.`;
+      const successMessage = `Successfully created workspace ${wkName}.`;
 
       // Wait until event log is properly logged
       cy.findByTestId('snackbar')
-        .findByText(successFulMessage, { timeout: 7000 })
+        .findByText(successMessage, { timeout: 7000 })
         .should('not.exist');
 
       // we should have create workspace event log
       cy.findByTitle('Event logs').click();
       cy.findByTestId('event-log-list').within(() => {
-        cy.findAllByText(successFulMessage).should('exist');
+        cy.findAllByText(successMessage).should('exist');
       });
 
       // edit the event log setting
       cy.findByTitle('Event logs settings').click();
       // could not change the maximum number if checked unlimited
-      cy.get('input[type="checkbox"]:visible').check();
+      cy.findByLabelText(/Unlimited logs/i).check();
       cy.findByPlaceholderText('The maximum amount of logs.').should(
         'be.disabled',
       );
@@ -64,14 +64,14 @@ describe('App Bar', () => {
 
       // change maximum number of event logs
       cy.findByTitle('Event logs settings').click();
-      cy.get('input[type="checkbox"]:visible').uncheck();
+      cy.findByLabelText(/Unlimited logs/i).uncheck();
       // change maximum event log to 1
       cy.findByPlaceholderText('The maximum amount of logs.').clear().type('1');
 
       cy.findAllByText('SAVE').filter(':visible').click();
       // the event log should be still visible
       cy.findByTestId('event-log-list').within(() => {
-        cy.findAllByText(successFulMessage).should('exist');
+        cy.findAllByText(successMessage).should('exist');
       });
 
       // click remove button if there are some logs
