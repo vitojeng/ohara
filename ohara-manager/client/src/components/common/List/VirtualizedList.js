@@ -16,14 +16,14 @@
 
 import React from 'react';
 import PropTypes from 'prop-types';
-import { noop } from 'lodash';
+import { noop, times } from 'lodash';
 import styled, { css } from 'styled-components';
+import Skeleton from '@material-ui/lab/Skeleton';
 
 import { CellMeasurerCache } from 'react-virtualized/dist/commonjs/CellMeasurer';
 import { List } from 'react-virtualized/dist/commonjs/List';
 import { AutoSizer } from 'react-virtualized/dist/commonjs/AutoSizer';
 import { CellMeasurer } from 'react-virtualized/dist/commonjs/CellMeasurer';
-import { TableLoader } from 'components/common/Loader';
 
 const StyledList = styled(List)(
   () => css`
@@ -32,6 +32,24 @@ const StyledList = styled(List)(
     }
   `,
 );
+
+const StyledLoader = styled.div(
+  ({ theme }) => css`
+    .MuiSkeleton-root {
+      margin: ${theme.spacing(0.5, 0)};
+    }
+  `,
+);
+
+const Loader = () => {
+  return (
+    <StyledLoader>
+      {times(30, (index) => (
+        <Skeleton animation="wave" height="40" key={index} width="100%" />
+      ))}
+    </StyledLoader>
+  );
+};
 
 const VirtualizedList = (props) => {
   const {
@@ -86,22 +104,24 @@ const VirtualizedList = (props) => {
     style: PropTypes.object,
   };
 
-  if (isLoading) return <TableLoader />;
+  if (isLoading) return <Loader />;
 
   return (
     <AutoSizer onResize={() => cache.clearAll()}>
-      {({ width, height }) => (
-        <StyledList
-          deferredMeasurementCache={cache}
-          height={height}
-          overscanRowCount={0}
-          rowCount={data.length}
-          rowHeight={cache.rowHeight}
-          rowRenderer={RowRendererWrapper}
-          scrollToIndex={autoScrollToBottom ? data.length : undefined}
-          width={width}
-        />
-      )}
+      {({ width, height }) => {
+        return (
+          <StyledList
+            deferredMeasurementCache={cache}
+            height={height}
+            overscanRowCount={0}
+            rowCount={data.length}
+            rowHeight={cache.rowHeight}
+            rowRenderer={RowRendererWrapper}
+            scrollToIndex={autoScrollToBottom ? data.length : undefined}
+            width={width}
+          />
+        );
+      }}
     </AutoSizer>
   );
 };

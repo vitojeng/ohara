@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import { isEmpty } from 'lodash';
+import { isEmpty, times } from 'lodash';
 import React from 'react';
 import PropTypes from 'prop-types';
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
@@ -25,8 +25,7 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import TableFooter from '@material-ui/core/TableFooter';
 import Typography from '@material-ui/core/Typography';
-
-import { TableLoader } from 'components/common/Loader';
+import Skeleton from '@material-ui/lab/Skeleton';
 
 const Wrapper = styled.div`
   &.has-title {
@@ -62,6 +61,24 @@ const StyledFooter = styled(TableFooter)`
   background-color: ${(props) => props.theme.palette.grey[50]};
 `;
 
+const StyledLoader = styled.div(
+  ({ theme }) => css`
+    .MuiSkeleton-root {
+      margin: ${theme.spacing(0.5, 0)};
+    }
+  `,
+);
+
+const Loader = () => {
+  return (
+    <StyledLoader>
+      {times(10, (index) => (
+        <Skeleton animation="wave" height={40} key={index} width="100%" />
+      ))}
+    </StyledLoader>
+  );
+};
+
 const MuiTable = (props) => {
   const {
     headers,
@@ -77,7 +94,7 @@ const MuiTable = (props) => {
   const hasTitle = title.length > 0 ? true : false;
   const titleClass = hasTitle ? 'has-title' : '';
 
-  if (isLoading) return <TableLoader />;
+  if (isLoading) return <Loader />;
 
   return (
     <Wrapper className={`${titleClass}`}>
