@@ -40,7 +40,6 @@ import oharastream.ohara.client.configurator.{
 }
 import oharastream.ohara.common.setting.ObjectKey
 import oharastream.ohara.common.util.{CommonUtils, Releasable, VersionUtils}
-import oharastream.ohara.configurator.Configurator
 import oharastream.ohara.it.ContainerPlatform.ResourceRef
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -207,61 +206,6 @@ object ContainerPlatform {
     */
   def dockerMode: ContainerPlatform = _dockerMode.get
 
-  private[this] val CUSTOM_CONFIGURATOR_KEY = "ohara.it.configurator"
-
-  /**
-    * custom mode accepts an existent Configurator service to run IT. In this mode, the nodes must be stored in Configurator
-    * already. otherwise, RuntimeException is thrown. The container client is setup according to mode of Configurator.
-    * 1) k8s mode => k8s client
-    * 2) docker mode => docker client
-    * 3) throw RuntimeException
-    *
-    * @return
-    */
-  private[this] def customMode: Option[ContainerPlatform] = sys.env.get(CUSTOM_CONFIGURATOR_KEY).map(_.split(":")).map {
-    case Array(hostname, portString) =>
-      val port   = portString.toInt
-      val _nodes = result(NodeApi.access.hostname(hostname).port(port).list())
-      if (_nodes.isEmpty)
-        throw new RuntimeException(s"the configurator run on $hostname:$port does not store any nodes")
-      val info = result(InspectApi.access.hostname(hostname).port(port).configuratorInfo())
-      val clientCreator = Configurator.Mode.forName(info.mode) match {
-        case Configurator.Mode.K8S =>
-          () =>
-            K8SClient.builder
-              .serverURL(info.k8sUrls.get.coordinatorUrl)
-              .metricsServerURL(info.k8sUrls.get.metricsUrl.orNull)
-              .remoteFolderHandler(RemoteFolderHandler(DataCollie(_nodes)))
-              .build()
-        case Configurator.Mode.DOCKER =>
-          () => DockerClient(DataCollie(_nodes))
-        case _ =>
-          throw new RuntimeException(s"${info.mode} is not supported!!!!")
-      }
-      new ContainerPlatform {
-        override def setup(): ResourceRef = new ResourceRef {
-          private[this] val serviceKeyHolder        = ServiceKeyHolder(clientCreator())
-          override def generateObjectKey: ObjectKey = serviceKeyHolder.generateObjectKey()
-          override def configuratorHostname: String = hostname
-          override def configuratorPort: Int        = port
-          override def close(): Unit = {
-            Releasable.close(containerClient)
-            Releasable.close(serviceKeyHolder)
-          }
-          override val containerClient: ContainerClient = clientCreator()
-          override def nodes: Seq[Node]                 = _nodes
-        }
-
-        override def setupContainerClient(): ContainerClient = clientCreator()
-        override def nodeNames: Set[String]                  = _nodes.map(_.hostname).toSet
-        override def toString: String                        = "CUSTOM"
-      }
-    case _ =>
-      throw new RuntimeException(
-        s"the value of $CUSTOM_CONFIGURATOR_KEY should be <hostname>:<port> but actual is ${sys.env.get(CUSTOM_CONFIGURATOR_KEY)}"
-      )
-  }
-
   private[this] val ERROR_MESSAGE = s"please set ${ContainerPlatform.K8S_COORDINATOR_URL_KEY} and ${ContainerPlatform.K8S_METRICS_SERVER_URL_KEY}" +
     s"to run the IT on k8s mode; Or set ${ContainerPlatform.DOCKER_NODES_KEY} to run IT on docker mode"
 
@@ -276,7 +220,7 @@ object ContainerPlatform {
   /**
     * @return k8s + docker. Or empty collection
     */
-  def all: Seq[ContainerPlatform] = (_dockerMode ++ _k8sMode ++ customMode).toSeq
+  def all: Seq[ContainerPlatform] = (_dockerMode ++ _k8sMode).toSeq
 
   def builder = new Builder
 
