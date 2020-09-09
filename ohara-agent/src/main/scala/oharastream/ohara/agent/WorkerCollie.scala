@@ -124,7 +124,9 @@ trait WorkerCollie extends Collie {
                   // define the urls as string list so as to simplify the script for worker
                   "WORKER_PLUGIN_URLS"     -> pluginInfos.map(_.url.get.toURI.toASCIIString).mkString(","),
                   "WORKER_SHARED_JAR_URLS" -> sharedJarInfos.map(_.url.get.toURI.toASCIIString).mkString(",")
-                ),
+                ) ++ creation.jvmPerformanceOptions
+                  .map(options => Map("KAFKA_JVM_PERFORMANCE_OPTS" -> options))
+                  .getOrElse(Map.empty),
                 hostname = Collie.containerHostName(creation.group, creation.name, kind)
               )
 

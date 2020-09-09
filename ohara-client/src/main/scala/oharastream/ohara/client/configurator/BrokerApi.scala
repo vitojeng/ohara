@@ -24,7 +24,7 @@ import oharastream.ohara.common.setting.SettingDef.{Reference, Type}
 import oharastream.ohara.common.setting.{ObjectKey, SettingDef}
 import oharastream.ohara.common.util.{CommonUtils, VersionUtils}
 import spray.json.DefaultJsonProtocol._
-import spray.json.{JsNumber, JsObject, JsValue, RootJsonFormat}
+import spray.json.{JsNumber, JsObject, JsString, JsValue, RootJsonFormat}
 
 import scala.concurrent.{ExecutionContext, Future}
 object BrokerApi {
@@ -52,6 +52,8 @@ object BrokerApi {
 
   // KafkaConfig.SocketRequestMaxBytesProp
   val MAX_OF_REQUEST_MEMORY_BYTES: String = "socket.request.max.bytes"
+
+  val JVM_PERFORMANCE_OPTIONS_KEY: String = "jvm.performance.options"
 
   val DEFINITIONS: Seq[SettingDef] = DefinitionCollector()
     .addFollowupTo("core")
@@ -105,6 +107,11 @@ object BrokerApi {
         .documentation("Set the max memory allocation of per request")
         .positiveNumber(100 * 1024 * 1024L)
     )
+    .definition(
+      _.key(JVM_PERFORMANCE_OPTIONS_KEY)
+        .documentation("the performance configs for JVM. for example: GC and GC arguments")
+        .optional(SettingDef.Type.STRING)
+    )
     .initHeap()
     .maxHeap()
     .addFollowupTo("public")
@@ -148,10 +155,11 @@ object BrokerApi {
     def numberOfPartitions: Int = raw.numberOfPartitions.get
     def numberOfReplications4OffsetsTopic: Int =
       raw.numberOfReplications4OffsetsTopic.get
-    def numberOfNetworkThreads: Int = raw.numberOfNetworkThreads.get
-    def numberOfIoThreads: Int      = raw.numberOfIoThreads.get
-    def maxOfPoolMemory: Long       = raw.maxOfPoolMemory.get
-    def maxOfRequestMemory: Long    = raw.maxOfRequestMemory.get
+    def numberOfNetworkThreads: Int           = raw.numberOfNetworkThreads.get
+    def numberOfIoThreads: Int                = raw.numberOfIoThreads.get
+    def maxOfPoolMemory: Long                 = raw.maxOfPoolMemory.get
+    def maxOfRequestMemory: Long              = raw.maxOfRequestMemory.get
+    def jvmPerformanceOptions: Option[String] = raw.jvmPerformanceOptions
 
     override def volumeMaps: Map[ObjectKey, String] =
       if (logVolumeKeys.isEmpty) Map.empty
@@ -196,6 +204,9 @@ object BrokerApi {
 
     def maxOfRequestMemory: Option[Long] =
       raw.get(MAX_OF_REQUEST_MEMORY_BYTES).map(_.convertTo[Long])
+
+    def jvmPerformanceOptions: Option[String] =
+      raw.get(JVM_PERFORMANCE_OPTIONS_KEY).map(_.convertTo[String])
   }
 
   implicit val UPDATING_FORMAT: JsonRefiner[Updating] =
@@ -241,8 +252,9 @@ object BrokerApi {
     def numberOfReplications4OffsetsTopic: Int = settings.numberOfReplications4OffsetsTopic
     def numberOfNetworkThreads: Int            = settings.numberOfNetworkThreads
     def numberOfIoThreads: Int                 = settings.numberOfIoThreads
-    def maxOfPoolMemory: Long                  = raw.maxOfPoolMemory
-    def maxOfRequestMemory: Long               = raw.maxOfRequestMemory
+    def jvmPerformanceOptions: Option[String]  = settings.jvmPerformanceOptions
+    def maxOfPoolMemory: Long                  = settings.maxOfPoolMemory
+    def maxOfRequestMemory: Long               = settings.maxOfRequestMemory
 
     override def raw: Map[String, JsValue] = BROKER_CLUSTER_INFO_FORMAT.write(this).asJsObject.fields
 
@@ -288,6 +300,10 @@ object BrokerApi {
     @Optional("default value is 100 * 1024 * 1024")
     def maxOfRequestMemory(sizeInBytes: Long): Request.this.type =
       setting(MAX_OF_REQUEST_MEMORY_BYTES, JsNumber(CommonUtils.requirePositiveLong(sizeInBytes)))
+
+    @Optional("default value is empty")
+    def jvmPerformanceOptions(options: String): Request.this.type =
+      setting(JVM_PERFORMANCE_OPTIONS_KEY, JsString(CommonUtils.requireNonEmpty(options)))
 
     /**
       * broker information creation.

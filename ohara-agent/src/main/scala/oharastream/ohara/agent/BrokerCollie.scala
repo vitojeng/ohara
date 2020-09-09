@@ -112,7 +112,9 @@ trait BrokerCollie extends Collie {
                     s" -Dcom.sun.management.jmxremote.rmi.port=${creation.jmxPort}" +
                     s" -Djava.rmi.server.hostname=${newNode.hostname}"),
                   "KAFKA_HEAP_OPTS" -> s"-Xms${creation.initHeap}M -Xmx${creation.maxHeap}M"
-                ),
+                ) ++ creation.jvmPerformanceOptions
+                  .map(options => Map("KAFKA_JVM_PERFORMANCE_OPTS" -> options))
+                  .getOrElse(Map.empty),
                 hostname = Collie.containerHostName(creation.group, creation.name, kind)
               )
 

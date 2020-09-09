@@ -671,6 +671,16 @@ class TestWorkerRoute extends OharaTest {
       ).compressionType shouldBe compressionType
     }
 
+  @Test
+  def testJvmPerformanceOptions(): Unit =
+    result(
+      workerApi.request
+        .nodeNames(nodeNames)
+        .brokerClusterKey(brokerClusterKey)
+        .jvmPerformanceOptions("-XX:+UnlockExperimentalVMOptions -XX:+UseZGC")
+        .create()
+    ).jvmPerformanceOptions.get shouldBe "-XX:+UnlockExperimentalVMOptions -XX:+UseZGC"
+
   @AfterEach
   def tearDown(): Unit = Releasable.close(configurator)
 }

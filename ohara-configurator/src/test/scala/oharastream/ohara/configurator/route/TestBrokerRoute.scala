@@ -609,6 +609,16 @@ class TestBrokerRoute extends OharaTest {
         .create()
     ).maxOfRequestMemory shouldBe 12345
 
+  @Test
+  def testJvmPerformanceOptions(): Unit =
+    result(
+      brokerApi.request
+        .zookeeperClusterKey(zookeeperClusterInfo.key)
+        .nodeNames(nodeNames)
+        .jvmPerformanceOptions("-XX:+UnlockExperimentalVMOptions -XX:+UseZGC")
+        .create()
+    ).jvmPerformanceOptions.get shouldBe "-XX:+UnlockExperimentalVMOptions -XX:+UseZGC"
+
   @AfterEach
   def tearDown(): Unit = Releasable.close(configurator)
 }
