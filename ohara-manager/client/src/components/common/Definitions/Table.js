@@ -90,7 +90,10 @@ const Table = (props) => {
         field: tableKey.name,
         type: typeConverter(tableKey.type),
         ...(tableKey.recommendedValues.length > 0 && {
-          lookup: { ...tableKey.recommendedValues },
+          lookup: tableKey.recommendedValues.reduce((result, key) => {
+            result[key] = key;
+            return result;
+          }, {}),
         }),
       };
     }),
@@ -105,22 +108,30 @@ const Table = (props) => {
         data={stateRef.current.data}
         editable={{
           onRowAdd: (newData) =>
-            new Promise((resolve) => {
+            new Promise((resolve, reject) => {
               setTimeout(() => {
-                resolve();
+                if (Object.keys(newData).length < tableKeys.length) {
+                  return reject();
+                }
+
                 const newRow = () => {
                   let data = [...stateRef.current.data];
                   data.push(newData);
                   return data;
                 };
+
                 stateRef.current.data = newRow();
                 onChange(stateRef.current.data);
+                resolve();
               });
             }),
           onRowUpdate: (newData, oldData) =>
-            new Promise((resolve) => {
+            new Promise((resolve, reject) => {
               setTimeout(() => {
-                resolve();
+                if (Object.keys(newData).length < tableKeys.length) {
+                  return reject();
+                }
+
                 if (oldData) {
                   const newRow = () => {
                     const data = [...stateRef.current.data];
@@ -130,12 +141,12 @@ const Table = (props) => {
                   stateRef.current.data = newRow();
                   onChange(stateRef.current.data);
                 }
+                resolve();
               });
             }),
           onRowDelete: (oldData) =>
             new Promise((resolve) => {
               setTimeout(() => {
-                resolve();
                 const newRow = () => {
                   const data = [...stateRef.current.data];
                   data.splice(data.indexOf(oldData), 1);
@@ -143,6 +154,7 @@ const Table = (props) => {
                 };
                 stateRef.current.data = newRow();
                 onChange(stateRef.current.data);
+                resolve();
               });
             }),
         }}

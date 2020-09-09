@@ -39,8 +39,8 @@ import {
   StyleIconButton,
   StyleMuiDialogContent,
   StyleMuiDialogActions,
-  LeftBody,
-  RightBody,
+  Sidebar,
+  Content,
   StyleFilter,
   StyleAccordion,
 } from './PipelinePropertyDialogStyles';
@@ -205,7 +205,7 @@ const PipelinePropertyDialog = (props) => {
     >
       <DialogTitle onClose={onClose} title={title} />
       <StyleMuiDialogContent dividers>
-        <LeftBody data-testid="sidebar">
+        <Sidebar data-testid="sidebar">
           {
             // Unimplemented feature
             false && (
@@ -267,8 +267,8 @@ const PipelinePropertyDialog = (props) => {
               }
             })}
           </div>
-        </LeftBody>
-        <RightBody data-testid="definition-content">
+        </Sidebar>
+        <Content data-testid="definition-content">
           <PipelinePropertyForm
             definitions={definitionsByGroup}
             freePorts={
@@ -283,7 +283,7 @@ const PipelinePropertyDialog = (props) => {
             ref={formRef}
             topics={currentTopics}
           />
-        </RightBody>
+        </Content>
         <div className="speed-dial">
           <PipelinePropertySpeedDial formRef={formRef} />
         </div>

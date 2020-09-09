@@ -60,10 +60,10 @@ export const StyleMuiDialogActions = styled(MuiDialogActions)(
   `,
 );
 
-export const LeftBody = styled.div(
+export const Sidebar = styled.div(
   ({ theme }) => css`
     position: absolute;
-    width: ${theme.spacing(40)}px;
+    width: 280px;
     height: calc(100% - 140px);
     padding: ${theme.spacing(0, 2, 1, 2)};
     left: 0;
@@ -115,9 +115,10 @@ export const LeftBody = styled.div(
     }
   `,
 );
-export const RightBody = styled.div(
+
+export const Content = styled.div(
   ({ theme }) => css`
-    margin: ${theme.spacing(2, 6, 2, 40)};
+    margin: ${theme.spacing(2, 6, 2, 32.5)};
 
     & > form > * {
       margin: ${theme.spacing(0, 0, 3, 2)};
