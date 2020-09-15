@@ -29,7 +29,7 @@ if (!versions["scala"].startsWith(defaultScalaMinor)) throw new GradleException(
   versions["akka"] = project.hasProperty('akka.version') ? project.properties['akka.version'] : "2.6.4"
 versions["akkaHttp"] = project.hasProperty('akka.http.version') ? project.properties['akka.http.version'] : "10.1.11"
 versions["scalatest"] = project.hasProperty('scalatest.version') ? project.properties['scalatest.version'] : "3.1.1"
-versions["junit"] = project.hasProperty('junit.version') ? project.properties['junit.version'] : "5.6.2"
+versions["junit"] = project.hasProperty('junit.version') ? project.properties['junit.version'] : "5.7.0"
 versions["javassist"] = project.hasProperty('javassist.version') ? project.properties['javassist.version'] : "3.27.0-GA"
 versions["slf4j"] = project.hasProperty('slf4j.version') ? project.properties['slf4j.version'] : "1.7.30"
 versions["scalaLogging"] = project.hasProperty('scalaLogging.version') ? project.properties['scalaLogging.version'] : "3.9.2"
