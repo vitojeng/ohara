@@ -14,6 +14,7 @@
 # limitations under the License.
 #
 
+ARG OS=azul/zulu-openjdk:11
 FROM oharastream/ohara:deps as deps
 
 # add label to intermediate image so jenkins can find out this one to remove
@@ -54,14 +55,10 @@ RUN cp $(find "/opt/ohara/" -maxdepth 1 -type d -name "ohara-*")/bin/ohara_versi
 # copy connector jars
 RUN cp $(find "/opt/ohara/" -maxdepth 1 -type d -name "ohara-*")/lib/* $(find "${KAFKA_DIR}" -maxdepth 1 -type d -name "kafka_*")/libs/
 
-FROM centos:7.7.1908
+FROM $OS
 
-# install tools
-RUN yum install -y \
-  java-11-openjdk \
-  wget # we use wget to download custom plugin from configurator
-
-ENV JAVA_HOME=/usr/lib/jvm/jre
+# we use wget to download custom plugin from configurator
+RUN apt update && apt install -y wget
 
 # change user from root to kafka
 ARG USER=ohara

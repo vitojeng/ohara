@@ -14,6 +14,7 @@
 # limitations under the License.
 #
 
+ARG OS=azul/zulu-openjdk:11
 FROM oharastream/ohara:deps as deps
 
 # add label to intermediate image so jenkins can find out this one to remove
@@ -45,12 +46,7 @@ RUN git checkout $COMMIT
 RUN if [[ "$BEFORE_BUILD" != "" ]]; then /bin/bash -c "$BEFORE_BUILD" ; fi
 RUN git rev-parse HEAD > $(find "${KAFKA_DIR}" -maxdepth 1 -type d -name "kafka_*")/bin/ohara_version
 
-FROM centos:7.7.1908
-
-RUN yum install -y \
-  java-11-openjdk
-
-ENV JAVA_HOME=/usr/lib/jvm/jre
+FROM $OS
 
 # change user from root to kafka
 ARG USER=ohara
