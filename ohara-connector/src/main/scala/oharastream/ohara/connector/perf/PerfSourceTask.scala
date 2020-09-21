@@ -15,6 +15,8 @@
  */
 
 package oharastream.ohara.connector.perf
+import java.util.concurrent.TimeUnit
+
 import oharastream.ohara.common.annotations.VisibleForTesting
 import oharastream.ohara.common.data._
 import oharastream.ohara.common.setting.TopicKey
@@ -81,11 +83,10 @@ class PerfSourceTask extends RowSourceTask {
   override protected def terminate(): Unit = {}
 
   override protected def pollRecords(): java.util.List[RowSourceRecord] = {
-    val current = CommonUtils.current()
-    if (current - lastPoll > props.freq.toMillis) {
-      lastPoll = current
-      records
-    } else java.util.List.of()
+    val timeToWait = lastPoll + props.freq.toMillis - CommonUtils.current()
+    if (timeToWait > 0) TimeUnit.MILLISECONDS.sleep(timeToWait)
+    lastPoll = CommonUtils.current()
+    records
   }
 }
 
