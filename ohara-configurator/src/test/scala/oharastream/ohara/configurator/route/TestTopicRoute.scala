@@ -16,6 +16,8 @@
 
 package oharastream.ohara.configurator.route
 
+import java.util.concurrent.TimeUnit
+
 import oharastream.ohara.client.configurator.BrokerApi.BrokerClusterInfo
 import oharastream.ohara.client.configurator.TopicApi.{CleanupPolicy, Request, TopicInfo, TopicState}
 import oharastream.ohara.client.configurator.{BrokerApi, TopicApi, ZookeeperApi}
@@ -607,6 +609,20 @@ class TestTopicRoute extends OharaTest {
 
     topicInfo.cleanupPolicy shouldBe policy
     topicInfo.minCleanableDirtyRatio shouldBe ratio
+  }
+
+  @Test
+  def testRetention(): Unit = {
+    val topicInfo = result(
+      topicApi.request
+        .retention(Duration(10, TimeUnit.SECONDS))
+        .brokerClusterKey(brokerClusterInfo.key)
+        .create()
+    )
+    topicInfo.retention shouldBe Duration(10, TimeUnit.SECONDS)
+    topicInfo.configs(TopicApi.RETENTION_TIME_KEY) shouldBe JsString("10 seconds")
+    // the value should be converted to kafka
+    topicInfo.kafkaConfigs("retention.ms") shouldBe "10000"
   }
 
   @AfterEach

@@ -27,7 +27,6 @@ import oharastream.ohara.common.util.CommonUtils
 import oharastream.ohara.configurator.route.hook._
 import oharastream.ohara.configurator.store.{DataStore, MetricsCache}
 import oharastream.ohara.kafka.PartitionInfo
-import spray.json.JsString
 
 import scala.compat.java8.FutureConverters._
 import scala.concurrent.{ExecutionContext, Future}
@@ -261,13 +260,7 @@ private[configurator] object TopicRoute {
                     .topicKey(topicInfo.key)
                     .numberOfPartitions(topicInfo.numberOfPartitions)
                     .numberOfReplications(topicInfo.numberOfReplications)
-                    .options(topicInfo.configs.map {
-                      case (key, value) =>
-                        key -> (value match {
-                          case JsString(value) => value
-                          case _               => value.toString()
-                        })
-                    }.asJava)
+                    .options(topicInfo.kafkaConfigs.asJava)
                     .create()
                     .toScala
                     .flatMap(_ => Future.unit)

@@ -29,6 +29,7 @@ import spray.json.DefaultJsonProtocol._
 import spray.json.{JsNumber, JsObject, JsString, JsValue, RootJsonFormat}
 
 import scala.collection.mutable
+import scala.concurrent.duration.Duration
 import scala.concurrent.{ExecutionContext, Future}
 import scala.jdk.CollectionConverters._
 
@@ -39,9 +40,19 @@ object TopicApi {
   val NUMBER_OF_PARTITIONS_KEY              = "numberOfPartitions"
   val NUMBER_OF_REPLICATIONS_KEY            = "numberOfReplications"
   val SEGMENT_BYTES_KEY: String             = TopicConfig.SEGMENT_BYTES_CONFIG
-  val SEGMENT_MS_KEY: String                = TopicConfig.SEGMENT_MS_CONFIG
+  val SEGMENT_TIME_KEY: String              = "segment.time"
   val CLEANUP_POLICY_KEY: String            = TopicConfig.CLEANUP_POLICY_CONFIG
   val MIN_CLEANABLE_DIRTY_RATIO_KEY: String = TopicConfig.MIN_CLEANABLE_DIRTY_RATIO_CONFIG
+  val RETENTION_TIME_KEY: String            = "retention.time"
+
+  /**
+    * Use to convert ohara key to kafka key. Not all kafka namings are suitable to ohara. For example, the postfix "ms"
+    * is not a good design to ohara since ohara supports Duration.
+    */
+  private[this] val TO_KAFKA_CONFIG_KEY: Map[String, String] = Map(
+    RETENTION_TIME_KEY -> TopicConfig.RETENTION_MS_CONFIG,
+    SEGMENT_TIME_KEY   -> TopicConfig.SEGMENT_MS_CONFIG
+  )
 
   /**
     * the config with this group is mapped to kafka's custom config. Kafka divide configs into two parts.
@@ -98,9 +109,9 @@ object TopicApi {
         .positiveNumber(1L * 1024L * 1024L * 1024L)
     )
     .definition(
-      _.key(SEGMENT_MS_KEY)
+      _.key(SEGMENT_TIME_KEY)
         .documentation(TopicConfig.SEGMENT_MS_DOC)
-        .positiveNumber(7L * 24L * 60L * 60L * 1000L)
+        .optional(java.time.Duration.ofDays(7))
     )
     .definition(
       _.key(CLEANUP_POLICY_KEY)
@@ -111,6 +122,11 @@ object TopicApi {
       _.key(MIN_CLEANABLE_DIRTY_RATIO_KEY)
         .documentation(TopicConfig.MIN_CLEANABLE_DIRTY_RATIO_DOC)
         .optional(0.5d)
+    )
+    .definition(
+      _.key(RETENTION_TIME_KEY)
+        .documentation(TopicConfig.RETENTION_MS_DOC)
+        .optional(java.time.Duration.ofDays(7))
     )
     .result
 
@@ -129,6 +145,8 @@ object TopicApi {
     def cleanupPolicy: Option[CleanupPolicy] = raw.get(CLEANUP_POLICY_KEY).map(_.convertTo[CleanupPolicy])
 
     def minCleanableDirtyRatio: Option[Double] = raw.get(MIN_CLEANABLE_DIRTY_RATIO_KEY).map(_.convertTo[Double])
+
+    def retention: Option[Duration] = raw.get(RETENTION_TIME_KEY).map(_.convertTo[Duration])
   }
 
   implicit val UPDATING_FORMAT: RootJsonFormat[Updating] =
@@ -161,6 +179,8 @@ object TopicApi {
     def cleanupPolicy: CleanupPolicy = raw.cleanupPolicy.get
 
     def minCleanableDirtyRatio: Double = raw.minCleanableDirtyRatio.get
+
+    def retention: Duration = raw.retention.get
   }
 
   implicit val CREATION_FORMAT: JsonRefiner[Creation] =
@@ -270,11 +290,31 @@ object TopicApi {
         DEFINITIONS.filter(_.group() == CONFIGS_GROUP).exists(_.key() == key)
     }
 
+    /**
+      * @return custom configs in kafka format
+      */
+    def kafkaConfigs: Map[String, String] = configs.map {
+      case (key, value) =>
+        // convert the duration type to milliseconds
+        val convertedValue = DEFINITIONS
+          .find(_.key() == key)
+          .filter(_.valueType() == SettingDef.Type.DURATION)
+          .map(_ => JsNumber(DURATION_FORMAT.read(value).toMillis))
+          .getOrElse(value)
+        // convert ohara key to kafka key.
+        TO_KAFKA_CONFIG_KEY.getOrElse(key, key) -> (convertedValue match {
+          case JsString(v) => v
+          case _           => convertedValue.toString()
+        })
+    }
+
     override def raw: Map[String, JsValue] = TOPIC_INFO_FORMAT.write(this).asJsObject.fields
 
     def cleanupPolicy: CleanupPolicy = raw.cleanupPolicy
 
     def minCleanableDirtyRatio: Double = raw.minCleanableDirtyRatio
+
+    def retention: Duration = raw.retention
   }
 
   implicit val TOPIC_INFO_FORMAT: RootJsonFormat[TopicInfo] = JsonRefiner(new RootJsonFormat[TopicInfo] {
@@ -326,6 +366,8 @@ object TopicApi {
     def cleanupPolicy(policy: CleanupPolicy): Request = setting(CLEANUP_POLICY_KEY, CLEANUP_POLICY_FORMAT.write(policy))
 
     def minCleanableDirtyRatio(value: Double): Request = setting(MIN_CLEANABLE_DIRTY_RATIO_KEY, JsNumber(value))
+
+    def retention(value: Duration): Request = setting(RETENTION_TIME_KEY, DURATION_FORMAT.write(value))
 
     def setting(key: String, value: JsValue): Request = settings(Map(key -> value))
 
