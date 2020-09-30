@@ -14,8 +14,9 @@
 # limitations under the License.
 #
 
-ARG OS=azul/zulu-openjdk:11
-FROM oharastream/ohara:deps as deps
+ARG BUILD_OS=oharastream/ohara:deps
+ARG RUNTIME_OS=azul/zulu-openjdk:11
+FROM $BUILD_OS as deps
 
 # add label to intermediate image so jenkins can find out this one to remove
 ARG STAGE="intermediate"
@@ -39,14 +40,12 @@ RUN cp /version $(find "${KAFKA_DIR}" -maxdepth 1 -type d -name "kafka_*")/bin/b
 ARG BRANCH="master"
 ARG COMMIT=$BRANCH
 ARG REPO="https://github.com/oharastream/ohara.git"
-ARG BEFORE_BUILD=""
 WORKDIR /testpatch/ohara
 RUN git clone $REPO /testpatch/ohara
 RUN git checkout $COMMIT
-RUN if [[ "$BEFORE_BUILD" != "" ]]; then /bin/bash -c "$BEFORE_BUILD" ; fi
 RUN git rev-parse HEAD > $(find "${KAFKA_DIR}" -maxdepth 1 -type d -name "kafka_*")/bin/ohara_version
 
-FROM $OS
+FROM $RUNTIME_OS
 
 # change user from root to kafka
 ARG USER=ohara

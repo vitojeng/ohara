@@ -14,8 +14,9 @@
 # limitations under the License.
 #
 
-ARG OS=azul/zulu-openjdk:11
-FROM oharastream/ohara:deps as deps
+ARG BUILD_OS=oharastream/ohara:deps
+ARG RUNTIME_OS=azul/zulu-openjdk:11
+FROM $BUILD_OS as deps
 
 # add label to intermediate image so jenkins can find out this one to remove
 ARG STAGE="intermediate"
@@ -39,11 +40,9 @@ RUN cp /version $(find "${KAFKA_DIR}" -maxdepth 1 -type d -name "kafka_*")/bin/w
 ARG BRANCH="master"
 ARG COMMIT=$BRANCH
 ARG REPO="https://github.com/oharastream/ohara.git"
-ARG BEFORE_BUILD=""
 WORKDIR /testpatch/ohara
 RUN git clone $REPO /testpatch/ohara
 RUN git checkout $COMMIT
-RUN if [[ "$BEFORE_BUILD" != "" ]]; then /bin/bash -c "$BEFORE_BUILD" ; fi
 # we build ohara with specified version of kafka in order to keep the compatibility
 RUN ./gradlew clean ohara-connector:build -x test -PskipManager \
   -Pkafka.version=$(cat /version) \
@@ -55,7 +54,7 @@ RUN cp $(find "/opt/ohara/" -maxdepth 1 -type d -name "ohara-*")/bin/ohara_versi
 # copy connector jars
 RUN cp $(find "/opt/ohara/" -maxdepth 1 -type d -name "ohara-*")/lib/* $(find "${KAFKA_DIR}" -maxdepth 1 -type d -name "kafka_*")/libs/
 
-FROM $OS
+FROM $RUNTIME_OS
 
 # we use wget to download custom plugin from configurator
 RUN apt update && apt install -y wget
@@ -76,7 +75,7 @@ ENV KAFKA_HOME=/home/$USER/default
 ENV PATH=$PATH:$KAFKA_HOME/bin
 
 # copy Tini
-COPY --from=deps /tini /tini
+COPY --from=oharastream/ohara:deps /tini /tini
 RUN chmod +x /tini
 
 USER $USER
