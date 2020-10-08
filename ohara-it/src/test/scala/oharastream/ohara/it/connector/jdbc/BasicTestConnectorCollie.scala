@@ -34,7 +34,6 @@ import oharastream.ohara.connector.jdbc.source.{JDBCSourceConnector, JDBCSourceC
 import oharastream.ohara.it.ContainerPlatform.ResourceRef
 import oharastream.ohara.it.{ContainerPlatform, IntegrationTest}
 import oharastream.ohara.kafka.Consumer
-import oharastream.ohara.kafka.connector.TaskSetting
 import org.junit.jupiter.api.condition.EnabledIfEnvironmentVariable
 import org.junit.jupiter.api.{AfterEach, Tag}
 import org.junit.jupiter.params.ParameterizedTest
@@ -49,27 +48,30 @@ import scala.jdk.CollectionConverters._
 @EnabledIfEnvironmentVariable(named = "ohara.it.docker", matches = ".*")
 private[jdbc] abstract class BasicTestConnectorCollie extends IntegrationTest {
   private[this] val log                    = Logger(classOf[BasicTestConnectorCollie])
+  private[this] val inputDataTime          = 5000L
   private[this] val JAR_FOLDER_KEY: String = "ohara.it.jar.folder"
   private[this] val jarFolderPath          = sys.env(JAR_FOLDER_KEY)
-  protected def tableName: String
-  protected def columnPrefixName: String
-  private[this] var timestampColumn: String = _
-  private[this] var queryColumn: String     = _
-
   private[this] var client: DatabaseClient = _
 
-  protected def dbUrl: String
-  protected def dbUserName: String
-  protected def dbPassword: String
-  protected def dbName: String
-  protected def BINARY_TYPE_NAME: String
+  protected[jdbc] def tableName: String
+  protected[jdbc] def columnPrefixName: String
+  protected[jdbc] def dbUrl: String
+  protected[jdbc] def dbUserName: String
+  protected[jdbc] def dbPassword: String
+  protected[jdbc] def dbName: String
+  protected[jdbc] def BINARY_TYPE_NAME: String
+  protected[jdbc] def INCREMENT_TYPE_NAME: String
+
+  protected[this] def incrementColumn: String = s"${columnPrefixName}0"
+  protected[this] def queryColumn: String     = s"${columnPrefixName}2"
+  protected[this] def timestampColumn: String = s"${columnPrefixName}1"
 
   /**
     * This function for setting database JDBC jar file name.
     * from local upload to configurator server for connector worker container to download use.
     * @return JDBC driver file name
     */
-  protected def jdbcDriverJarFileName: String
+  protected[jdbc] def jdbcDriverJarFileName: String
 
   private[this] var inputDataThread: Releasable = _
 
@@ -78,21 +80,22 @@ private[jdbc] abstract class BasicTestConnectorCollie extends IntegrationTest {
     client = DatabaseClient.builder.url(dbUrl).user(dbUserName).password(dbPassword).build
 
     // Create table
-    val columns = (1 to 4).map(x => s"$columnPrefixName$x")
-    timestampColumn = columns(0)
-    queryColumn = columns(1)
-    val column1 = RdbColumn(columns(0), "TIMESTAMP", false)
-    val column2 = RdbColumn(columns(1), "varchar(45)", true)
-    val column3 = RdbColumn(columns(2), "integer", false)
-    val column4 = RdbColumn(columns(3), BINARY_TYPE_NAME, false)
-    client.createTable(tableName, Seq(column1, column2, column3, column4))
+    val columns = Seq(
+      RdbColumn(s"$timestampColumn", "TIMESTAMP", false),
+      RdbColumn(s"$queryColumn", "VARCHAR(45)", false),
+      RdbColumn(s"${columnPrefixName}3", "INTEGER", false),
+      RdbColumn(s"${columnPrefixName}4", BINARY_TYPE_NAME, false)
+    )
+
+    client.createTable(tableName, Seq(RdbColumn(s"$incrementColumn", INCREMENT_TYPE_NAME, true)) ++ columns)
     val tableTotalCount = new LongAdder()
 
     inputDataThread = {
       val pool            = Executors.newSingleThreadExecutor()
       val startTime: Long = CommonUtils.current()
       pool.execute { () =>
-        val sql               = s"INSERT INTO $tableName VALUES (${columns.map(_ => "?").mkString(",")})"
+        val sql =
+          s"INSERT INTO $tableName(${columns.map(_.name).mkString(",")}) VALUES (${columns.map(_ => "?").mkString(",")})"
         val preparedStatement = client.connection.prepareStatement(sql)
         try {
           while ((CommonUtils.current() - startTime) <= inputDataTime) {
@@ -120,7 +123,6 @@ private[jdbc] abstract class BasicTestConnectorCollie extends IntegrationTest {
   def testNormal(platform: ContainerPlatform): Unit =
     close(platform.setup()) { resourceRef =>
       val startTestTimestamp                     = CommonUtils.current()
-      val inputDataTime                          = 3000L
       val tableTotalCount                        = setupDatabase(inputDataTime)
       val (brokerClusterInfo, workerClusterInfo) = startCluster(resourceRef)
       val connectorKey                           = ConnectorKey.of(CommonUtils.randomString(5), "JDBC-Source-Connector-Test")
@@ -147,7 +149,8 @@ private[jdbc] abstract class BasicTestConnectorCollie extends IntegrationTest {
 
         val resultSet = statement.executeQuery(s"select * from $tableName order by $queryColumn")
 
-        val tableData: Seq[String] = Iterator.continually(resultSet).takeWhile(_.next()).map(_.getString(2)).toSeq
+        val tableData: Seq[String] =
+          Iterator.continually(resultSet).takeWhile(_.next()).map(_.getString(queryColumn)).toSeq
         val topicData: Seq[String] = result
           .map(record => record.key.get.cell(queryColumn).value().toString)
           .sorted[String]
@@ -165,7 +168,6 @@ private[jdbc] abstract class BasicTestConnectorCollie extends IntegrationTest {
   def testConnectorStartPauseResumeDelete(platform: ContainerPlatform): Unit =
     close(platform.setup()) { resourceRef =>
       val startTestTimestamp                     = CommonUtils.current()
-      val inputDataTime                          = 30000L
       val tableTotalCount                        = setupDatabase(inputDataTime)
       val (brokerClusterInfo, workerClusterInfo) = startCluster(resourceRef)
       val connectorKey                           = ConnectorKey.of(CommonUtils.randomString(5), "JDBC-Source-Connector-Test")
@@ -209,8 +211,9 @@ private[jdbc] abstract class BasicTestConnectorCollie extends IntegrationTest {
         tableTotalCount.intValue() shouldBe result3.size
 
         // Check the topic data is equals the database table
-        val resultSet              = statement.executeQuery(s"select * from $tableName order by $queryColumn")
-        val tableData: Seq[String] = Iterator.continually(resultSet).takeWhile(_.next()).map(_.getString(2)).toSeq
+        val resultSet = statement.executeQuery(s"select * from $tableName order by $queryColumn")
+        val tableData: Seq[String] =
+          Iterator.continually(resultSet).takeWhile(_.next()).map(_.getString(queryColumn)).toSeq
         val topicData: Seq[String] = result3
           .map(record => record.key.get.cell(queryColumn).value().toString)
           .sorted[String]
@@ -227,7 +230,6 @@ private[jdbc] abstract class BasicTestConnectorCollie extends IntegrationTest {
   def testTableInsertUpdateDelete(platform: ContainerPlatform): Unit =
     close(platform.setup()) { resourceRef =>
       val startTestTimestamp                     = CommonUtils.current()
-      val inputDataTime                          = 10000L
       val tableTotalCount                        = setupDatabase(inputDataTime)
       val (brokerClusterInfo, workerClusterInfo) = startCluster(resourceRef)
       val connectorKey                           = ConnectorKey.of(CommonUtils.randomString(5), "JDBC-Source-Connector-Test")
@@ -244,10 +246,19 @@ private[jdbc] abstract class BasicTestConnectorCollie extends IntegrationTest {
           .keySerializer(Serializer.ROW)
           .valueSerializer(Serializer.BYTES)
           .build()
+
       val insertPreparedStatement =
-        client.connection.prepareStatement(s"INSERT INTO $tableName($timestampColumn, $queryColumn) VALUES(?,?)")
+        client.connection.prepareStatement(
+          s"INSERT INTO $tableName($timestampColumn, $queryColumn) VALUES(?,?)"
+        )
       val updatePreparedStatement =
-        client.connection.prepareStatement(s"UPDATE $tableName SET $timestampColumn=? WHERE $queryColumn=?")
+        client.connection.prepareStatement(
+          s"UPDATE $tableName SET $timestampColumn=? WHERE $queryColumn=?"
+        )
+      val deletePreparedStatement =
+        client.connection.prepareStatement(
+          s"DELETE FROM $tableName WHERE $timestampColumn=?"
+        )
       val statement = client.connection.createStatement()
       try {
         val resultSet = statement.executeQuery(s"select * from $tableName order by $queryColumn")
@@ -255,43 +266,47 @@ private[jdbc] abstract class BasicTestConnectorCollie extends IntegrationTest {
           .continually(resultSet)
           .takeWhile(_.next())
           .map { x =>
-            (x.getTimestamp(1), x.getString(2))
+            (x.getTimestamp(timestampColumn), x.getString(queryColumn))
           }
           .toSeq
           .head
 
-        statement.executeUpdate(s"DELETE FROM $tableName WHERE $queryColumn='${queryResult._2}'")
-
-        insertPreparedStatement.setTimestamp(1, queryResult._1)
-        insertPreparedStatement.setString(2, queryResult._2)
-        insertPreparedStatement.executeUpdate()
-
         await(
           () => CommonUtils.current() - startTestTimestamp >= inputDataTime && count() == tableTotalCount.intValue()
         )
+        insertPreparedStatement.setTimestamp(1, new Timestamp(queryResult._1.getTime + 86400000)) // 86400000 is a day
+        insertPreparedStatement.setString(2, queryResult._2)
+        insertPreparedStatement.executeUpdate()
 
-        val result = consumer.poll(java.time.Duration.ofSeconds(60), tableTotalCount.intValue()).asScala
-        tableTotalCount.intValue() shouldBe result.size
+        val expectTopicCount = tableTotalCount.intValue() + 1
+        val result           = consumer.poll(java.time.Duration.ofSeconds(60), expectTopicCount).asScala
+        expectTopicCount shouldBe result.size
         val topicData: Seq[String] = result
           .map(record => record.key.get.cell(queryColumn).value().toString)
           .sorted[String]
           .toSeq
         val tableResultSet = statement.executeQuery(s"select * from $tableName order by $queryColumn")
         val resultTableData: Seq[String] =
-          Iterator.continually(tableResultSet).takeWhile(_.next()).map(_.getString(2)).toSeq
+          Iterator.continually(tableResultSet).takeWhile(_.next()).map(_.getString(queryColumn)).toSeq
         checkData(resultTableData, topicData)
 
+        deletePreparedStatement.setTimestamp(1, queryResult._1)
+        deletePreparedStatement.executeUpdate()
+        consumer.seekToBeginning()
+        val deleteResult = consumer.poll(java.time.Duration.ofSeconds(30), expectTopicCount).asScala
+        expectTopicCount shouldBe deleteResult.size
+
         // Test update data for the table
-        updatePreparedStatement.setTimestamp(1, queryResult._1)
+        updatePreparedStatement.setTimestamp(1, new Timestamp(queryResult._1.getTime + 172800000)) // 172800000 is 2 day
         updatePreparedStatement.setString(2, queryResult._2)
         updatePreparedStatement.executeUpdate()
-        TimeUnit.SECONDS.sleep(5)
         consumer.seekToBeginning()
-        val updateResult = consumer.poll(java.time.Duration.ofSeconds(30), tableTotalCount.intValue()).asScala
-        updateResult.size shouldBe tableTotalCount.intValue()
+        val updateResult = consumer.poll(java.time.Duration.ofSeconds(30), expectTopicCount).asScala
+        expectTopicCount shouldBe updateResult.size
       } finally {
         Releasable.close(insertPreparedStatement)
         Releasable.close(updatePreparedStatement)
+        Releasable.close(deletePreparedStatement)
         Releasable.close(statement)
         Releasable.close(consumer)
       }
@@ -365,6 +380,8 @@ private[jdbc] abstract class BasicTestConnectorCollie extends IntegrationTest {
     (brokerClusterInfo, workerClusterInfo)
   }
 
+  protected[jdbc] def props: JDBCSourceConnectorConfig
+
   private[this] def createConnector(
     connectorAdmin: ConnectorAdmin,
     connectorKey: ConnectorKey,
@@ -377,7 +394,7 @@ private[jdbc] abstract class BasicTestConnectorCollie extends IntegrationTest {
         .connectorClass(classOf[JDBCSourceConnector])
         .topicKey(topicKey)
         .numberOfTasks(1)
-        .settings(props().toMap)
+        .settings(props.toMap)
         .create()
     )
 
@@ -392,20 +409,6 @@ private[jdbc] abstract class BasicTestConnectorCollie extends IntegrationTest {
             log.info(s"[WORKER] worker cluster:${cluster.name} is starting ... retry", e)
             false
         }
-    )
-
-  private[this] def props(): JDBCSourceConnectorConfig =
-    JDBCSourceConnectorConfig(
-      TaskSetting.of(
-        Map(
-          "source.db.url"                -> dbUrl,
-          "source.db.username"           -> dbUserName,
-          "source.db.password"           -> dbPassword,
-          "source.table.name"            -> tableName,
-          "source.timestamp.column.name" -> timestampColumn,
-          "source.schema.pattern"        -> "TUSER"
-        ).asJava
-      )
     )
 
   private[this] def checkData(tableData: Seq[String], topicData: Seq[String]): Unit =
