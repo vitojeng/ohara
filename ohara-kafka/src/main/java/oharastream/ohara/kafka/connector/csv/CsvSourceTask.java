@@ -17,11 +17,10 @@
 package oharastream.ohara.kafka.connector.csv;
 
 import java.nio.file.Paths;
+import java.util.ArrayDeque;
 import java.util.Iterator;
 import java.util.List;
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.TimeUnit;
+import java.util.Queue;
 import oharastream.ohara.common.annotations.VisibleForTesting;
 import oharastream.ohara.common.exception.NoSuchFileException;
 import oharastream.ohara.common.util.Releasable;
@@ -48,7 +47,7 @@ public abstract class CsvSourceTask extends RowSourceTask {
   private DataReader dataReader;
   private FileSystem fs;
   private int fileNameCacheCapacity;
-  private BlockingQueue<String> fileNameCache;
+  private Queue<String> fileNameCache;
 
   /**
    * Return the file system for this connector
@@ -64,7 +63,7 @@ public abstract class CsvSourceTask extends RowSourceTask {
     config = CsvSourceConfig.of(setting);
     dataReader = CsvDataReader.of(fs, config, rowContext);
     fileNameCacheCapacity = config.fileCacheSize();
-    fileNameCache = new ArrayBlockingQueue<String>(fileNameCacheCapacity);
+    fileNameCache = new ArrayDeque<>(fileNameCacheCapacity);
   }
 
   @Override
@@ -78,7 +77,7 @@ public abstract class CsvSourceTask extends RowSourceTask {
     }
 
     try {
-      String fileName = fileNameCache.poll(5, TimeUnit.SECONDS);
+      String fileName = fileNameCache.poll();
       if (fileName != null) {
         String path = Paths.get(config.inputFolder(), fileName).toString();
 
