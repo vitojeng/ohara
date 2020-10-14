@@ -17,8 +17,10 @@
 package oharastream.ohara.connector.jdbc.source
 
 import java.sql.Timestamp
-import oharastream.ohara.common.util.Releasable
+
+import oharastream.ohara.common.util.{Releasable, Sleeper}
 import oharastream.ohara.kafka.connector._
+
 import scala.jdk.CollectionConverters._
 
 class JDBCSourceTask extends RowSourceTask {
@@ -51,36 +53,40 @@ class JDBCSourceTask extends RowSourceTask {
   }
 
   override protected[source] def pollRecords(): java.util.List[RowSourceRecord] = {
-    val timestampRange = calcTimestampRange(firstTimestampValue, firstTimestampValue)
-    var startTimestamp = timestampRange._1
-    var stopTimestamp  = replaceToCurrentTimestamp(timestampRange._2)
+    val sleeper = new Sleeper()
+    do {
+      val timestampRange = calcTimestampRange(firstTimestampValue, firstTimestampValue)
+      var startTimestamp = timestampRange._1
+      var stopTimestamp  = replaceToCurrentTimestamp(timestampRange._2)
 
-    // Generate the start timestamp and stop timestamp to run multi task for the query
-    while (!needToRun(startTimestamp) ||
-           queryHandler.completed(
-             partitionKey(config.dbTableName, firstTimestampValue, startTimestamp),
-             startTimestamp,
-             stopTimestamp
-           )) {
-      val currentTimestamp = queryHandler.current()
-      val timestampRange   = calcTimestampRange(firstTimestampValue, stopTimestamp)
+      // Generate the start timestamp and stop timestamp to run multi task for the query
+      while (!needToRun(startTimestamp) ||
+             queryHandler.completed(
+               partitionKey(config.dbTableName, firstTimestampValue, startTimestamp),
+               startTimestamp,
+               stopTimestamp
+             )) {
+        val currentTimestamp = queryHandler.current()
+        val timestampRange   = calcTimestampRange(firstTimestampValue, stopTimestamp)
 
-      if (timestampRange._2.getTime <= currentTimestamp.getTime) {
-        startTimestamp = timestampRange._1
-        stopTimestamp = timestampRange._2
-      } else if (needToRun(currentTimestamp))
-        return queryHandler
-          .queryData(
-            partitionKey(config.dbTableName, firstTimestampValue, stopTimestamp),
-            stopTimestamp,
-            currentTimestamp
-          )
-          .asJava
-      else return Seq.empty.asJava
-    }
-    queryHandler
-      .queryData(partitionKey(config.dbTableName, firstTimestampValue, startTimestamp), startTimestamp, stopTimestamp)
-      .asJava
+        if (timestampRange._2.getTime <= currentTimestamp.getTime) {
+          startTimestamp = timestampRange._1
+          stopTimestamp = timestampRange._2
+        } else if (needToRun(currentTimestamp))
+          return queryHandler
+            .queryData(
+              partitionKey(config.dbTableName, firstTimestampValue, stopTimestamp),
+              stopTimestamp,
+              currentTimestamp
+            )
+            .asJava
+        else return Seq.empty.asJava
+      }
+      val queryResult = queryHandler
+        .queryData(partitionKey(config.dbTableName, firstTimestampValue, startTimestamp), startTimestamp, stopTimestamp)
+      if (queryResult.nonEmpty) return queryResult.asJava
+    } while (sleeper.tryToSleep())
+    Seq.empty.asJava
   }
 
   override protected[source] def terminate(): Unit = Releasable.close(queryHandler)
