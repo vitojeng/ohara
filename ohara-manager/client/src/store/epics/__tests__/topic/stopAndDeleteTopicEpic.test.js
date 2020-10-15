@@ -206,7 +206,7 @@ it('should handle stop error', () => {
   });
 });
 
-it('should handle delete error', async () => {
+it('should handle delete error', () => {
   const error = {
     status: -1,
     data: {},

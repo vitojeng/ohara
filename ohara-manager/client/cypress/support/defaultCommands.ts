@@ -14,9 +14,7 @@
  * limitations under the License.
  */
 
-// indicate this file is a module
 export {};
-
 const SINGLE_COMMAND_TIMEOUT = 5000;
 
 Cypress.Commands.overwrite('get', (originFn, subject, options) => {

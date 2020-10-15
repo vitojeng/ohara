@@ -79,7 +79,7 @@ const replaceKeyInObject = (
       if (isPlainObject(newObjs[i][key])) {
         const obj = replaceKeyInObject(newObjs[i][key], originStr, changeStr);
         newObjs[i][key] = obj;
-      } else if (key.indexOf(originStr) !== -1) {
+      } else if (key.includes(originStr)) {
         const newKey = key.split(originStr).join(changeStr);
         newObjs[i][newKey] = newObjs[i][key];
         delete newObjs[i][key];
@@ -110,7 +110,7 @@ const createAxios = ({ timeout = 20000 }: { timeout?: number } = {}) => {
 
   // get the query params object from url string
   const axiosParams = (urlString?: string): Params => {
-    var params: Params = {};
+    const params: Params = {};
     if (urlString) {
       new URL(urlString).searchParams.forEach((value, key) => {
         params[key] = value;
@@ -138,7 +138,7 @@ const createAxios = ({ timeout = 20000 }: { timeout?: number } = {}) => {
     },
     (error) => {
       //initial the error response data
-      let errorRes: AxiosResponse<AxiosData> = {
+      const errorRes: AxiosResponse<AxiosData> = {
         status: -1,
         statusText: '',
         headers: {},
@@ -492,7 +492,7 @@ export class API {
     params: FileRequest;
     options?: { [k: string]: any };
   }): Promise<T> {
-    let formData = new FormData();
+    const formData = new FormData();
     formData.append('file', params.file);
     formData.append('group', params.group);
     if (params.tags) {

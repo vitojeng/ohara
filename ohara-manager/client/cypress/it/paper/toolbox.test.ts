@@ -1,4 +1,3 @@
-import { ElementParameters } from './../../support/customCommands';
 /*
  * Copyright 2019 is-land
  *
@@ -16,6 +15,7 @@ import { ElementParameters } from './../../support/customCommands';
  */
 
 import * as generate from '../../../src/utils/generate';
+import { ElementParameters } from '../../types';
 import { NodeRequest } from '../../../src/api/apiInterface/nodeInterface';
 import { KIND, CELL_TYPE } from '../../../src/const';
 import { SOURCE, SINK } from '../../../src/api/apiInterface/connectorInterface';

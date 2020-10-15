@@ -14,29 +14,21 @@
  * limitations under the License.
  */
 
-// ***********************************************************
-// This example plugins/index.js can be used to load plugins
-//
-// You can change the location of this file or turn off loading
-// the plugins file with the 'pluginsFile' configuration option.
-//
-// You can read more here:
-// https://on.cypress.io/plugins-guide
-// ***********************************************************
+export {};
 
-// This function is called when a project is opened or re-opened (e.g. due to
-// the project's config changing)
-
-// in plugins/index.js
 const fs = require('fs');
 const path = require('path');
 const browserify = require('@cypress/browserify-preprocessor');
 
-module.exports = (on, config) => {
+module.exports = (
+  on: Cypress.PluginEvents,
+  config: Cypress.PluginConfigOptions,
+) => {
   require('@cypress/code-coverage/task')(on, config);
   on(
     'file:preprocessor',
     browserify({
+      // @ts-ignore
       onBundle(bundle) {
         bundle.transform(require('browserify-istanbul'));
       },
@@ -52,7 +44,7 @@ module.exports = (on, config) => {
   const configForEnvironment = getConfigurationByFile(configFile);
 
   // we overwrite default config by cypress.{api|e2e}.json file
-  let newConfig = Object.assign({}, config, configForEnvironment);
+  const newConfig = Object.assign({}, config, configForEnvironment);
 
   // if we don't define baseUrl yet, use default: localhost:3000
   if (!newConfig.baseUrl) newConfig.baseUrl = 'http://localhost:3000';
@@ -60,7 +52,7 @@ module.exports = (on, config) => {
   return newConfig;
 };
 
-function getConfigurationByFile(file) {
+function getConfigurationByFile(file: string) {
   const pathToConfigFile = path.resolve(
     './cypress',
     'configs',

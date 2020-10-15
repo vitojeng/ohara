@@ -17,9 +17,8 @@
 import * as generate from '../../../src/utils/generate';
 import { NodeRequest } from '../../../src/api/apiInterface/nodeInterface';
 import { KIND } from '../../../src/const';
-import { ElementParameters } from './../../support/customCommands';
+import { ElementParameters, CellAction } from '../../types';
 import { isShabondi } from '../../../src/components/Pipeline/PipelineUtils';
-import { CELL_ACTION } from '../../support/customCommands';
 import { SOURCE, SINK } from '../../../src/api/apiInterface/connectorInterface';
 
 const node: NodeRequest = {
@@ -212,7 +211,7 @@ describe('Paper', () => {
 
 function fillNodeName(elementName: string) {
   cy.getCell(elementName).trigger('mouseover');
-  cy.cellAction(elementName, CELL_ACTION.config).click();
+  cy.cellAction(elementName, CellAction.config).click();
 
   cy.findByLabelText('Node name list').click();
   cy.findByText(node.hostname)

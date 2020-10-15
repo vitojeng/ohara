@@ -15,12 +15,11 @@
  */
 
 import * as generate from '../../../src/utils/generate';
-import { CELL_ACTION } from '../../support/customCommands';
+import { CellAction, ElementParameters } from '../../types';
 import { KIND, CELL_STATUS } from '../../../src/const';
 import { ObjectAbstract } from '../../../src/api/apiInterface/pipelineInterface';
 import { fetchPipelines } from '../../utils';
 import { NodeRequest } from '../../../src/api/apiInterface/nodeInterface';
-import { ElementParameters } from './../../support/customCommands';
 import { SOURCE, SINK } from '../../../src/api/apiInterface/connectorInterface';
 import { PipelineRequest } from '../../../src/api/apiInterface/pipelineInterface';
 
@@ -87,7 +86,7 @@ describe('Elements', () => {
 
       // Start the connector
       cy.getCell(sourceName).trigger('mouseover');
-      cy.cellAction(sourceName, CELL_ACTION.start).click();
+      cy.cellAction(sourceName, CellAction.start).click();
 
       // Should have the status of running
       cy.getElementStatus(sourceName).should('have.text', CELL_STATUS.running);
@@ -98,13 +97,13 @@ describe('Elements', () => {
 
       // Start the connector
       cy.getCell(sourceName).trigger('mouseover');
-      cy.cellAction(sourceName, CELL_ACTION.start).click();
+      cy.cellAction(sourceName, CellAction.start).click();
 
       // It's Running
       cy.getElementStatus(sourceName).should('have.text', CELL_STATUS.running);
 
       // Stop the connector
-      cy.cellAction(sourceName, CELL_ACTION.stop).click();
+      cy.cellAction(sourceName, CellAction.stop).click();
 
       // It's stopped
       cy.getElementStatus(sourceName).should('have.text', CELL_STATUS.stopped);
@@ -127,7 +126,7 @@ describe('Elements', () => {
 
       // Open the dialog
       cy.getCell(sourceName).trigger('mouseover');
-      cy.cellAction(sourceName, CELL_ACTION.config).click();
+      cy.cellAction(sourceName, CellAction.config).click();
 
       // Should be visible by now
       cy.findByText(`Edit the property of ${sourceName}`).should('be.visible');
@@ -163,7 +162,7 @@ describe('Elements', () => {
 
       // Try to remove the element
       cy.getCell(topicName).trigger('mouseover');
-      cy.cellAction(topicName, CELL_ACTION.remove).click();
+      cy.cellAction(topicName, CellAction.remove).click();
 
       cy.findByTestId('delete-dialog').within(() => {
         // We should display a message to tell users why they cannot do so
@@ -185,7 +184,7 @@ describe('Elements', () => {
       cy.stopPipeline('pipeline1');
 
       cy.getCell(topicName).trigger('mouseover');
-      cy.cellAction(topicName, CELL_ACTION.remove).click();
+      cy.cellAction(topicName, CellAction.remove).click();
 
       cy.findByTestId('delete-dialog').findByText('DELETE').click();
 
@@ -343,13 +342,15 @@ describe('Elements', () => {
 
       // TODO: refactor this to run without using `cy.addElement()` as the method
       // requires a topic name and doing too much in the background which makes our test unreal
-      topics.forEach((topic: string) =>
-        cy.addElement({ name: topic, kind: KIND.topic }),
-      );
+      topics.forEach((topic: string) => {
+        cy.addElement({ name: topic, kind: KIND.topic });
+      });
 
       cy.get('#paper').within(() => {
         cy.get('.topic').should('have.length', 3);
-        topics.forEach((topic) => cy.findByText(topic).should('exist'));
+        topics.forEach((topic) => {
+          cy.findByText(topic).should('exist');
+        });
       });
     });
 
@@ -502,7 +503,7 @@ describe('Elements', () => {
 
       const { sourceName } = createSourceAndTopic();
       cy.getCell(sourceName).trigger('mouseover');
-      cy.cellAction(sourceName, CELL_ACTION.start).click();
+      cy.cellAction(sourceName, CellAction.start).click();
 
       // Should have the status of pending
       cy.getElementStatus(sourceName).should('have.text', CELL_STATUS.pending);
@@ -523,7 +524,7 @@ describe('Elements', () => {
 
       // Manually stop the connector, this ensures it gets the "stop" state and could be properly cleanup later
       cy.getCell(sourceName).trigger('mouseover');
-      cy.cellAction(sourceName, CELL_ACTION.stop).click();
+      cy.cellAction(sourceName, CellAction.stop).click();
     });
   });
 
@@ -531,7 +532,7 @@ describe('Elements', () => {
     it('should disable some of the actions when running', () => {
       const { sourceName } = createSourceAndTopic();
       cy.getCell(sourceName).trigger('mouseover');
-      cy.cellAction(sourceName, CELL_ACTION.start).click();
+      cy.cellAction(sourceName, CellAction.start).click();
 
       cy.get('#paper').within(() => {
         cy.findByText(sourceName).should(($source) => {
@@ -560,7 +561,7 @@ describe('Elements', () => {
     it('should disable some of the actions when failed', () => {
       const { sourceName } = createSourceAndTopic();
       cy.getCell(sourceName).trigger('mouseover');
-      cy.cellAction(sourceName, CELL_ACTION.start).click();
+      cy.cellAction(sourceName, CellAction.start).click();
 
       cy.wrap(null).then(async () => {
         // There's only one pipeline in our env

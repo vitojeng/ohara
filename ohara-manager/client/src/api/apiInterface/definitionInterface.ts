@@ -155,7 +155,7 @@ export class UISettingDef implements SettingDef {
   denyList: string[];
   prefix?: string | undefined;
 
-  constructor(key: string, type: Type, internal: boolean = true) {
+  constructor(key: string, type: Type, internal = true) {
     this.key = key;
     this.group = 'default';
     this.displayName = key;

@@ -18,8 +18,7 @@ import * as generate from '../../../src/utils/generate';
 import { NodeRequest } from '../../../src/api/apiInterface/nodeInterface';
 import { KIND, CELL_STATUS } from '../../../src/const';
 import { SOURCE, SINK } from '../../../src/api/apiInterface/connectorInterface';
-import { CELL_ACTION } from '../../support/customCommands';
-import { ElementParameters } from './../../support/customCommands';
+import { CellAction, ElementParameters } from '../../types';
 
 describe('Toolbar', () => {
   const node: NodeRequest = {
@@ -691,7 +690,7 @@ describe('Toolbar', () => {
       it(`should display metrics when starts a connection with Paper element's start action button`, () => {
         // Start the source with element's start action button
         cy.getCell(sourceName).trigger('mouseover');
-        cy.cellAction(sourceName, CELL_ACTION.start).click();
+        cy.cellAction(sourceName, CellAction.start).click();
 
         // Ensure the connector is running
         cy.getElementStatus(sourceName).should(

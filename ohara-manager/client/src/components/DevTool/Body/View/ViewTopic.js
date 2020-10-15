@@ -34,7 +34,7 @@ const ViewTopic = () => {
   const { data, isFetching } = hooks.useDevToolTopicData();
 
   const getHeaders = (messages) => {
-    let headers = [];
+    const headers = [];
     messages.forEach((message) => {
       if (message.value) {
         const keys = Object.keys(message.value);

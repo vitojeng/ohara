@@ -68,7 +68,7 @@ export const createServicesInNodes = async ({
   withBroker = false,
   withZookeeper = false,
 } = {}) => {
-  let result: { [k: string]: any } = {};
+  const result: { [k: string]: any } = {};
 
   const node = {
     hostname: generate.serviceName({ prefix: 'node' }),

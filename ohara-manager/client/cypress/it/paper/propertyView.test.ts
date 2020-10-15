@@ -15,11 +15,10 @@
  */
 
 import { isEmpty, isObject } from 'lodash';
-import { CELL_ACTION } from '../../support/customCommands';
+import { CellAction, ElementParameters } from '../../types';
 import * as generate from '../../../src/utils/generate';
 import { NodeRequest } from '../../../src/api/apiInterface/nodeInterface';
 import { fetchServices, fetchServiceInfo } from '../../utils';
-import { ElementParameters } from './../../support/customCommands';
 import {
   SettingDef,
   ClassInfo,
@@ -121,7 +120,7 @@ describe('Property view', () => {
 
     // Start the connection
     cy.getCell(sourceName).trigger('mouseover');
-    cy.cellAction(sourceName, CELL_ACTION.start).click();
+    cy.cellAction(sourceName, CellAction.start).click();
 
     // Open source property view
     cy.getCell(sourceName).click();
@@ -146,7 +145,7 @@ describe('Property view', () => {
 
     // Stop the connection
     cy.getCell(sourceName).trigger('mouseover');
-    cy.cellAction(sourceName, CELL_ACTION.stop).click();
+    cy.cellAction(sourceName, CellAction.stop).click();
 
     cy.getCell(sourceName).click();
 
@@ -332,7 +331,7 @@ describe('Property view', () => {
 
     // Start the connection
     cy.getCell(sourceName).trigger('mouseover');
-    cy.cellAction(sourceName, CELL_ACTION.start).click();
+    cy.cellAction(sourceName, CellAction.start).click();
 
     // Open property view
     cy.getCell(sourceName).click();
@@ -386,7 +385,7 @@ describe('Property view', () => {
     cy.getCell(sourceName).click();
 
     // link the source-sink
-    cy.cellAction(sourceName, CELL_ACTION.link).click();
+    cy.cellAction(sourceName, CellAction.link).click();
     cy.getCell(sinkName).click();
 
     // target topic should not exist before creating topic

@@ -13,15 +13,17 @@
     "module": "esnext",
     "moduleResolution": "node",
     "resolveJsonModule": true,
-    "isolatedModules": true,
     "noEmit": true,
     "jsx": "react",
     "sourceMap": true,
     "noImplicitAny": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
-    "noImplicitReturns": true
+    "noImplicitReturns": true,
+    "strictNullChecks": true,
+    "noImplicitThis": true,
+    "isolatedModules": true
   },
   "exclude": ["node_modules", "build"],
-  "include": ["src"]
+  "include": ["src", "cypress"]
 }

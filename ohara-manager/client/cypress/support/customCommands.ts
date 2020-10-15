@@ -14,161 +14,16 @@
  * limitations under the License.
  */
 
-/* eslint-disable no-unused-vars */
-/* eslint-disable @typescript-eslint/no-unused-vars */
-/* eslint-disable no-console */
+// eslint-disable-next-line @typescript-eslint/triple-slash-reference
+///<reference path="../global.d.ts" />
 
-// Note: Do not change the usage of absolute path
-// unless you have a solution to resolve TypeScript + Coverage
 import '@testing-library/cypress/add-commands';
-
-import { some } from 'lodash';
-import {
-  NodeRequest,
-  NodeResponse,
-} from '../../src/api/apiInterface/nodeInterface';
-import { State } from '../../src/api/apiInterface/topicInterface';
 import * as generate from '../../src/utils/generate';
+import { some } from 'lodash';
+import { NodeRequest } from '../../src/api/apiInterface/nodeInterface';
+import { State } from '../../src/api/apiInterface/topicInterface';
 import { deleteAllServices, generateNodeIfNeeded } from '../utils';
-import { KIND } from '../../src/const';
-
-interface FixtureResponse {
-  name: string;
-  fileList: FileList;
-  file: File;
-  group: string;
-  tags?: object;
-}
-
-export interface ElementParameters {
-  name: string;
-  kind: KIND.stream | KIND.topic | KIND.source | KIND.sink | KIND.shabondi;
-  className?: string;
-}
-
-export enum SETTING_SECTION {
-  topics = 'Topics',
-  autofill = 'Autofill',
-  zookeeper = 'Zookeeper',
-  broker = 'Broker',
-  worker = 'Worker',
-  stream = 'Stream',
-  nodes = 'Nodes',
-  files = 'Files',
-  dangerZone = 'Danger Zone',
-}
-
-export enum CELL_ACTION {
-  link = 'link',
-  config = 'config',
-  remove = 'remove',
-  start = 'start',
-  stop = 'stop',
-}
-
-declare global {
-  namespace Cypress {
-    type FixtureRequest = {
-      fixturePath: string;
-      name: string;
-      group: string;
-      tags?: object;
-    };
-    interface Chainable {
-      // Utils
-      createJar: (file: FixtureRequest) => Promise<FixtureResponse>;
-      createNode: (node?: NodeRequest) => Chainable<NodeRequest>;
-      createNodeIfNotExists: (node: NodeRequest) => Chainable<NodeResponse>;
-      createWorkspace: ({
-        workspaceName,
-        node,
-        closeOnFailureOrFinish,
-      }: {
-        workspaceName?: string;
-        node?: NodeRequest;
-        closeOnFailureOrFinish?: boolean;
-      }) => Chainable<null>;
-      produceTopicData: (
-        workspaceName?: string,
-        topicName?: string,
-      ) => Chainable<void>;
-      deleteAllServices: () => Chainable<null>;
-      /**
-       * Get the _&lt;td /&gt;_ elements by required parameters.
-       * <p> This function has the following combination:
-       *
-       * <p> 1. `columnName`: filter all _&lt;td /&gt;_ elements of specific column.
-       *
-       * <p> 2. `columnName + columnValue`: filter the _&lt;td /&gt;_ element of specific column and value.
-       *
-       * <p> 3. `columnName + rowFilter`: filter the _&lt;td /&gt;_ element of specific column in specific rows.
-       *
-       * <p> 4. `columnName + columnValue + rowFilter`: filter the _&lt;td /&gt;_ element of specific column in specific rows.
-       *
-       * @param {string} columnName the filtered header of table cell
-       * @param {string} columnValue the filtered value of table cell
-       * @param {Function} rowFilter given a function to filter the result of elements
-       */
-      getTableCellByColumn: (
-        $table: JQuery<HTMLTableElement>,
-        columnName: string,
-        columnValue?: string,
-        rowFilter?: (row: JQuery<HTMLTableElement>) => boolean,
-      ) => Chainable<JQuery<HTMLElement | HTMLElement[]>>;
-      // Paper
-      // Drag & Drop
-      dragAndDrop: (
-        shiftX: number,
-        shiftY: number,
-      ) => Chainable<JQuery<HTMLElement>>;
-      addNode: (node?: NodeRequest) => Chainable<null>;
-      addElement: (element: ElementParameters) => Chainable<null>;
-      addElements: (elements: ElementParameters[]) => Chainable<null>;
-      removeElement: (name: string) => Chainable<null>;
-
-      /**
-       * Get a Paper element by name
-       * @param {string} name Element name
-       * @param {boolean} isTopic If element is a topic
-       * @example cy.getElement('mySource').should('have.text', 'running');
-       * @example cy.getElement('myTopic').should('have.class', 'running');
-       */
-
-      getElementStatus: (
-        name: string,
-        isTopic?: boolean,
-      ) => Chainable<JQuery<HTMLElement>>;
-      getCell: (name: string) => Chainable<HTMLElement>;
-      cellAction: (name: string, action: CELL_ACTION) => Chainable<HTMLElement>;
-
-      /**
-       * Create a connection between elements
-       * @param {string[]} elements Element list, the connection will be created following the list order
-       * @param {boolean} waitForApiCall If the command should wait for pipeline update API call to finish or not
-       * @example cy.createConnection(['ftpSource', 'topic1', 'consoleSink']); // create a connection of ftpSource -> topic1 -> consoleSink
-       */
-
-      createConnections: (
-        elements: string[],
-        waitForApiCall?: boolean,
-      ) => Chainable<null>;
-      uploadStreamJar: () => Chainable<null>;
-      // Pipeline
-      createPipeline: (name?: string) => Chainable<null>;
-      startPipeline: (name: string) => Chainable<null>;
-      stopPipeline: (name: string) => Chainable<null>;
-      deletePipeline: (name: string) => Chainable<null>;
-      stopAndDeleteAllPipelines: () => Chainable<null>;
-      // Settings
-      switchSettingSection: (
-        section: SETTING_SECTION,
-        listItem?: string,
-      ) => Chainable<null>;
-      createSharedTopic: (name?: string) => Chainable<null>;
-      closeIntroDialog: () => Chainable<null>;
-    }
-  }
-}
+import { FixtureResponse, SettingSection } from '../types';
 
 // Utility commands
 Cypress.Commands.add('createJar', (file: Cypress.FixtureRequest) => {
@@ -176,7 +31,7 @@ Cypress.Commands.add('createJar', (file: Cypress.FixtureRequest) => {
   cy.fixture(`${fixturePath}/${name}`, 'base64')
     .then(Cypress.Blob.base64StringToBlob)
     .then((blob) => {
-      const blobObj = blob as Blob;
+      const blobObj = blob;
       const type = 'application/java-archive';
       const testFile = new File([blobObj], name, { type });
       const dataTransfer = new DataTransfer();
@@ -379,7 +234,7 @@ Cypress.Commands.add(
 // Settings
 Cypress.Commands.add(
   'switchSettingSection',
-  (section: SETTING_SECTION, listItem?: string) => {
+  (section: SettingSection, listItem?: string) => {
     cy.get('body').then(($body) => {
       // check whether we are in the homepage or not
       if (
@@ -423,7 +278,7 @@ Cypress.Commands.add(
 Cypress.Commands.add(
   'createSharedTopic',
   (name = generate.serviceName({ prefix: 'topic' })) => {
-    cy.switchSettingSection(SETTING_SECTION.topics);
+    cy.switchSettingSection(SettingSection.topics);
 
     // add shared topics
     cy.findByTitle('Create Topic').should('be.enabled').click();

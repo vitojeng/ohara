@@ -16,9 +16,8 @@
 
 import { NodeRequest } from '../../../src/api/apiInterface/nodeInterface';
 import * as generate from '../../../src/utils/generate';
-import { SETTING_SECTION } from '../../support/customCommands';
+import { SettingSection, ElementParameters } from '../../types';
 import { hashByGroupAndName } from '../../../src/utils/sha';
-import { ElementParameters } from './../../support/customCommands';
 import { KIND } from '../../../src/const';
 import {
   SOURCE,
@@ -60,7 +59,7 @@ describe('Restart workspace', () => {
     cy.findByTestId('nodes-dialog-close-button').click();
 
     // add newly added node into workspace
-    cy.switchSettingSection(SETTING_SECTION.nodes);
+    cy.switchSettingSection(SettingSection.nodes);
     cy.get('div.section-page-content').within(() => {
       cy.findByTitle('Add Node').click();
     });
@@ -69,7 +68,9 @@ describe('Restart workspace', () => {
     cy.findAllByRole('dialog')
       .filter(':visible')
       .should('have.length', 1)
-      .within(() => cy.findByText('CANCEL').click());
+      .within(() => {
+        cy.findByText('CANCEL').click();
+      });
     cy.get('div.section-page-content').within(() => {
       cy.findByTitle('Add Node').click();
     });
@@ -106,7 +107,7 @@ describe('Restart workspace', () => {
   });
 
   it('should show an restart indicator after adding node to zookeeper', () => {
-    cy.switchSettingSection(SETTING_SECTION.zookeeper);
+    cy.switchSettingSection(SettingSection.zookeeper);
 
     cy.get('div.section-page-content').within(() => {
       cy.findByTitle('Add Node').click();
@@ -138,7 +139,9 @@ describe('Restart workspace', () => {
       cy.findByText(hostname)
         .siblings('td')
         .last()
-        .within(() => cy.findByTitle('Undo add node').click());
+        .within(() => {
+          cy.findByTitle('Undo add node').click();
+        });
       cy.findByText(hostname).should('not.exist');
     });
 
@@ -174,7 +177,7 @@ describe('Restart workspace', () => {
     });
 
     // the zookeeper section should have 1 change warning
-    cy.contains('h2', SETTING_SECTION.zookeeper)
+    cy.contains('h2', SettingSection.zookeeper)
       .parent('section')
       .find('ul')
       .contains('span', '1');
@@ -213,7 +216,7 @@ describe('Restart workspace', () => {
 
     // the zookeeper section should not have warnings
     cy.findAllByRole('alert').should('not.exist');
-    cy.contains('h2', SETTING_SECTION.zookeeper)
+    cy.contains('h2', SettingSection.zookeeper)
       .parent('section')
       .find('ul')
       .contains('span', '1')
@@ -222,7 +225,7 @@ describe('Restart workspace', () => {
 
   it('should be able to restart from indicator after adding node to zookeeper', () => {
     // add node to zookeeper
-    cy.switchSettingSection(SETTING_SECTION.zookeeper);
+    cy.switchSettingSection(SettingSection.zookeeper);
     cy.get('div.section-page-content').within(() => {
       cy.findByTitle('Add Node').click();
     });
@@ -307,7 +310,7 @@ describe('Restart workspace', () => {
       .should('be.visible')
       .click();
 
-    cy.switchSettingSection(SETTING_SECTION.zookeeper);
+    cy.switchSettingSection(SettingSection.zookeeper);
     cy.get('div.section-page-content').within(() => {
       cy.get('table')
         .should('have.length', 1)
@@ -320,7 +323,7 @@ describe('Restart workspace', () => {
 
   it('should be able to restart from indicator after adding node to broker', () => {
     // add node to zookeeper
-    cy.switchSettingSection(SETTING_SECTION.broker);
+    cy.switchSettingSection(SettingSection.broker);
     cy.get('div.section-page-content').within(() => {
       cy.findByTitle('Add Node').click();
     });
@@ -397,7 +400,7 @@ describe('Restart workspace', () => {
     // close the snackbar
     cy.findByTestId('snackbar').find('button:visible').click();
 
-    cy.switchSettingSection(SETTING_SECTION.zookeeper);
+    cy.switchSettingSection(SettingSection.zookeeper);
     cy.get('div.section-page-content').within(() => {
       cy.get('table')
         .should('have.length', 1)
@@ -410,7 +413,7 @@ describe('Restart workspace', () => {
 
   it('should be able to restart from indicator after adding node to worker', () => {
     // add node to zookeeper
-    cy.switchSettingSection(SETTING_SECTION.worker);
+    cy.switchSettingSection(SettingSection.worker);
     cy.get('div.section-page-content').within(() => {
       cy.findByTitle('Add Node').click();
     });
@@ -487,7 +490,7 @@ describe('Restart workspace', () => {
       .should('be.visible')
       .click();
 
-    cy.switchSettingSection(SETTING_SECTION.zookeeper);
+    cy.switchSettingSection(SettingSection.zookeeper);
     cy.get('div.section-page-content').within(() => {
       cy.get('table')
         .should('have.length', 1)
@@ -499,7 +502,7 @@ describe('Restart workspace', () => {
   });
 
   it('should be able to restart worker by directly click button', () => {
-    cy.switchSettingSection(SETTING_SECTION.dangerZone, 'Restart this worker');
+    cy.switchSettingSection(SettingSection.dangerZone, 'Restart this worker');
     cy.findAllByRole('dialog')
       .filter(':visible')
       .should('have.length', 1)
@@ -508,7 +511,7 @@ describe('Restart workspace', () => {
       });
 
     // click again
-    cy.switchSettingSection(SETTING_SECTION.dangerZone, 'Restart this worker');
+    cy.switchSettingSection(SettingSection.dangerZone, 'Restart this worker');
 
     cy.findAllByRole('dialog')
       .filter(':visible')
@@ -527,7 +530,7 @@ describe('Restart workspace', () => {
 
   // Waiting for support volume
   it.skip('should be able to restart broker by directly click button', () => {
-    cy.switchSettingSection(SETTING_SECTION.dangerZone, 'Restart this broker');
+    cy.switchSettingSection(SettingSection.dangerZone, 'Restart this broker');
     cy.findAllByRole('dialog')
       .filter(':visible')
       .should('have.length', 1)
@@ -536,7 +539,7 @@ describe('Restart workspace', () => {
       });
 
     // click again
-    cy.switchSettingSection(SETTING_SECTION.dangerZone, 'Restart this broker');
+    cy.switchSettingSection(SettingSection.dangerZone, 'Restart this broker');
 
     cy.findAllByRole('dialog')
       .filter(':visible')
@@ -560,7 +563,7 @@ describe('Restart workspace', () => {
 
   it('should be able to restart workspace by directly click button', () => {
     cy.switchSettingSection(
-      SETTING_SECTION.dangerZone,
+      SettingSection.dangerZone,
       'Restart this workspace',
     );
     cy.findAllByRole('dialog')
@@ -572,7 +575,7 @@ describe('Restart workspace', () => {
 
     // click again
     cy.switchSettingSection(
-      SETTING_SECTION.dangerZone,
+      SettingSection.dangerZone,
       'Restart this workspace',
     );
 
@@ -601,7 +604,7 @@ describe('Restart workspace', () => {
 
   it('retry stop worker should be used normally in restart workspace', () => {
     cy.switchSettingSection(
-      SETTING_SECTION.dangerZone,
+      SettingSection.dangerZone,
       'Restart this workspace',
     );
 
@@ -686,7 +689,7 @@ describe('Restart workspace', () => {
 
   it('retry update worker should be used normally in restart workspace', () => {
     cy.switchSettingSection(
-      SETTING_SECTION.dangerZone,
+      SettingSection.dangerZone,
       'Restart this workspace',
     );
 
@@ -732,7 +735,7 @@ describe('Restart workspace', () => {
 
   it('retry stop topic should be used normally in restart workspace', () => {
     cy.switchSettingSection(
-      SETTING_SECTION.dangerZone,
+      SettingSection.dangerZone,
       'Restart this workspace',
     );
 
@@ -782,7 +785,7 @@ describe('Restart workspace', () => {
 
   it('retry stop broker should be used normally in restart workspace', () => {
     cy.switchSettingSection(
-      SETTING_SECTION.dangerZone,
+      SettingSection.dangerZone,
       'Restart this workspace',
     );
 
@@ -830,7 +833,7 @@ describe('Restart workspace', () => {
 
   it('retry update broker should be used normally in restart workspace', () => {
     cy.switchSettingSection(
-      SETTING_SECTION.dangerZone,
+      SettingSection.dangerZone,
       'Restart this workspace',
     );
 
@@ -876,7 +879,7 @@ describe('Restart workspace', () => {
 
   it('retry stop zookeeper should be used normally in restart workspace', () => {
     cy.switchSettingSection(
-      SETTING_SECTION.dangerZone,
+      SettingSection.dangerZone,
       'Restart this workspace',
     );
 
@@ -924,7 +927,7 @@ describe('Restart workspace', () => {
 
   it('retry update zookeeper should be used normally in restart workspace', () => {
     cy.switchSettingSection(
-      SETTING_SECTION.dangerZone,
+      SettingSection.dangerZone,
       'Restart this workspace',
     );
 
@@ -970,7 +973,7 @@ describe('Restart workspace', () => {
 
   it('retry start zookeeper should be used normally in restart workspace', () => {
     cy.switchSettingSection(
-      SETTING_SECTION.dangerZone,
+      SettingSection.dangerZone,
       'Restart this workspace',
     );
 
@@ -1018,7 +1021,7 @@ describe('Restart workspace', () => {
 
   it('retry start broker should be used normally in restart workspace', () => {
     cy.switchSettingSection(
-      SETTING_SECTION.dangerZone,
+      SettingSection.dangerZone,
       'Restart this workspace',
     );
 
@@ -1066,7 +1069,7 @@ describe('Restart workspace', () => {
 
   it('retry start topic should be used normally in restart workspace', () => {
     cy.switchSettingSection(
-      SETTING_SECTION.dangerZone,
+      SettingSection.dangerZone,
       'Restart this workspace',
     );
 
@@ -1144,7 +1147,7 @@ describe('Restart workspace', () => {
 
   it('retry start worker should be used normally in restart workspace', () => {
     cy.switchSettingSection(
-      SETTING_SECTION.dangerZone,
+      SettingSection.dangerZone,
       'Restart this workspace',
     );
 
@@ -1192,7 +1195,7 @@ describe('Restart workspace', () => {
 
   it('the rollback workspace should return to its original state', () => {
     cy.switchSettingSection(
-      SETTING_SECTION.dangerZone,
+      SettingSection.dangerZone,
       'Restart this workspace',
     );
 
@@ -1237,7 +1240,7 @@ describe('Restart workspace', () => {
 
   it('should mark the workspace as unstable when it fails', () => {
     cy.switchSettingSection(
-      SETTING_SECTION.dangerZone,
+      SettingSection.dangerZone,
       'Restart this workspace',
     );
 
@@ -1283,10 +1286,7 @@ describe('Delete workspace', () => {
 
   it('should be able to restart the same name workspace which just removed and re-created', () => {
     // Delete workspace1
-    cy.switchSettingSection(
-      SETTING_SECTION.dangerZone,
-      'Delete this workspace',
-    );
+    cy.switchSettingSection(SettingSection.dangerZone, 'Delete this workspace');
 
     cy.findByTestId('delete-workspace-confirm-dialog')
       .should('exist')
@@ -1305,7 +1305,7 @@ describe('Delete workspace', () => {
 
     // click restart workspace should be OK
     cy.switchSettingSection(
-      SETTING_SECTION.dangerZone,
+      SettingSection.dangerZone,
       'Restart this workspace',
     );
 
@@ -1348,10 +1348,7 @@ describe('Delete workspace', () => {
     cy.startPipeline('pipeline1');
 
     // Go to settings page and delete the workspace
-    cy.switchSettingSection(
-      SETTING_SECTION.dangerZone,
-      'Delete this workspace',
-    );
+    cy.switchSettingSection(SettingSection.dangerZone, 'Delete this workspace');
 
     // Should stop users from deleting
     cy.findByTestId('delete-workspace-confirm-dialog')
@@ -1401,10 +1398,7 @@ describe('Delete workspace', () => {
     cy.findByTitle(workspace1).should('exist').click();
 
     // Go to settings page and delete the workspace
-    cy.switchSettingSection(
-      SETTING_SECTION.dangerZone,
-      'Delete this workspace',
-    );
+    cy.switchSettingSection(SettingSection.dangerZone, 'Delete this workspace');
 
     // Confirm deletion
     cy.findByTestId('delete-workspace-confirm-dialog')
@@ -1453,10 +1447,7 @@ describe('Delete workspace', () => {
     cy.get('#paper').findByText(sourceName).should('exist');
 
     // Go to settings page and delete the workspace
-    cy.switchSettingSection(
-      SETTING_SECTION.dangerZone,
-      'Delete this workspace',
-    );
+    cy.switchSettingSection(SettingSection.dangerZone, 'Delete this workspace');
 
     // Confirm deletion
     cy.findByTestId('delete-workspace-confirm-dialog')

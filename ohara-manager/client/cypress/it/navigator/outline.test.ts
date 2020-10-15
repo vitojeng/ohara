@@ -15,7 +15,7 @@
  */
 
 import * as generate from '../../../src/utils/generate';
-import { ElementParameters } from './../../support/customCommands';
+import { ElementParameters } from '../../types';
 import { KIND } from '../../../src/const';
 import { NodeRequest } from '../../../src/api/apiInterface/nodeInterface';
 import { SOURCE, SINK } from '../../../src/api/apiInterface/connectorInterface';

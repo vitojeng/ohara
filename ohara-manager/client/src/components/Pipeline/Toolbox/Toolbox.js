@@ -111,10 +111,10 @@ const Toolbox = (props) => {
     setIsOpen(false);
   };
 
-  let sourceGraph = React.useRef(null);
-  let sinkGraph = React.useRef(null);
-  let topicGraph = React.useRef(null);
-  let streamGraph = React.useRef(null);
+  const sourceGraph = React.useRef(null);
+  const sinkGraph = React.useRef(null);
+  const topicGraph = React.useRef(null);
+  const streamGraph = React.useRef(null);
 
   React.useEffect(() => {
     if (!connectors.sources || !connectors.sinks) return;

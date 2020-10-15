@@ -116,7 +116,7 @@ const PipelinePropertyDialog = (props) => {
     return true;
   };
 
-  const handleSubmit = async (values) => {
+  const handleSubmit = (values) => {
     const topicCells = paperApi.getCells(KIND.topic);
     let topics = [];
     values.settingDefinitions.forEach((def) => {
@@ -188,7 +188,7 @@ const PipelinePropertyDialog = (props) => {
     );
   };
 
-  const handleClick = async (key) => {
+  const handleClick = (key) => {
     setSelected(key);
     setTimeout(() => {
       if (formRef.current) formRef.current.scrollIntoView(key);

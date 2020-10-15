@@ -16,11 +16,7 @@
 
 import * as generate from '../../src/utils/generate';
 import { KIND, CELL_STATUS } from '../../src/const';
-import {
-  ElementParameters,
-  CELL_ACTION,
-  SETTING_SECTION,
-} from '../support/customCommands';
+import { ElementParameters, CellAction, SettingSection } from '../types';
 import { SOURCE, SINK } from '../../src/api/apiInterface/connectorInterface';
 import { hashByGroupAndName } from '../../src/utils/sha';
 
@@ -69,7 +65,7 @@ describe('Pipeline', () => {
 
       // Configure stream element
       cy.getCell(streamName).trigger('mouseover');
-      cy.cellAction(streamName, CELL_ACTION.config).click();
+      cy.cellAction(streamName, CellAction.config).click();
 
       cy.findByLabelText('Node name list').click();
       cy.findByText(Cypress.env('nodeHost'))
@@ -148,7 +144,7 @@ describe('Pipeline', () => {
       cy.uploadStreamJar();
       cy.createPipeline();
 
-      cy.switchSettingSection(SETTING_SECTION.files);
+      cy.switchSettingSection(SettingSection.files);
 
       cy.get('div.section-page-content').within(() => {
         // upload the files by custom command "createJar"
@@ -167,7 +163,7 @@ describe('Pipeline', () => {
       });
 
       cy.switchSettingSection(
-        SETTING_SECTION.worker,
+        SettingSection.worker,
         'Worker plugins and shared jars',
       );
 
@@ -185,10 +181,7 @@ describe('Pipeline', () => {
         .check();
       cy.findByText('SAVE').click();
 
-      cy.switchSettingSection(
-        SETTING_SECTION.dangerZone,
-        'Restart this worker',
-      );
+      cy.switchSettingSection(SettingSection.dangerZone, 'Restart this worker');
       cy.findAllByRole('dialog')
         .filter(':visible')
         .should('have.length', 1)
@@ -254,7 +247,7 @@ describe('Pipeline', () => {
         cy.addElement({ name, ...rest });
 
         cy.getCell(name).trigger('mouseover');
-        cy.cellAction(name, CELL_ACTION.config).click();
+        cy.cellAction(name, CellAction.config).click();
 
         // Should have the dialog title
         cy.findByText(`Edit the property of ${name}`).should('exist');

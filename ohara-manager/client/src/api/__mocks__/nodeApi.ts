@@ -25,7 +25,7 @@ import {
   NodeResponseList,
 } from 'api/apiInterface/nodeInterface';
 
-export let entity = {
+export const entity = {
   services: [
     {
       name: 'zookeeper',

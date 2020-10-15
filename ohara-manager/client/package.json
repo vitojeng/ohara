@@ -28,8 +28,9 @@
     "prereport:combined": "cross-env mkdir coverage/reports && cp coverage/ut/coverage-final.json coverage/reports/coverage-ut.json && cp coverage/api/coverage-final.json coverage/reports/coverage-api.json && cp coverage/it/coverage-final.json coverage/reports/coverage-it.json || true",
     "report:combined": "nyc report --reporter=html --reporter=json-summary --temp-dir coverage/reports || true",
     "postreport:combined": "rm -rf coverage/reports",
-    "lint": "eslint --max-warnings 0 src cypress",
+    "lint": "eslint --cache --max-warnings 0 \"./{src,cypress}/**/*.{ts,js,tsx,jsx}\"",
     "lint:ci": "cross-env CI=true eslint --max-warnings 0 src cypress",
+    "typecheck": "tsc --noEmit",
     "vet": "yarn audit"
   },
   "dependencies": {
@@ -42,6 +43,7 @@
     "@testing-library/cypress": "6.0.0",
     "@types/faker": "4.1.12",
     "@types/lodash": "4.14.158",
+    "@types/node": "14.11.8",
     "@types/react-dom": "16.9.8",
     "@xstate/react": "0.8.1",
     "axios": "0.19.2",
@@ -50,7 +52,9 @@
     "classnames": "2.2.6",
     "cypress": "4.11.0",
     "cypress-plugin-retries": "1.5.2",
+    "eslint-config-prettier": "6.12.0",
     "eslint-plugin-cypress": "2.11.1",
+    "eslint-plugin-prettier": "3.1.4",
     "final-form": "4.20.1",
     "final-form-arrays": "3.0.2",
     "history": "5.0.0",
@@ -91,65 +95,6 @@
   },
   "resolutions": {
     "node-fetch": "2.6.1"
-  },
-  "eslintConfig": {
-    "extends": [
-      "react-app",
-      "eslint:recommended"
-    ],
-    "plugins": [
-      "jest"
-    ],
-    "globals": {
-      "cy": false,
-      "Cypress": false,
-      "describe": false,
-      "context": false,
-      "before": false,
-      "after": false,
-      "beforeEach": false,
-      "afterEach": false,
-      "it": false,
-      "assert": false,
-      "expect": false
-    },
-    "rules": {
-      "jest/no-focused-tests": "warn",
-      "jest/valid-describe": "warn",
-      "jest/no-identical-title": "warn",
-      "no-alert": "warn",
-      "no-debugger": "warn",
-      "no-console": "warn",
-      "no-unused-vars": [
-        "warn",
-        {
-          "args": "after-used"
-        }
-      ],
-      "no-template-curly-in-string": "warn",
-      "no-case-declarations": "off",
-      "array-callback-return": "warn",
-      "object-shorthand": "warn",
-      "react/prop-types": "warn",
-      "react/no-unused-prop-types": "warn",
-      "react/no-unknown-property": "warn",
-      "dot-notation": "warn",
-      "camelcase": [
-        "warn",
-        {
-          "properties": "never",
-          "ignoreDestructuring": true
-        }
-      ],
-      "react/jsx-sort-props": [
-        "warn",
-        {
-          "ignoreCase": false,
-          "callbacksLast": false
-        }
-      ],
-      "eqeqeq": "warn"
-    }
   },
   "browserslist": [
     ">0.2%",

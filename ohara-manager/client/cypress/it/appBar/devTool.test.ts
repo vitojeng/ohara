@@ -16,7 +16,7 @@
 
 import * as generate from '../../../src/utils/generate';
 import { LOG_SERVICE } from '../../../src/api/apiInterface/logInterface';
-import { SETTING_SECTION } from '../../support/customCommands';
+import { SettingSection } from '../../types';
 import { KIND, DevToolTabName } from '../../../src/const';
 
 describe('App Bar', () => {
@@ -45,7 +45,7 @@ describe('App Bar', () => {
       cy.createPipeline();
 
       // add shared topics
-      cy.switchSettingSection(SETTING_SECTION.topics);
+      cy.switchSettingSection(SettingSection.topics);
       cy.findByTitle('Create Topic').should('be.enabled').click();
       cy.findAllByRole('dialog')
         .filter(':visible')

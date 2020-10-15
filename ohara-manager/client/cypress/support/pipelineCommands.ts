@@ -19,8 +19,7 @@ import { capitalize } from 'lodash';
 
 import { KIND, CELL_TYPE, CELL_STATUS } from '../../src/const';
 import { hashByGroupAndName } from '../../src/utils/sha';
-import { SETTING_SECTION, CELL_ACTION } from './customCommands';
-import { ElementParameters } from './customCommands';
+import { SettingSection, CellAction, ElementParameters } from '../types';
 
 Cypress.Commands.add('createPipeline', (name = 'pipeline1') => {
   cy.log(`Creating pipeline: ${name}`);
@@ -187,7 +186,7 @@ Cypress.Commands.add('addElement', ({ name, kind, className }) => {
       if (isSharedTopic) {
         cy.findByText(name).should('exist');
 
-        let topics: string[] = [];
+        const topics: string[] = [];
 
         $paper.find('#topic-list .display-name').each((_, element) => {
           if (element.textContent) {
@@ -267,7 +266,7 @@ Cypress.Commands.add(
 
       // Action
       cy.getCell(elementName).trigger('mouseover');
-      cy.cellAction(elementName, CELL_ACTION.link).click();
+      cy.cellAction(elementName, CellAction.link).click();
 
       // Create the link: currentElement -> nextElement
       cy.getCell(nextElementName).click();
@@ -284,7 +283,7 @@ Cypress.Commands.add('removeElement', (name) => {
   cy.log(`Removing an element: ${name}`);
 
   cy.getCell(name).trigger('mouseover');
-  cy.cellAction(name, CELL_ACTION.remove).click();
+  cy.cellAction(name, CellAction.remove).click();
   cy.findByTestId('delete-dialog').findByText('DELETE').click();
 
   cy.get('#paper').findByText(name).should('not.exist');
@@ -306,7 +305,7 @@ Cypress.Commands.add('getCell', (name) => {
   });
 });
 
-Cypress.Commands.add('cellAction', (name, action: CELL_ACTION) => {
+Cypress.Commands.add('cellAction', (name, action: CellAction) => {
   // open the cell menu
   cy.get('#paper').within(() => {
     cy.findAllByText(name)
@@ -314,7 +313,9 @@ Cypress.Commands.add('cellAction', (name, action: CELL_ACTION) => {
       .should('exist')
       .parents('.paper-element')
       .first()
-      .within(() => cy.get(`button.${action.toString()}:visible`));
+      .within(() => {
+        cy.get(`button.${action.toString()}:visible`);
+      });
   });
 });
 
@@ -334,7 +335,7 @@ Cypress.Commands.add('getElementStatus', (name, isTopic = false) => {
 
 Cypress.Commands.add('uploadStreamJar', () => {
   cy.log('Uploading stream jar');
-  cy.switchSettingSection(SETTING_SECTION.stream);
+  cy.switchSettingSection(SettingSection.stream);
 
   // click upload plugins
   cy.findAllByTitle('Add File').first().click();

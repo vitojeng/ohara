@@ -62,8 +62,8 @@ describe('Object API', () => {
     const params = generateObject();
     await objectApi.create(params);
 
-    let newParams = { ...params, pwd: generate.password() };
-    newParams.tags.domain = generate.domainName(10);
+    const newParams = { ...params, pwd: generate.password() };
+    newParams.tags.domain = generate.domainName();
 
     const result = await objectApi.update(newParams);
 

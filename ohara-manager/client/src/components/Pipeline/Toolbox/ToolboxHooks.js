@@ -94,7 +94,7 @@ export const useToolboxHeight = ({ expanded, searchResults, connectors }) => {
     const toolbarHeight = 72;
 
     // When there's search result, we need to use it
-    let { sources, topics, streams, sinks } = _.isEmpty(searchResults)
+    const { sources, topics, streams, sinks } = _.isEmpty(searchResults)
       ? connectors
       : searchResults;
 

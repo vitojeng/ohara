@@ -115,7 +115,7 @@ const Table = (props) => {
                 }
 
                 const newRow = () => {
-                  let data = [...stateRef.current.data];
+                  const data = [...stateRef.current.data];
                   data.push(newData);
                   return data;
                 };

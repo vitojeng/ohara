@@ -39,7 +39,7 @@ const promise = { resolve: jest.fn(), reject: jest.fn() };
 
 const topicId = getId(topicEntity);
 
-beforeEach(async () => {
+beforeEach(() => {
   jest.restoreAllMocks();
   jest.resetAllMocks();
 });
@@ -188,7 +188,7 @@ it('should handle create error', () => {
   });
 });
 
-it('should handle start error', async () => {
+it('should handle start error', () => {
   const spyGet = jest.spyOn(topicApi, 'get');
   for (let i = 0; i < 20; i++) {
     spyGet.mockReturnValueOnce(

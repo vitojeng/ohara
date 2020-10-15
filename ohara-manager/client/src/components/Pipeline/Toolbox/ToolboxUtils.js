@@ -355,8 +355,8 @@ export const enableDragAndDrop = (params) => {
 };
 
 export function getConnectorInfo(worker) {
-  let sources = [];
-  let sinks = [];
+  const sources = [];
+  const sinks = [];
 
   if (worker && worker.classInfos) {
     worker.classInfos.forEach((info) => {

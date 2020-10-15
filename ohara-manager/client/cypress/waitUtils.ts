@@ -25,7 +25,6 @@ import {
   ClusterResponse,
 } from '../src/api/apiInterface/clusterInterface';
 import { InspectServiceResponse } from '../src/api/apiInterface/inspectInterface';
-import { TopicResponse } from '../src/api/apiInterface/topicInterface';
 import {
   ObjectKey,
   BasicResponse,
@@ -39,9 +38,6 @@ export const waitForStopped = (res: ClusterResponse) =>
 
 export const waitForClassInfosReady = (res: InspectServiceResponse) =>
   !isEmpty(res.data.classInfos);
-
-export const waitForTopicReady = (res: TopicResponse) =>
-  res.data.state === SERVICE_STATE.RUNNING;
 
 export const wait = async <T extends BasicResponse>({
   api,

@@ -44,10 +44,10 @@ const ToolboxSearch = ({ searchData, setSearchResults, pipelineDispatch }) => {
   useEffect(() => {
     if (prevSearchTerm === debouncedSearchTerm) return;
     if (debouncedSearchTerm) {
-      let sources = [];
-      let sinks = [];
-      let topics = [];
-      let streams = [];
+      const sources = [];
+      const sinks = [];
+      const topics = [];
+      const streams = [];
 
       searchData.forEach((data) => {
         const { name, kind } = data;

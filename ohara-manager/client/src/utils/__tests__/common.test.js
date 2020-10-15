@@ -19,7 +19,7 @@ import { sleep } from '../common';
 jest.useFakeTimers();
 
 describe('sleep()', () => {
-  it('invokes the function correctly', async () => {
+  it('invokes the function correctly', () => {
     sleep(500);
 
     expect(setTimeout).toHaveBeenCalledTimes(1);

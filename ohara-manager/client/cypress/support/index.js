@@ -38,7 +38,6 @@ import _ from 'lodash';
 import './defaultCommands';
 import './customCommands';
 import './pipelineCommands';
-import './retryOnFail';
 import { deleteAllServices } from '../utils';
 
 after(async () => {
@@ -65,6 +64,7 @@ const customAssertions = (chai, utils) => {
   const customMethodA = (_super) => {
     return function a() {
       utils.flag(this, 'message', '[Type Assert]');
+      // eslint-disable-next-line
       _super.apply(this, arguments);
     };
   };

@@ -237,14 +237,12 @@ export const useShouldBeRestartWorkspace = () => {
       shouldBeRestartZookeeper,
     };
   }, [
-    broker.nodeNames,
+    broker,
     volumesByUsedBroker,
     volumesByUsedZookeeper,
-    worker.nodeNames,
-    worker.pluginKeys,
-    worker.sharedJarKeys,
+    worker,
     workspace,
-    zookeeper.nodeNames,
+    zookeeper,
   ]);
 
   return memoizedValue;

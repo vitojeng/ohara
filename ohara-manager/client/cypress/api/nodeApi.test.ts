@@ -89,7 +89,7 @@ describe('Node API', () => {
     const params = generateNode();
     await nodeApi.create(params);
 
-    let newParams = Object.assign({}, params);
+    const newParams = Object.assign({}, params);
     newParams.user = generate.userName();
     newParams.password = generate.password();
     newParams.tags = { a: 'tag' };
