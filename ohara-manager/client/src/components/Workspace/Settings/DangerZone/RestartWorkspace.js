@@ -15,7 +15,7 @@
  */
 
 import React from 'react';
-import { get } from 'lodash';
+import { get, isEmpty } from 'lodash';
 import PropTypes from 'prop-types';
 import Dialog from '@material-ui/core/Dialog';
 import DialogTitle from '@material-ui/core/DialogTitle';
@@ -176,9 +176,7 @@ const RestartWorkspace = (props) => {
       action: () =>
         updateZookeeperAction({
           ...workspace.zookeeper,
-          dataDir: {
-            ...zVolumes[0],
-          },
+          dataDir: !isEmpty(zVolumes) ? zVolumes[0] : null,
           tags: omit(zookeeper, ['tags']),
         }),
       revertAction: () => updateZookeeperAction({ ...zookeeper }),

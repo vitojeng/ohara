@@ -178,11 +178,10 @@ describe('Property view', () => {
       .find('.MuiAccordionDetails-root')
       .then(async ($details) => {
         const objectKey = { group: 'broker', name: 'workspace1' };
-        // Need both defs and settings in order to do the assertion
+        // Need both defs and settings in order to make the assertion
         const topics = await fetchServices(KIND.topic);
         const brokerDefs = await fetchServiceInfo(KIND.topic, objectKey);
         const currentTopic = topics[0];
-
         const defs = brokerDefs?.classInfos[0]?.settingDefinitions;
 
         // Some of the defs are hidden from UI
@@ -195,10 +194,14 @@ describe('Property view', () => {
           .filter((def) => def.key !== 'tags');
 
         displayDefs.forEach((def: SettingDef) => {
+          const settingValue = currentTopic[def.key];
           // Need to handle key conversion here
           const displayName = def.key.indexOf('__')
             ? def.key.replace(/__/g, '.')
             : def.key;
+
+          // Empty array is not rendered
+          if (isEmpty(settingValue) && isObject(settingValue)) return;
 
           // Assert all available defs
           cy.wrap($details)
@@ -206,9 +209,14 @@ describe('Property view', () => {
             .should('exist')
             .next() // display value
             .then(($displayValue) => {
-              expect($displayValue.text().replace(/,/g, '')).to.eq(
-                String(currentTopic[def.key]),
-              );
+              const text = $displayValue.text();
+
+              if (text.endsWith('seconds')) {
+                const calculated = Number(text.split(' ')[0]) * 1000;
+                expect(`${calculated} milliseconds`).to.eq(settingValue);
+              } else {
+                expect(text.replace(/,/g, '')).to.eq(String(settingValue));
+              }
             });
         });
       });
@@ -231,16 +239,13 @@ describe('Property view', () => {
       .find('.MuiAccordionDetails-root')
       .then(async ($details) => {
         const objectKey = { group: 'worker', name: 'workspace1' };
-
         const connectors = await fetchServices(KIND.source);
         const workerDefs = await fetchServiceInfo(KIND.source, objectKey);
-
+        const currentConnector = connectors[0]; // we should only have one connector
         const defs =
           workerDefs.classInfos.find(
             (classInfo: ClassInfo) => classInfo.className === SOURCE.perf,
           )?.settingDefinitions || [];
-
-        const currentConnector = connectors[0]; // we should only have one connector
 
         // Some of the defs are hidden from UI
         // 1. internal is not displayed
