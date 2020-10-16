@@ -22,10 +22,10 @@ import Paper from '@material-ui/core/Paper';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Checkbox from '@material-ui/core/Checkbox';
 
-import { Form } from 'const';
-import * as hooks from 'hooks';
-import { ValidateInputField } from 'components/common/Form';
 import validateVolumePath from './validateVolumePath';
+import * as hooks from 'hooks';
+import { Form } from 'const';
+import { ValidateInputField } from 'components/common/Form';
 
 const SetupVolumeForm = (props) => {
   const { handleSubmit, previousStep, invalid, pristine, submitting } = props;
@@ -67,6 +67,7 @@ const SetupVolumeForm = (props) => {
       return 'This volume path is legitimate';
     }
   };
+
   const handleCheck = () => {
     if (checked) {
       setChecked(false);

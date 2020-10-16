@@ -44,6 +44,7 @@ const ValidateInputField = (props) => {
     <InputWrap>
       <StyledTextField
         {...rest}
+        disabled={disabled}
         error={hasError}
         helperText={helperText}
         id={name}

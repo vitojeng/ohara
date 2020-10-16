@@ -2059,6 +2059,14 @@
     "@types/prop-types" "*"
     csstype "^3.0.2"
 
+"@types/redux-form@8.3.0":
+  version "8.3.0"
+  resolved "https://registry.yarnpkg.com/@types/redux-form/-/redux-form-8.3.0.tgz#d253e0078a4940187b946459e0bb4d6a355018b1"
+  integrity sha512-LUOpffXkPpY7n9pQvaAy9TifMgQFVqQF0LmJLLiZGWpDmDmvgEbNbQ6h2tSJ7CVNIVo45wPPVdWw5Mi91ZPvfQ==
+  dependencies:
+    "@types/react" "*"
+    redux "^3.6.0 || ^4.0.0"
+
 "@types/sinonjs__fake-timers@6.0.1", "@types/sinonjs__fake-timers@^6.0.1":
   version "6.0.1"
   resolved "https://registry.yarnpkg.com/@types/sinonjs__fake-timers/-/sinonjs__fake-timers-6.0.1.tgz#681df970358c82836b42f989188d133e218c458e"
@@ -11353,7 +11361,7 @@ redux-routines@3.0.5:
   dependencies:
     redux-actions "^2.6.5"
 
-redux@4.0.5, redux@^4.0.4:
+redux@4.0.5, "redux@^3.6.0 || ^4.0.0", redux@^4.0.4:
   version "4.0.5"
   resolved "https://registry.yarnpkg.com/redux/-/redux-4.0.5.tgz#4db5de5816e17891de8a80c424232d06f051d93f"
   integrity sha512-VSz1uMAH24DM6MF72vcojpYPtrTUu3ByVWfPL1nPfVRb5mZVTve5GnNCUV53QM/BZ66xfWrm0CTWoM+Xlz8V1w==

@@ -16,6 +16,7 @@
 
 import * as generate from '../../../src/utils/generate';
 import { generateNodeIfNeeded } from '../../utils';
+import { NodeRequest } from '../../../src/api/apiInterface/nodeInterface';
 
 describe('Create Workspace', () => {
   // generate node
@@ -139,7 +140,7 @@ describe('Create Workspace', () => {
       cy.findByText(hostname3).should('not.exist');
     });
 
-    it('should reset the form after create workspace successfully', () => {
+    it('should reset the form after successfully create a workspace', () => {
       const workspaceName = generate.serviceName({ prefix: 'ws' });
       cy.createWorkspace({ workspaceName });
 
@@ -156,32 +157,9 @@ describe('Create Workspace', () => {
       cy.get('div.MuiGrid-container').children('div').should('have.length', 1);
     });
 
-    it('should close the progress dialog automatically when "Close after finish" is checked', () => {
+    it('should close the progress dialog automatically when "Close after finish" option is checked', () => {
       const workspaceName = generate.serviceName({ prefix: 'ws' });
-
-      cy.visit('/');
-
-      // Wait until the page is loaded
-      cy.wait(1000);
-
-      cy.closeIntroDialog();
-
-      // Create a new workspace
-      cy.findByTitle('Create a new workspace').click();
-      cy.findByText('QUICK CREATE').should('exist').click();
-
-      // Step1: workspace name
-      if (workspaceName) {
-        // type the workspaceName by parameter
-        cy.findByDisplayValue('workspace', { exact: false })
-          .clear()
-          .type(workspaceName);
-      }
-      cy.findAllByText('NEXT').filter(':visible').click();
-
-      // Step2: select nodes
-      cy.contains('p:visible', 'Click here to select nodes').click();
-      cy.addNode(node);
+      createWorkspace(node, workspaceName);
 
       // Step3: set volume
       cy.findAllByText('NEXT').eq(1).filter(':visible').click();
@@ -200,38 +178,22 @@ describe('Create Workspace', () => {
         'not.be.visible',
       );
     });
+  });
 
-    it('should be set volume in quick create', () => {
+  context('Volume', () => {
+    it('should able to add a volume', () => {
       const workspaceName = generate.serviceName({ prefix: 'ws' });
+      const volumePath = '/home/ohara/workspace1';
+      createWorkspace(node, workspaceName);
 
-      cy.visit('/');
+      // It should be disabled by default
+      cy.findByLabelText(/volume path/i).should('be.disabled');
 
-      // Wait until the page is loaded
-      cy.wait(1000);
-
-      cy.closeIntroDialog();
-
-      // Create a new workspace
-      cy.findByTitle('Create a new workspace').click();
-      cy.findByText('QUICK CREATE').should('exist').click();
-
-      // Step1: workspace name
-      if (workspaceName) {
-        // type the workspaceName by parameter
-        cy.findByDisplayValue('workspace', { exact: false })
-          .clear()
-          .type(workspaceName);
-      }
-      cy.findAllByText('NEXT').filter(':visible').click();
-
-      // Step2: select nodes
-      cy.contains('p:visible', 'Click here to select nodes').click();
-      cy.addNode(node);
-
-      // Step3: set volume
+      // Set up volume
       cy.findAllByText('Enable volumes').click();
-      cy.findByPlaceholderText('/home/ohara/workspace1')
-        .type('/home/ohara/workspace1')
+      cy.findByLabelText(/volume path/i)
+        .should('be.enabled')
+        .type(volumePath)
         .blur();
       cy.findAllByText('NEXT').filter(':visible').click();
 
@@ -400,3 +362,29 @@ describe('Create Workspace', () => {
     });
   });
 });
+
+function createWorkspace(node: NodeRequest, workspaceName: string) {
+  cy.visit('/');
+
+  // Wait until the page is loaded
+  cy.wait(1000);
+
+  cy.closeIntroDialog();
+
+  // Create a new workspace
+  cy.findByTitle('Create a new workspace').click();
+  cy.findByText('QUICK CREATE').should('exist').click();
+
+  // Step1: workspace name
+  if (workspaceName) {
+    // type the workspaceName by parameter
+    cy.findByDisplayValue('workspace', { exact: false })
+      .clear()
+      .type(workspaceName);
+  }
+  cy.findAllByText('NEXT').filter(':visible').click();
+
+  // Step2: select nodes
+  cy.contains('p:visible', 'Click here to select nodes').click();
+  cy.addNode(node);
+}
