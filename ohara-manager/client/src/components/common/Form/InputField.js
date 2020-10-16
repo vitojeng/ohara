@@ -15,7 +15,6 @@
  */
 
 import React from 'react';
-import { isEmpty } from 'lodash';
 import PropTypes from 'prop-types';
 import TextField from '@material-ui/core/TextField';
 import styled from 'styled-components';
@@ -40,7 +39,6 @@ const InputField = (props) => {
   } = props;
 
   const hasError = meta.error && meta.touched;
-  const newValue = isEmpty(value) ? defaultValue : value;
 
   return (
     <InputWrap>
@@ -52,7 +50,7 @@ const InputField = (props) => {
         InputProps={restInput}
         name={name}
         onChange={onChange}
-        value={newValue}
+        value={value ?? defaultValue}
         width={width}
       />
     </InputWrap>

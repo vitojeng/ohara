@@ -20,30 +20,38 @@ describe('App Bar', () => {
   before(() => cy.deleteAllServices());
 
   beforeEach(() => {
-    // our tests should begin from home page
     cy.visit('/');
+
+    // Close the intro dialog
+    cy.findByTestId('close-intro-button').click();
+
+    // Open node list
+    cy.findByTitle(/node list/i)
+      .should('exist')
+      .click();
   });
 
   context('Node List', () => {
     it('should be able to add a random node in node list', () => {
-      cy.findByTestId('close-intro-button').click();
-
-      // click node list
-      cy.findByTitle(/node list/i).click();
+      const hostname = generate.serviceName();
+      const port = generate.port().toString();
+      const userName = generate.userName();
+      const password = generate.password();
 
       // create a node
       cy.findByTitle(/create node/i).click();
+
       // cancel create node
       cy.findByText('CANCEL').click();
+
       // Note: we replace this .click() by .trigger() in defaultCommands.ts
       // since the cypress command click could not found the button
       // open again
       cy.findByTitle(/create node/i).click();
-      const hostname = generate.serviceName();
       cy.findByLabelText(/hostname/i).type(hostname);
-      cy.findByLabelText(/port/i).type(generate.port().toString());
-      cy.findByLabelText(/user/i).type(generate.userName());
-      cy.findByLabelText(/password/i).type(generate.password());
+      cy.findByLabelText(/port/i).type(port);
+      cy.findByLabelText(/user/i).type(userName);
+      cy.findByLabelText(/password/i).type(password);
       cy.findByText('CREATE').click();
 
       // check the node information
@@ -58,9 +66,9 @@ describe('App Bar', () => {
       cy.get('body:visible').trigger('keydown', { keyCode: 27, which: 27 });
 
       // update node user
-      const user = generate.userName();
+      const newUserName = generate.userName();
       cy.findByTestId(`edit-node-${hostname}`).click();
-      cy.get('input[name=user]').clear().type(user);
+      cy.get('input[name=user]').clear().type(newUserName);
       cy.findByText('SAVE').click();
 
       // check the node information again
@@ -68,7 +76,7 @@ describe('App Bar', () => {
       cy.findAllByText(/^user$/i)
         .filter(':visible')
         .siblings('td')
-        .contains(user)
+        .contains(newUserName)
         .should('exist');
 
       // press "ESC" back to node list
@@ -83,10 +91,59 @@ describe('App Bar', () => {
       cy.findByText(hostname).should('not.exist');
     });
 
-    it('filter nodes should be work', () => {
-      cy.findByTestId('close-intro-button').click();
-      cy.findByTitle('Node list').should('exist').click();
+    it('should able to edit a node', () => {
+      const hostname = generate.serviceName();
+      const port = generate.port().toString();
+      const userName = generate.userName();
+      const password = generate.password();
 
+      // create a node
+      cy.findByTitle(/create node/i).click();
+
+      cy.findByLabelText(/hostname/i).type(hostname);
+      cy.findByLabelText(/port/i).type(port);
+      cy.findByLabelText(/user/i).type(userName);
+      cy.findByLabelText(/password/i).type(password);
+      cy.findByText('CREATE').click();
+
+      // Edit the node
+      const newUserName = generate.userName();
+      const newPort = generate.port().toString();
+      const newPassword = generate.password();
+      cy.findByTestId(`edit-node-${hostname}`).click();
+
+      // 1. Assert each field has the correct node info that we used during the creation
+      // 2. Update the field with new values
+      cy.findByLabelText(/hostname/i)
+        .should('have.value', hostname)
+        .and('be.disabled'); // hostname field is disabled by design
+
+      cy.findByLabelText(/port/i)
+        .should('have.value', port)
+        .clear()
+        .type(newPort);
+
+      cy.findByLabelText(/user/i)
+        .should('have.value', userName)
+        .clear()
+        .type(newUserName);
+
+      cy.findByLabelText(/password/i)
+        .should('have.value', password)
+        .clear()
+        .type(newPassword);
+      cy.findByText('SAVE').click();
+
+      // delete the fake node we just added
+      cy.findByTestId(`delete-node-${hostname}`).click();
+      // confirm dialog
+      cy.findByTestId('confirm-button-DELETE').click();
+
+      // will auto back to node list, and the node list should be empty
+      cy.findByText(hostname).should('not.exist');
+    });
+
+    it('should able to filter nodes', () => {
       const hostname1 = generate.serviceName();
       cy.findByTitle('Create Node').should('be.visible').click();
       cy.findByLabelText(/hostname/i).type(hostname1);
