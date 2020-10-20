@@ -180,7 +180,7 @@ describe('App Bar', () => {
       cy.findByText(hostname2).should('not.exist');
     });
 
-    it(`should not able to remove a node which is already in use`, () => {
+    it(`should not able to remove or edit a node when it's being used`, () => {
       const node = {
         hostname: generate.serviceName(),
         port: generate.port(),
@@ -194,11 +194,27 @@ describe('App Bar', () => {
       // click node list
       cy.findByTitle(/node list/i).click();
 
-      // Since the node is being used by workspace1
-      // it could not be removed at the moment
-      cy.findByTestId(`delete-node-${node.hostname}`).should('not.be.visible');
+      // Since the node is being used by workspace1, the edit and remove buttons should
+      // be disabled as well as displaying tooltips telling users why
+
+      // Edit
+      cy.findByTestId(`edit-node-${node.hostname}`).should(
+        'have.class',
+        'Mui-disabled',
+      );
+
       cy.findByTitle(
-        'Cannot remove a node which has services running in it',
+        'Cannot edit a node which contains running services',
+      ).should('exist');
+
+      // Remove
+      cy.findByTestId(`delete-node-${node.hostname}`).should(
+        'have.class',
+        'Mui-disabled',
+      );
+
+      cy.findByTitle(
+        'Cannot remove a node which contains running services',
       ).should('exist');
     });
   });

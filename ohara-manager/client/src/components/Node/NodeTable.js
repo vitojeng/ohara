@@ -51,6 +51,7 @@ const defaultOptions = {
   comparison: false,
   comparedNodes: [],
   customColumns: [],
+  disabledEditIcon: false,
   disabledDeleteIcon: false,
   disabledRemoveIcon: false,
   onCreateIconClick: null,
@@ -247,9 +248,17 @@ function NodeTable(props) {
       const showUndoIcon = (node) =>
         (options?.comparison && willBeAdded(node)) || willBeRemoved(node);
 
+      const disabledEditIcon = isFunction(options?.disabledEditIcon)
+        ? options?.disabledEditIcon(node)
+        : options?.disabledEditIcon;
+
       const disabledDeleteIcon = isFunction(options?.disabledDeleteIcon)
         ? options?.disabledDeleteIcon(node)
         : options?.disabledDeleteIcon;
+
+      const editTooltip = isFunction(options?.editTooltip)
+        ? options?.editTooltip(node)
+        : options?.editTooltip;
 
       const deleteTooltip = isFunction(options?.deleteTooltip)
         ? options?.deleteTooltip(node)
@@ -265,10 +274,11 @@ function NodeTable(props) {
               testid: `view-node-${node.hostname}`,
             },
             {
+              disabled: disabledEditIcon,
               hidden: !options?.showEditorIcon,
               name: 'edit',
               onClick: handleEditorIconClick,
-              tooltip: 'Edit node',
+              tooltip: editTooltip || 'Edit node',
               testid: `edit-node-${node.hostname}`,
             },
             {
@@ -429,6 +439,7 @@ NodeTable.propTypes = {
         type: PropTypes.string,
       }),
     ),
+    disabledEditIcon: PropTypes.oneOfType([PropTypes.bool, PropTypes.func]),
     disabledDeleteIcon: PropTypes.oneOfType([PropTypes.bool, PropTypes.func]),
     disabledRemoveIcon: PropTypes.oneOfType([PropTypes.bool, PropTypes.func]),
     onAddIconClick: PropTypes.func,
@@ -452,6 +463,7 @@ NodeTable.propTypes = {
     showRemoveIcon: PropTypes.bool,
     showTitle: PropTypes.bool,
     showServicesColumn: PropTypes.bool,
+    editTooltip: PropTypes.oneOfType([PropTypes.string, PropTypes.func]),
     deleteTooltip: PropTypes.oneOfType([PropTypes.string, PropTypes.func]),
     removeTooltip: PropTypes.oneOfType([PropTypes.string, PropTypes.func]),
   }),

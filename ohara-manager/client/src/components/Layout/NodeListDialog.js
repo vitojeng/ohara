@@ -68,12 +68,17 @@ const NodeListDialog = (props) => {
         onUpdate={handleUpdate}
         options={{
           onRefreshIconClick: fetchNodes,
+          disabledEditIcon: hasUsedServicesInNode,
           disabledDeleteIcon: hasUsedServicesInNode,
+          editTooltip: (node) => {
+            return hasUsedServicesInNode(node)
+              ? 'Cannot edit a node which contains running services'
+              : undefined; // Use default toolTip
+          },
           deleteTooltip: (node) => {
             return hasUsedServicesInNode(node)
-              ? 'Cannot remove a node which has services running in it'
-              : // use default toolTip otherwise
-                undefined;
+              ? 'Cannot remove a node which contains running services'
+              : undefined; // Use default toolTip
           },
           selection: false,
           showCreateIcon: true,
