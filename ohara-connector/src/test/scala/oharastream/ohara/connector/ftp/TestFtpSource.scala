@@ -17,7 +17,13 @@
 package oharastream.ohara.connector.ftp
 
 import oharastream.ohara.client.filesystem.FileSystem
+import oharastream.ohara.common.util.CommonUtils
 import oharastream.ohara.connector.CsvSourceTestBase
+import oharastream.ohara.kafka.connector.csv.CsvConnectorDefinitions.{
+  COMPLETED_FOLDER_KEY,
+  ERROR_FOLDER_KEY,
+  INPUT_FOLDER_KEY
+}
 import oharastream.ohara.kafka.connector.csv.CsvSourceConnector
 
 class TestFtpSource extends CsvSourceTestBase {
@@ -33,11 +39,14 @@ class TestFtpSource extends CsvSourceTestBase {
 
   override val connectorClass: Class[_ <: CsvSourceConnector] = classOf[FtpSource]
 
-  override val setupProps: Map[String, String] =
+  override val props: Map[String, String] =
     Map(
-      FTP_HOSTNAME_KEY  -> ftpServer.hostname,
-      FTP_PORT_KEY      -> ftpServer.port.toString,
-      FTP_USER_NAME_KEY -> ftpServer.user,
-      FTP_PASSWORD_KEY  -> ftpServer.password
+      FTP_HOSTNAME_KEY     -> ftpServer.hostname,
+      FTP_PORT_KEY         -> ftpServer.port.toString,
+      FTP_USER_NAME_KEY    -> ftpServer.user,
+      FTP_PASSWORD_KEY     -> ftpServer.password,
+      INPUT_FOLDER_KEY     -> s"/input${CommonUtils.randomString(5)}",
+      COMPLETED_FOLDER_KEY -> s"/completed${CommonUtils.randomString(5)}",
+      ERROR_FOLDER_KEY     -> s"/error${CommonUtils.randomString(5)}"
     )
 }

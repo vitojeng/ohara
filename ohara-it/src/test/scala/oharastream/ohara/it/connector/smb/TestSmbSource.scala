@@ -17,6 +17,7 @@
 package oharastream.ohara.it.connector.smb
 
 import oharastream.ohara.client.filesystem.FileSystem
+import oharastream.ohara.common.util.CommonUtils
 import oharastream.ohara.connector.CsvSourceTestBase
 import oharastream.ohara.connector.smb._
 import oharastream.ohara.kafka.connector.csv.CsvConnectorDefinitions._
@@ -33,14 +34,14 @@ class TestSmbSource extends CsvSourceTestBase with SmbEnv {
 
   override protected val connectorClass: Class[_ <: CsvSourceConnector] = classOf[SmbSource]
 
-  override protected val setupProps: Map[String, String] = Map(
+  override protected val props: Map[String, String] = Map(
     SMB_HOSTNAME_KEY     -> hostname,
     SMB_PORT_KEY         -> port.toString,
     SMB_USER_KEY         -> username,
     SMB_PASSWORD_KEY     -> password,
     SMB_SHARE_NAME_KEY   -> shareName,
-    INPUT_FOLDER_KEY     -> "input",
-    COMPLETED_FOLDER_KEY -> "completed",
-    ERROR_FOLDER_KEY     -> "error"
+    INPUT_FOLDER_KEY     -> s"input${CommonUtils.randomString(5)}",
+    COMPLETED_FOLDER_KEY -> s"completed${CommonUtils.randomString(5)}",
+    ERROR_FOLDER_KEY     -> s"error${CommonUtils.randomString(5)}"
   )
 }
