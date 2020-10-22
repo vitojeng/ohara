@@ -54,7 +54,7 @@ export function startTopic(key: ObjectKey) {
         if (res?.data?.state !== State.RUNNING) {
           throw {
             ...res,
-            title: `Failed to start topic ${key.name}: Unable to confirm the status of the topic is running`,
+            title: `Failed to start topic "${key.name}": Unable to confirm the status of the topic is running`,
           };
         }
       }),
@@ -76,7 +76,7 @@ export function stopTopic(key: ObjectKey) {
         if (res?.data?.state) {
           throw {
             ...res,
-            title: `Failed to stop topic ${key.name}: Unable to confirm the status of the topic is not running`,
+            title: `Failed to stop topic "${key.name}": Unable to confirm the status of the topic is not running`,
           };
         }
       }),

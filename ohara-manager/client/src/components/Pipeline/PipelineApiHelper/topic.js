@@ -45,7 +45,7 @@ const topic = () => {
   };
 
   const stopAndRemove = (params, paperApi) => {
-    const { id, name, isShared } = params;
+    const { id, name, displayName, isShared } = params;
 
     if (isShared) return paperApi.removeElement(id);
 
@@ -53,6 +53,7 @@ const topic = () => {
       {
         id,
         name,
+        displayName,
       },
       { paperApi },
     );

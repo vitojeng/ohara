@@ -20,9 +20,7 @@ import createTopicEpic from './createTopicEpic';
 import deleteTopicEpic from './deleteTopicEpic';
 import deleteTopicsEpic from './deleteTopicsEpic';
 import updateTopicEpic from './updateTopicEpic';
-import startTopicEpic from './startTopicEpic';
 import startTopicsEpic from './startTopicsEpic';
-import stopTopicEpic from './stopTopicEpic';
 import stopTopicsEpic from './stopTopicsEpic';
 import createAndStartTopicEpic from './createAndStartTopicEpic';
 import stopAndDeleteTopicEpic from './stopAndDeleteTopicEpic';
@@ -33,9 +31,7 @@ export default combineEpics(
   deleteTopicEpic,
   deleteTopicsEpic,
   updateTopicEpic,
-  startTopicEpic,
   startTopicsEpic,
-  stopTopicEpic,
   stopTopicsEpic,
   createAndStartTopicEpic,
   stopAndDeleteTopicEpic,

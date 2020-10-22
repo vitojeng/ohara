@@ -139,17 +139,19 @@ it('should handle stop error', () => {
 
   makeTestScheduler().run((helpers) => {
     const { hot, expectObservable, expectSubscriptions, flush } = helpers;
+    const displayName = 'T1';
+    const id = '1234';
+    const values = { ...topicEntity, id, displayName };
 
     const input = '   ^-a    ';
     const expected = '--a 32199ms (bc)';
     const subs = '    ^------';
-    const id = '1234';
 
     const action$ = hot(input, {
       a: {
         type: actions.stopAndDeleteTopic.TRIGGER,
         payload: {
-          values: { ...topicEntity, id },
+          values,
           options: { paperApi },
           ...promise,
         },
@@ -173,7 +175,7 @@ it('should handle stop error', () => {
             state: SERVICE_STATE.RUNNING,
           },
           status: 200,
-          title: `Failed to stop topic ${topicEntity.name}: Unable to confirm the status of the topic is not running`,
+          title: `Failed to stop topic "${displayName}": Unable to confirm the status of the topic is not running`,
         },
       },
       c: {
@@ -184,7 +186,7 @@ it('should handle stop error', () => {
             state: SERVICE_STATE.RUNNING,
           },
           status: 200,
-          title: `Failed to stop topic ${topicEntity.name}: Unable to confirm the status of the topic is not running`,
+          title: `Failed to stop topic "${displayName}": Unable to confirm the status of the topic is not running`,
           type: LOG_LEVEL.error,
         },
       },
@@ -207,10 +209,16 @@ it('should handle stop error', () => {
 });
 
 it('should handle delete error', () => {
+  const displayName = 'T1';
   const error = {
     status: -1,
     data: {},
-    title: 'Error mock',
+    title: 'Remove topic "abc" failed.',
+  };
+
+  const expectedError = {
+    ...error,
+    title: `Remove topic "${displayName}" failed.`,
   };
 
   jest.spyOn(topicApi, 'remove').mockReturnValue(throwError(error));
@@ -227,7 +235,7 @@ it('should handle delete error', () => {
       a: {
         type: actions.stopAndDeleteTopic.TRIGGER,
         payload: {
-          values: { ...topicEntity, id },
+          values: { ...topicEntity, id, displayName },
           options: { paperApi },
           ...promise,
         },
@@ -248,6 +256,7 @@ it('should handle delete error', () => {
             topics: {
               [topicId]: {
                 ...topicEntity,
+                displayName,
                 id,
               },
             },
@@ -265,7 +274,7 @@ it('should handle delete error', () => {
       },
       e: {
         type: actions.createEventLog.TRIGGER,
-        payload: { ...error, type: LOG_LEVEL.error },
+        payload: { ...expectedError, type: LOG_LEVEL.error },
       },
     });
 

@@ -54,7 +54,7 @@ let runtimeData: ClusterData = {
   nodeMetrics: {},
 };
 
-// simulate a promise request with a delay of 2s
+// Simulate requests with a delay of 100ms
 export const create = (params: ServiceBody): Observable<ClusterResponse> =>
   of({
     status: 200,
@@ -62,7 +62,6 @@ export const create = (params: ServiceBody): Observable<ClusterResponse> =>
     data: { ...runtimeData, ...params },
   }).pipe(delay(100));
 
-// simulate a promise request with a delay of 1s
 export const remove = (): Observable<BasicResponse> =>
   of({
     status: 200,
@@ -70,7 +69,6 @@ export const remove = (): Observable<BasicResponse> =>
     data: {},
   }).pipe(delay(100));
 
-// simulate a promise request with a delay of 500ms
 export const get = (params: ObjectKey): Observable<ClusterResponse> =>
   of({
     status: 200,
@@ -78,7 +76,6 @@ export const get = (params: ObjectKey): Observable<ClusterResponse> =>
     data: { ...entity, ...runtimeData, ...params },
   }).pipe(delay(100));
 
-// simulate a promise request with a delay of 500ms
 export const getAll = (): Observable<ClusterResponseList> =>
   of({
     status: 200,
@@ -86,7 +83,6 @@ export const getAll = (): Observable<ClusterResponseList> =>
     data: [{ ...entity, ...runtimeData }],
   }).pipe(delay(100));
 
-// simulate a promise request with a delay of 100ms
 export const update = (params: ServiceBody): Observable<ClusterResponse> =>
   of({
     status: 200,
@@ -94,7 +90,6 @@ export const update = (params: ServiceBody): Observable<ClusterResponse> =>
     data: { ...runtimeData, ...params },
   }).pipe(delay(100));
 
-// simulate a promise request with a delay of 10ms
 export const start = (): Observable<BasicResponse> =>
   of({
     status: 200,
@@ -106,7 +101,6 @@ export const start = (): Observable<BasicResponse> =>
     delay(100),
   );
 
-// simulate a promise request with a delay of 10ms
 export const stop = (): Observable<BasicResponse> =>
   of({
     status: 200,

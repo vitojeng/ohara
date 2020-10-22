@@ -33,6 +33,7 @@ import { getId } from 'utils/object';
 import { deleteTopic, stopTopic } from 'observables';
 import { CELL_STATUS } from 'const';
 import { catchErrorWithEventLog } from '../utils';
+import { replaceErrorObjectName } from './utils';
 
 // topic is not really a "component" in UI, i.e, we don't have actions on it
 // we should combine "delete + stop" for single deletion request
@@ -59,7 +60,7 @@ export default (action$) =>
           startWith(actions.stopTopic.request({ topicId })),
           catchError((err) => {
             updateStatus(err?.data?.state?.toLowerCase() ?? previousStatus);
-            return throwError(err);
+            return throwError(replaceErrorObjectName(err, values.displayName));
           }),
         ),
         deleteTopic(values).pipe(
@@ -76,7 +77,7 @@ export default (action$) =>
           ),
           startWith(actions.deleteTopic.request({ topicId })),
           catchError((err) => {
-            return throwError(err);
+            return throwError(replaceErrorObjectName(err, values.displayName));
           }),
         ),
       ).pipe(

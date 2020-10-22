@@ -125,11 +125,109 @@ it('should be able to create and start a topic', () => {
   });
 });
 
+it('should handle start error', () => {
+  const spyGet = jest.spyOn(topicApi, 'get');
+  for (let i = 0; i < 20; i++) {
+    spyGet.mockReturnValueOnce(
+      of({
+        status: 200,
+        title: 'retry mock get data',
+        data: { ...omit(topicEntity, 'state') },
+      }).pipe(delay(100)),
+    );
+  }
+
+  makeTestScheduler().run((helpers) => {
+    const { hot, expectObservable, expectSubscriptions, flush } = helpers;
+    const displayName = 'T1';
+    const id = '1234';
+    const values = { ...topicEntity, id, state: undefined, displayName };
+
+    const input = '   ^-a                         ';
+    const expected = '--a 99ms (bc) 32196ms (de)';
+    const subs = '    ^---------------------------';
+
+    const action$ = hot(input, {
+      a: {
+        type: actions.createAndStartTopic.TRIGGER,
+        payload: {
+          values,
+          options: { paperApi },
+          ...promise,
+        },
+      },
+    });
+    const output$ = createAndStartTopicEpic(action$);
+
+    expectObservable(output$).toBe(expected, {
+      a: {
+        type: actions.createTopic.REQUEST,
+        payload: { topicId },
+      },
+      b: {
+        type: actions.createTopic.SUCCESS,
+        payload: {
+          topicId,
+          entities: {
+            topics: {
+              [topicId]: values,
+            },
+          },
+          result: topicId,
+        },
+      },
+      c: {
+        type: actions.startTopic.REQUEST,
+        payload: { topicId },
+      },
+      d: {
+        type: actions.createAndStartTopic.FAILURE,
+        payload: {
+          topicId,
+          data: topicEntity,
+          status: 200,
+          title: `Failed to start topic "${displayName}": Unable to confirm the status of the topic is running`,
+        },
+      },
+      e: {
+        type: actions.createEventLog.TRIGGER,
+        payload: {
+          data: topicEntity,
+          status: 200,
+          title: `Failed to start topic "${displayName}": Unable to confirm the status of the topic is running`,
+          type: LOG_LEVEL.error,
+        },
+      },
+    });
+
+    expectSubscriptions(action$.subscriptions).toBe(subs);
+
+    flush();
+
+    expect(paperApi.updateElement).toHaveBeenCalledTimes(2);
+    expect(paperApi.updateElement).toHaveBeenCalledWith(id, {
+      status: CELL_STATUS.pending,
+    });
+    expect(paperApi.updateElement).toHaveBeenCalledWith(id, {
+      status: CELL_STATUS.stopped,
+    });
+
+    expect(promise.reject).toHaveBeenCalledTimes(1);
+  });
+});
+
 it('should handle create error', () => {
+  const displayName = 'T1';
+
   const error = {
     status: -1,
     data: {},
-    title: 'Error mock',
+    title: 'Create topic "abc" failed.',
+  };
+
+  const expectedError = {
+    ...error,
+    title: `Create topic "${displayName}" failed.`,
   };
 
   jest.spyOn(topicApi, 'create').mockReturnValue(throwError(error));
@@ -146,7 +244,7 @@ it('should handle create error', () => {
       a: {
         type: actions.createAndStartTopic.TRIGGER,
         payload: {
-          values: { ...topicEntity, id },
+          values: { ...topicEntity, id, displayName },
           options: { paperApi },
           ...promise,
         },
@@ -167,7 +265,7 @@ it('should handle create error', () => {
       },
       c: {
         type: actions.createEventLog.TRIGGER,
-        payload: { ...error, type: LOG_LEVEL.error },
+        payload: { ...expectedError, type: LOG_LEVEL.error },
       },
     });
 
@@ -185,94 +283,5 @@ it('should handle create error', () => {
 
     expect(paperApi.removeElement).toHaveBeenCalledTimes(1);
     expect(paperApi.removeElement).toHaveBeenCalledWith(id);
-  });
-});
-
-it('should handle start error', () => {
-  const spyGet = jest.spyOn(topicApi, 'get');
-  for (let i = 0; i < 20; i++) {
-    spyGet.mockReturnValueOnce(
-      of({
-        status: 200,
-        title: 'retry mock get data',
-        data: { ...omit(topicEntity, 'state') },
-      }).pipe(delay(100)),
-    );
-  }
-
-  makeTestScheduler().run((helpers) => {
-    const { hot, expectObservable, expectSubscriptions, flush } = helpers;
-
-    const input = '   ^-a                         ';
-    const expected = '--a 99ms (bc) 32196ms (de)';
-    const subs = '    ^---------------------------';
-    const id = '1234';
-
-    const action$ = hot(input, {
-      a: {
-        type: actions.createAndStartTopic.TRIGGER,
-        payload: {
-          values: { ...topicEntity, id, state: undefined },
-          options: { paperApi },
-          ...promise,
-        },
-      },
-    });
-    const output$ = createAndStartTopicEpic(action$);
-
-    expectObservable(output$).toBe(expected, {
-      a: {
-        type: actions.createTopic.REQUEST,
-        payload: { topicId },
-      },
-      b: {
-        type: actions.createTopic.SUCCESS,
-        payload: {
-          topicId,
-          entities: {
-            topics: {
-              [topicId]: { ...topicEntity, id },
-            },
-          },
-          result: topicId,
-        },
-      },
-      c: {
-        type: actions.startTopic.REQUEST,
-        payload: { topicId },
-      },
-      d: {
-        type: actions.createAndStartTopic.FAILURE,
-        payload: {
-          topicId,
-          data: topicEntity,
-          status: 200,
-          title: `Failed to start topic ${topicEntity.name}: Unable to confirm the status of the topic is running`,
-        },
-      },
-      e: {
-        type: actions.createEventLog.TRIGGER,
-        payload: {
-          data: topicEntity,
-          status: 200,
-          title: `Failed to start topic ${topicEntity.name}: Unable to confirm the status of the topic is running`,
-          type: LOG_LEVEL.error,
-        },
-      },
-    });
-
-    expectSubscriptions(action$.subscriptions).toBe(subs);
-
-    flush();
-
-    expect(paperApi.updateElement).toHaveBeenCalledTimes(2);
-    expect(paperApi.updateElement).toHaveBeenCalledWith(id, {
-      status: CELL_STATUS.pending,
-    });
-    expect(paperApi.updateElement).toHaveBeenCalledWith(id, {
-      status: CELL_STATUS.stopped,
-    });
-
-    expect(promise.reject).toHaveBeenCalledTimes(1);
   });
 });

@@ -14,25 +14,18 @@
  * limitations under the License.
  */
 
-import { isError } from 'lodash';
-import { catchError } from 'rxjs/operators';
-import { from } from 'rxjs';
-import * as actions from 'store/actions';
-import { LOG_LEVEL } from 'const';
-
-export function catchErrorWithEventLog(error: any) {
-  return catchError((err) => {
-    err = isError(err)
-      ? {
-          title: err.message,
-          data: { error: { message: err.stack } },
-        }
-      : err;
-    const eventLog = actions.createEventLog.trigger({
-      ...err,
-      type: LOG_LEVEL.error,
-    });
-    const otherError = error(err);
-    return from([otherError, eventLog]);
-  });
+interface Error {
+  title: string;
+  errorObject: any;
 }
+
+export const replaceErrorObjectName = (
+  error: Error,
+  displayName: string,
+): Error => {
+  if (error?.title) {
+    error.title = error.title.replace(/".*?"/, `"${displayName}"`);
+  }
+
+  return error;
+};

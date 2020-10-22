@@ -29,6 +29,7 @@ import { catchErrorWithEventLog } from '../utils';
 // Note: The caller SHOULD handle the error of this action
 export const createTopic$ = (params) => {
   const topicId = getId(params);
+
   return defer(() => topicApi.create(params)).pipe(
     mergeMap((res) => {
       const normalizedData = normalize(res.data, schema.topic);
