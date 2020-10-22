@@ -56,22 +56,7 @@ public class TestCsvSourceTask extends OharaTest {
     Assertions.assertEquals(sourceTask.fileNameCacheSize(), 0);
 
     sourceTask.pollRecords();
-    // First poll the element, so queue size is 3 - 1 equals 2
-    Assertions.assertEquals(sourceTask.fileNameCacheSize(), 2);
-
-    sourceTask.pollRecords();
-    Assertions.assertEquals(sourceTask.fileNameCacheSize(), 1);
-
-    sourceTask.pollRecords();
-    Assertions.assertEquals(sourceTask.fileNameCacheSize(), 0);
-
-    sourceTask.pollRecords();
-    Assertions.assertEquals(sourceTask.fileNameCacheSize(), 2);
-
-    sourceTask.pollRecords();
-    Assertions.assertEquals(sourceTask.fileNameCacheSize(), 1);
-
-    sourceTask.pollRecords();
+    // MockCsvSourceTask can't find any data from queue so it should drain all cached files
     Assertions.assertEquals(sourceTask.fileNameCacheSize(), 0);
   }
 
@@ -100,12 +85,7 @@ public class TestCsvSourceTask extends OharaTest {
     // Test continue to process other file
     sourceTask.run(TaskSetting.of(settings));
     sourceTask.pollRecords();
-    Assertions.assertEquals(sourceTask.fileNameCacheSize(), 2);
-
-    sourceTask.pollRecords();
-    Assertions.assertEquals(sourceTask.fileNameCacheSize(), 1);
-
-    sourceTask.pollRecords();
+    // MockCsvSourceTask can't find any data from queue so it should drain all cached files
     Assertions.assertEquals(sourceTask.fileNameCacheSize(), 0);
   }
 

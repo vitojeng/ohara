@@ -18,9 +18,13 @@ package oharastream.ohara.common.util;
 
 import java.util.concurrent.TimeUnit;
 
+/**
+ * implement the sleep time based on exponential growth. The min value is 100ms and max value is
+ * 1000ms.
+ */
 public class Sleeper {
   private static final long INIT_SLEEP_TIME = 100;
-  private static final int MAX_SLEEP_TIME = 1000; // The 1000 is 1 seconds
+  private static final long MAX_SLEEP_TIME = 1000; // The 1000 is 1 seconds
   private long nextSleepTime = INIT_SLEEP_TIME;
 
   /**
@@ -31,12 +35,11 @@ public class Sleeper {
   public boolean tryToSleep() {
     try {
       TimeUnit.MILLISECONDS.sleep(nextSleepTime);
-      nextSleepTime = nextSleepTime * 2;
-      if (nextSleepTime >= MAX_SLEEP_TIME) { // Max timeout is 1 second
-        nextSleepTime = MAX_SLEEP_TIME;
-        return false;
-      } else return true;
+      nextSleepTime = Math.min(nextSleepTime * 2, MAX_SLEEP_TIME);
+      return nextSleepTime < MAX_SLEEP_TIME;
     } catch (InterruptedException e) {
+      // restore the interrupt
+      Thread.currentThread().interrupt();
       return false;
     }
   }

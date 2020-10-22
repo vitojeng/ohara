@@ -40,7 +40,9 @@ import oharastream.ohara.kafka.connector.RowSourceRecord;
 @FunctionalInterface
 public interface DataReader {
   /**
-   * Read content from a file and convert it to row source records.
+   * Read content from a file and convert it to row source records. This method does not throw
+   * exception since it deals with exception by moving failed file to error folder (if it is
+   * present)
    *
    * <p>Note: after the file is read, remember to release relevant resources.
    *

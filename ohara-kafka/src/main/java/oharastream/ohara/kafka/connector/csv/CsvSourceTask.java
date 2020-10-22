@@ -24,6 +24,7 @@ import java.util.Queue;
 import oharastream.ohara.common.annotations.VisibleForTesting;
 import oharastream.ohara.common.exception.NoSuchFileException;
 import oharastream.ohara.common.util.Releasable;
+import oharastream.ohara.common.util.Sleeper;
 import oharastream.ohara.kafka.connector.RowSourceRecord;
 import oharastream.ohara.kafka.connector.RowSourceTask;
 import oharastream.ohara.kafka.connector.TaskSetting;
@@ -32,8 +33,6 @@ import oharastream.ohara.kafka.connector.csv.source.CsvSourceConfig;
 import oharastream.ohara.kafka.connector.csv.source.DataReader;
 import oharastream.ohara.kafka.connector.storage.FileSystem;
 import oharastream.ohara.kafka.connector.storage.FileType;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * CsvSourceTask moveFile files from file system to Kafka topics. The file format must be csv file,
@@ -42,7 +41,6 @@ import org.slf4j.LoggerFactory;
  * 100 message in connector topic.
  */
 public abstract class CsvSourceTask extends RowSourceTask {
-  private static final Logger log = LoggerFactory.getLogger(CsvSourceTask.class);
   private CsvSourceConfig config;
   private DataReader dataReader;
   private FileSystem fs;
@@ -68,31 +66,38 @@ public abstract class CsvSourceTask extends RowSourceTask {
 
   @Override
   public final List<RowSourceRecord> pollRecords() {
-    if (fileNameCache.isEmpty()) {
-      Iterator<String> fileNames = fs.listFileNames(config.inputFolder());
-      while (fileNames.hasNext()) {
-        if (fileNameCacheCapacity <= fileNameCache.size()) break;
-        else fileNameCache.offer(fileNames.next());
-      }
-    }
-
-    try {
-      String fileName = fileNameCache.poll();
-      if (fileName != null) {
-        String path = Paths.get(config.inputFolder(), fileName).toString();
-
-        // we skip the folder
-        if (fs.fileType(path) == FileType.FILE
-            &&
-            // Avoid more than one Task processing the same file
-            fileName.hashCode() % config.total() == config.hash()) {
-          return dataReader.read(path);
+    var sleeper = new Sleeper();
+    do {
+      if (fileNameCache.isEmpty()) {
+        Iterator<String> fileNames = fs.listFileNames(config.inputFolder());
+        while (fileNames.hasNext()) {
+          if (fileNameCacheCapacity <= fileNameCache.size()) break;
+          else fileNameCache.offer(fileNames.next());
         }
       }
+
+      String fileName = fileNameCache.poll();
+      while (fileName != null) {
+        List<RowSourceRecord> records = tryToRead(fileName);
+        if (records.isEmpty()) fileName = fileNameCache.poll();
+        else return records;
+      }
+    } while (sleeper.tryToSleep());
+    return List.of();
+  }
+
+  private List<RowSourceRecord> tryToRead(String fileName) {
+    try {
+      String path = Paths.get(config.inputFolder(), fileName).toString();
+      // we skip the folder
+      if (fs.fileType(path) == FileType.FILE
+          // Avoid more than one Task processing the same file
+          && fileName.hashCode() % config.total() == config.hash()) {
+        return dataReader.read(path);
+      }
     } catch (NoSuchFileException e) {
-      log.error(e.getMessage(), e);
-    } catch (Exception e) {
-      throw new RuntimeException(e);
+      // fs.fileType may throw NoSuchFileException if the file is removed by other process. We just
+      // swallow this error
     }
     return List.of();
   }
