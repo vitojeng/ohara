@@ -124,9 +124,8 @@ export const Content = styled.div(
       margin: ${theme.spacing(0, 0, 3, 2)};
     }
 
-    & > form > div > .MuiPaper-elevation2 {
-      padding-left: ${theme.spacing(1)}px;
-      margin-left: ${theme.spacing(1)}px;
+    .MuiTableCell-paddingCheckbox {
+      padding-left: ${theme.spacing(1.5)}px;
     }
   `,
 );

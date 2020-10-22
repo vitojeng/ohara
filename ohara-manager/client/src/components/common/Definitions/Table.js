@@ -35,6 +35,8 @@ import Search from '@material-ui/icons/Search';
 import ViewColumn from '@material-ui/icons/ViewColumn';
 import FormHelperText from '@material-ui/core/FormHelperText';
 
+import { useShowMessage } from 'hooks';
+
 const tableIcons = {
   Add: forwardRef((props, ref) => <AddBox {...props} ref={ref} />),
   Check: forwardRef((props, ref) => <Check {...props} ref={ref} />),
@@ -59,18 +61,6 @@ const tableIcons = {
   ViewColumn: forwardRef((props, ref) => <ViewColumn {...props} ref={ref} />),
 };
 
-const typeConverter = (key) => {
-  switch (key) {
-    case 'number':
-      return 'numeric';
-    case 'boolean':
-      return 'boolean';
-
-    default:
-      return 'string';
-  }
-};
-
 const Table = (props) => {
   const {
     input: { name, onChange, value = [] },
@@ -82,18 +72,25 @@ const Table = (props) => {
   } = props;
 
   const stateRef = React.useRef({});
+  const showMessage = useShowMessage();
 
   stateRef.current = {
     columns: tableKeys.map((tableKey) => {
+      const { name, type, recommendedValues } = tableKey;
+      const dataTypes = getDataTypes(recommendedValues);
+
       return {
-        title: tableKey.name,
-        field: tableKey.name,
-        type: typeConverter(tableKey.type),
-        ...(tableKey.recommendedValues.length > 0 && {
-          lookup: tableKey.recommendedValues.reduce((result, key) => {
-            result[key] = key;
-            return result;
-          }, {}),
+        title: name,
+        field: name,
+        type: getType(type),
+        align: 'left',
+        editPlaceholder: getPlaceholder(name),
+        disabled: true,
+        validate: (rowData) => getValidateFunction(rowData, name, value),
+        headerStyle: { whiteSpace: 'noWrap', textAlign: 'left' },
+        ...(recommendedValues.length > 0 && {
+          lookup: dataTypes,
+          initialEditValue: dataTypes[Object.keys(dataTypes)[0]],
         }),
       };
     }),
@@ -109,53 +106,46 @@ const Table = (props) => {
         editable={{
           onRowAdd: (newData) =>
             new Promise((resolve, reject) => {
-              setTimeout(() => {
-                if (Object.keys(newData).length < tableKeys.length) {
-                  return reject();
-                }
+              if (Object.keys(newData).length < tableKeys.length) {
+                showMessage('All fields are required');
+                return reject(); // Prevents users from submitting the new item
+              }
 
+              const newRow = () => {
+                const data = [...stateRef.current.data];
+                data.push(newData);
+                return data;
+              };
+
+              stateRef.current.data = newRow();
+              onChange(stateRef.current.data);
+              resolve();
+            }),
+
+          onRowUpdate: (newData, oldData) =>
+            new Promise((resolve) => {
+              if (oldData) {
                 const newRow = () => {
                   const data = [...stateRef.current.data];
-                  data.push(newData);
+                  data[data.indexOf(oldData)] = newData;
                   return data;
                 };
-
                 stateRef.current.data = newRow();
                 onChange(stateRef.current.data);
-                resolve();
-              });
+              }
+              resolve();
             }),
-          onRowUpdate: (newData, oldData) =>
-            new Promise((resolve, reject) => {
-              setTimeout(() => {
-                if (Object.keys(newData).length < tableKeys.length) {
-                  return reject();
-                }
 
-                if (oldData) {
-                  const newRow = () => {
-                    const data = [...stateRef.current.data];
-                    data[data.indexOf(oldData)] = newData;
-                    return data;
-                  };
-                  stateRef.current.data = newRow();
-                  onChange(stateRef.current.data);
-                }
-                resolve();
-              });
-            }),
           onRowDelete: (oldData) =>
             new Promise((resolve) => {
-              setTimeout(() => {
-                const newRow = () => {
-                  const data = [...stateRef.current.data];
-                  data.splice(data.indexOf(oldData), 1);
-                  return data;
-                };
-                stateRef.current.data = newRow();
-                onChange(stateRef.current.data);
-                resolve();
-              });
+              const newRow = () => {
+                const data = [...stateRef.current.data];
+                data.splice(data.indexOf(oldData), 1);
+                return data;
+              };
+              stateRef.current.data = newRow();
+              onChange(stateRef.current.data);
+              resolve();
             }),
         }}
         icons={tableIcons}
@@ -170,6 +160,60 @@ const Table = (props) => {
     </div>
   );
 };
+
+function getType(type) {
+  switch (type) {
+    case 'number':
+      return 'numeric';
+    default:
+      return 'string';
+  }
+}
+
+function getDataTypes(recommendedValues) {
+  return recommendedValues.reduce((result, dataType) => {
+    result[dataType] = dataType;
+    return result;
+  }, {});
+}
+
+function getPlaceholder(name) {
+  if (name === 'order') return '1';
+  if (name === 'name' || name === 'newName') return name;
+}
+
+function getValidateFunction(rowData, name, values) {
+  if (name === 'name' || name === 'newName') {
+    return rowData[name] === ''
+      ? { isValid: false, helperText: 'Field is required' }
+      : true;
+  }
+
+  if (name === 'order') {
+    const currentOrder = rowData.order;
+    const isOrderExist = values
+      // When updating a cell, the current value should be exclude from the validation list
+      // or it will be treated as invalid since the "order is taken"
+      .filter((value) => value.tableData?.editing !== 'update')
+      .some((value) => value.order === currentOrder);
+
+    const isDelete = rowData.tableData?.editing === 'delete';
+
+    if (currentOrder <= 0) {
+      return { isValid: false, helperText: 'Order starts from 1' };
+    }
+
+    if (isOrderExist && !isDelete) {
+      return { isValid: false, helperText: 'Order is taken' };
+    }
+
+    // A true should be returned in order to make the validation passed
+    return true;
+  }
+
+  // Same here
+  return true;
+}
 
 Table.propTypes = {
   input: PropTypes.shape({

@@ -45,7 +45,13 @@ export const serviceName = ({
   return name;
 };
 
-export const randomString = ({ length = 50 }) => {
+interface Options {
+  length?: number;
+}
+
+export const randomString = (options?: Options) => {
+  const length = options?.length ?? 50;
+
   let string = '';
   const possible =
     'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';

@@ -39,14 +39,14 @@ export enum Permission {
 export enum Type {
   BOOLEAN = 'BOOLEAN',
   STRING = 'STRING',
-  POSITIVE_SHORT = 'POSITIVE_SHORT',
-  SHORT = 'SHORT',
-  POSITIVE_INT = 'POSITIVE_INT',
   INT = 'INT',
-  POSITIVE_LONG = 'POSITIVE_LONG',
+  SHORT = 'SHORT',
   LONG = 'LONG',
-  POSITIVE_DOUBLE = 'POSITIVE_DOUBLE',
   DOUBLE = 'DOUBLE',
+  POSITIVE_SHORT = 'POSITIVE_SHORT',
+  POSITIVE_INT = 'POSITIVE_INT',
+  POSITIVE_LONG = 'POSITIVE_LONG',
+  POSITIVE_DOUBLE = 'POSITIVE_DOUBLE',
   ARRAY = 'ARRAY',
   CLASS = 'CLASS',
   PASSWORD = 'PASSWORD',
@@ -58,6 +58,21 @@ export enum Type {
   OBJECT_KEY = 'OBJECT_KEY',
   OBJECT_KEYS = 'OBJECT_KEYS',
   TAGS = 'TAGS',
+}
+
+export enum RecommendValue {
+  STRING = 'STRING',
+  INT = 'INT',
+  FLOAT = 'FLOAT',
+  SHORT = 'SHORT',
+  LONG = 'LONG',
+  DOUBLE = 'DOUBLE',
+  BOOLEAN = 'BOOLEAN',
+  OBJECT = 'OBJECT',
+  ROW = 'ROW',
+  CELL = 'CELL',
+  BYTE = 'BYTE',
+  BYTES = 'BYTES',
 }
 
 export function isNumberType(type: Type) {
