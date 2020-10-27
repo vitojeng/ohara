@@ -16,7 +16,7 @@
     "lint": "run-s lint:server lint:client",
     "lint:fix": "run-s lint:server:fix lint:client:fix",
     "lint:ci": "run-s lint:server:ci lint:client",
-    "lint:server": "eslint --ignore-pattern \"/client\" --ignore-pattern \"/coverage\" \"**/*.js\"",
+    "lint:server": "eslint --max-warnings 0 --ignore-pattern \"/client\" --ignore-pattern \"/coverage\" \"**/*.js\"",
     "lint:client": "yarn --cwd client lint",
     "lint:server:ci": "yarn lint:server --max-warnings 0",
     "lint:client:ci": "yarn --cwd client lint:ci",
@@ -43,11 +43,11 @@
     "clean:deps": "rm -rf ./node_modules && rm -rf ./client/node_modules",
     "copy:jars": "node ./scripts/copyJars.js",
     "build": "yarn --cwd client build",
-    "format": "prettier --write \"**/*.*(js|ts|json|html|md)\"",
-    "format:check": "prettier --check \"**/*.*(js|ts|json|html|md)\"",
+    "format": "prettier --write \"**/*.*(js|ts|tsx|json|html|md)\"",
+    "format:check": "prettier --check \"**/*.*(js|ts|tsx|json|html|md)\"",
     "license:test": "cd .. && cross-env ./gradlew licenseTest",
     "license:apply": "cd .. && cross-env ./gradlew licenseApply",
-    "prepush": "run-s clean:files setup lint test:unit:ci license:apply format"
+    "typecheck": "yarn --cwd client typecheck"
   },
   "dependencies": {
     "body-parser": "1.19.0",
@@ -58,7 +58,9 @@
     "express": "4.17.1",
     "forever": "3.0.2",
     "http-proxy-middleware": "1.0.5",
+    "husky": "4.3.0",
     "junit-report-merger": "0.0.6",
+    "lint-staged": "10.4.2",
     "lodash": "4.17.19",
     "morgan": "1.10.0",
     "yargs": "15.4.1"
@@ -76,6 +78,15 @@
     "ts-node": "8.10.2",
     "typescript": "3.9.7",
     "wait-on": "5.1.0"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged --allow-empty && yarn typecheck && yarn license:apply"
+    }
+  },
+  "lint-staged": {
+    "*.{js,ts,tsx}": "yarn lint:client:fix",
+    "*.{js,ts,tsx,md,html,css}": "yarn format"
   },
   "resolutions": {
     "minimist": "1.2.5"

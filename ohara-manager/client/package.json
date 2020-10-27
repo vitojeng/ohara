@@ -30,7 +30,7 @@
     "postreport:combined": "rm -rf coverage/reports",
     "lint": "eslint --cache --max-warnings 0 \"./{src,cypress}/**/*.{ts,js,tsx,jsx}\"",
     "lint:ci": "cross-env CI=true eslint --max-warnings 0 src cypress",
-    "typecheck": "tsc --noEmit",
+    "typecheck": "tsc -p tsconfig.json -p ./cypress/tsconfig.json --noEmit",
     "vet": "yarn audit"
   },
   "dependencies": {

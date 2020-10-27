@@ -39,6 +39,7 @@ def needHeaders() {
     fileTree(dir: ".").include("**/*.properties"),
     fileTree(dir: ".").include("**/*.js"),
     fileTree(dir: ".").include("**/*.ts"),
+    fileTree(dir: ".").include("**/*.tsx"),
     fileTree(dir: ".").include("**/*.dockerfile"),
     fileTree(dir: ".").include("**/*.conf"),
     fileTree(dir: ".").include("**/*.gradle"),
@@ -77,6 +78,7 @@ license {
   mapping {
     js='JAVADOC_STYLE'
     ts='JAVADOC_STYLE'
+    tsx = "JAVADOC_STYLE"
     scala='JAVADOC_STYLE'
     gradle='JAVADOC_STYLE'
     dockerfile='SCRIPT_STYLE'
