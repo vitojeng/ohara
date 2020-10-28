@@ -17,7 +17,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Checkbox from '@material-ui/core/Checkbox';
+import MuiCheckbox from '@material-ui/core/Checkbox';
 import styled from 'styled-components';
 
 const InputWrap = styled.div`
@@ -25,7 +25,7 @@ const InputWrap = styled.div`
   width: 100%;
 `;
 
-const MuiCheckbox = ({
+const Checkbox = ({
   input: { name, onChange, value, ...restInput },
   label,
   testId,
@@ -35,10 +35,10 @@ const MuiCheckbox = ({
     <InputWrap>
       <FormControlLabel
         control={
-          <Checkbox
+          <MuiCheckbox
             data-testid={testId}
             {...rest}
-            checked={value}
+            checked={!!value}
             color="primary"
             id={name}
             inputProps={restInput}
@@ -52,11 +52,11 @@ const MuiCheckbox = ({
   );
 };
 
-MuiCheckbox.propTypes = {
+Checkbox.propTypes = {
   input: PropTypes.shape({
     name: PropTypes.string.isRequired,
     onChange: PropTypes.func.isRequired,
-    value: PropTypes.bool.isRequired,
+    value: PropTypes.oneOfType([PropTypes.string, PropTypes.bool]).isRequired,
   }).isRequired,
   meta: PropTypes.shape({
     touched: PropTypes.bool,
@@ -67,4 +67,4 @@ MuiCheckbox.propTypes = {
   testId: PropTypes.string,
 };
 
-export default MuiCheckbox;
+export default Checkbox;

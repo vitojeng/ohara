@@ -18,7 +18,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { Field, reduxForm, formValueSelector } from 'redux-form';
+import { Field, reduxForm, formValueSelector, change } from 'redux-form';
 import Button from '@material-ui/core/Button';
 import Paper from '@material-ui/core/Paper';
 import CircularProgress from '@material-ui/core/CircularProgress';
@@ -37,15 +37,20 @@ const validate = (values) => {
   return errors;
 };
 
-const asyncValidate = async (values) => {
+const asyncValidate = async (values, dispatch) => {
   const { workspace = {}, volume = {} } = values;
   const { nodeNames } = workspace;
-  const { enabled, path } = volume;
+  const { enabled, path, verifiedPath } = volume;
 
   if (enabled) {
     try {
       if (!path) throw 'This is a required field';
-      await validateVolumePath(path, nodeNames);
+
+      // No need to verify the verified path
+      if (path !== verifiedPath) {
+        await validateVolumePath(path, nodeNames);
+        dispatch(change(Form.CREATE_WORKSPACE, 'volume.verifiedPath', path));
+      }
     } catch (err) {
       throw { volume: { path: err } };
     }
