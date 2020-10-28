@@ -18,16 +18,12 @@ package oharastream.ohara.kafka.connector;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 import oharastream.ohara.common.data.Cell;
 import oharastream.ohara.common.data.Column;
 import oharastream.ohara.common.data.Row;
 import oharastream.ohara.common.setting.ObjectKey;
 import oharastream.ohara.common.setting.SettingDef;
-import oharastream.ohara.common.setting.WithDefinitions;
 import oharastream.ohara.common.util.CommonUtils;
 import oharastream.ohara.kafka.connector.json.ConnectorDefUtils;
 import oharastream.ohara.metrics.basic.Counter;
@@ -35,28 +31,6 @@ import org.apache.kafka.common.config.ConfigDef;
 import org.apache.kafka.connect.connector.ConnectRecord;
 
 final class ConnectorUtils {
-  static Map<String, SettingDef> toSettingDefinitions(
-      List<SettingDef> systemDefinedDefinitions,
-      List<SettingDef> userDefinedDefinitions,
-      boolean needColumnDefinition) {
-    Map<String, SettingDef> finalDefinitions =
-        new TreeMap<>(
-            userDefinedDefinitions.stream()
-                .collect(Collectors.toUnmodifiableMap(SettingDef::key, Function.identity())));
-    finalDefinitions.putAll(
-        systemDefinedDefinitions.stream()
-            .filter(
-                definition ->
-                    needColumnDefinition || definition != ConnectorDefUtils.COLUMNS_DEFINITION)
-            .collect(Collectors.toUnmodifiableMap(SettingDef::key, Function.identity())));
-
-    // add system-defined definitions if developers does NOT define them
-    finalDefinitions.putIfAbsent(WithDefinitions.AUTHOR_KEY, WithDefinitions.AUTHOR_DEFINITION);
-    finalDefinitions.putIfAbsent(WithDefinitions.VERSION_KEY, WithDefinitions.VERSION_DEFINITION);
-    finalDefinitions.putIfAbsent(WithDefinitions.REVISION_KEY, WithDefinitions.REVISION_DEFINITION);
-    return finalDefinitions;
-  }
-
   static ConfigDef toConfigDef(Collection<SettingDef> settingDefinitions) {
     ConfigDef def = new ConfigDef();
     settingDefinitions.stream().map(ConnectorDefUtils::toConfigKey).forEach(def::define);
