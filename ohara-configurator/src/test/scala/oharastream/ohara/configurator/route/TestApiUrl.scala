@@ -18,7 +18,7 @@ package oharastream.ohara.configurator.route
 
 import oharastream.ohara.common.rule.OharaTest
 import com.typesafe.scalalogging.Logger
-import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.{Disabled, Test}
 import org.scalatest.matchers.should.Matchers._
 
 import sys.process._
@@ -26,6 +26,7 @@ import sys.process._
 class TestApiUrl extends OharaTest {
   private[this] val log = Logger(classOf[TestApiUrl])
 
+  @Disabled("enable this test if the web site is available")
   @Test
   def testDocumentApiUrl(): Unit = {
     val command = "curl --silent --url %s".format(oharastream.ohara.configurator.route.apiUrl)
