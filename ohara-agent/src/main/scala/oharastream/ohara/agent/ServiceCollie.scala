@@ -279,7 +279,7 @@ abstract class ServiceCollie extends Releasable {
             }
         )
       )
-      .flatMap(Future.traverse(_)(v => containerClient.removeVolumes(v.name)))
+      .flatMap(Future.traverse(_)(v => containerClient.removeVolumes(v.fullName)))
       .map(_ => ())
 }
 
