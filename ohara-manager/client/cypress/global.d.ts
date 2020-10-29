@@ -17,26 +17,18 @@
 /// <reference types="cypress" />
 
 declare namespace Cypress {
-  type FixtureRequest = {
+  interface FixtureRequest {
     fixturePath: string;
     name: string;
     group: string;
     tags?: object;
-  };
+  }
 
   interface Chainable {
     createJar: (file: FixtureRequest) => Promise<FixtureResponse>;
     createNode: (node?: NodeRequest) => Chainable<NodeRequest>;
     createNodeIfNotExists: (node: NodeRequest) => Chainable<NodeResponse>;
-    createWorkspace: ({
-      workspaceName,
-      node,
-      closeOnFailureOrFinish,
-    }: {
-      workspaceName?: string;
-      node?: NodeRequest;
-      closeOnFailureOrFinish?: boolean;
-    }) => Chainable<null>;
+    createWorkspace: (options?: CreateWorkspaceOption) => Chainable<null>;
     produceTopicData: (
       workspaceName?: string,
       topicName?: string,
@@ -71,6 +63,23 @@ declare namespace Cypress {
       shiftY: number,
     ) => Chainable<JQuery<HTMLElement>>;
     addNode: (node?: NodeRequest) => Chainable<null>;
+
+    /**
+     * Delete a node from node list, don't confuse this with add/remove note from workspaces
+     * @param {string} hostname node hostname
+     * @param {boolean} isInsideNodeList whether to skip the "open node list dialog" step or not, defaults to `false`
+     * @example cy.deleteNode('host123', true); // Assuming you're in the node list dialog, the open dialog step is skipped
+     * @example cy.deleteNode('host123', false);
+     */
+
+    deleteNode: (hostname: string, isInsideNodeList?) => Chainable<null>;
+
+    /**
+     * Delete all nodes, note that you need to make sure these nodes are not used by any workspaces or services
+     * @example cy.deleteNodesByApi();
+     */
+
+    deleteNodesByApi: () => Chainable<null>;
     addElement: (element: ElementParameters) => Chainable<null>;
     addElements: (elements: ElementParameters[]) => Chainable<null>;
     removeElement: (name: string) => Chainable<null>;

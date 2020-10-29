@@ -24,7 +24,7 @@ describe('Pipeline', () => {
   context('Create connections from scratch', () => {
     it('Perf source -> Topic -> Stream -> Topic -> Console sink', () => {
       // Prepare the environment for the test
-      cy.createWorkspace({});
+      cy.createWorkspace();
       cy.createPipeline();
       cy.uploadStreamJar();
 
@@ -140,7 +140,7 @@ describe('Pipeline', () => {
 
     it('should able to open the dialog', () => {
       cy.deleteAllServices();
-      cy.createWorkspace({});
+      cy.createWorkspace();
       cy.uploadStreamJar();
       cy.createPipeline();
 

@@ -16,7 +16,6 @@
 
 import * as generate from '../../../src/utils/generate';
 import { generateNodeIfNeeded } from '../../utils';
-import { NodeRequest } from '../../../src/api/apiInterface/nodeInterface';
 
 describe('Create Workspace', () => {
   // generate node
@@ -34,7 +33,6 @@ describe('Create Workspace', () => {
     it('should remember the state when close the dialog', () => {
       const workspaceName = generate.serviceName({ prefix: 'ws' });
       const nodeHost = generate.serviceName({ prefix: 'node' });
-
       // first visit will popup the quick create dialog
       cy.findByText('QUICK CREATE').click();
 
@@ -59,8 +57,9 @@ describe('Create Workspace', () => {
       cy.findByText('SAVE').click();
       cy.findAllByText('NEXT').filter(':visible').click();
 
-      // assert the node data should appear when click back button
-      cy.findAllByText('BACK').filter(':visible').click();
+      // 1. assert the node data should appear when click back button
+      // 2. Fix cypress detached DOM issue: https://docs.cypress.io/guides/references/error-messages.html#Ignore-built-in-error-checking
+      cy.findAllByText('BACK').filter(':visible').click({ force: true });
       cy.contains('h6', 'Hostname')
         .siblings('div')
         .invoke('html')
@@ -76,9 +75,11 @@ describe('Create Workspace', () => {
         .siblings('div')
         .invoke('html')
         .should('equal', nodeHost);
+
+      cy.deleteNodesByApi();
     });
 
-    it('should be able to selected and filtered node', () => {
+    it('should be able to select and filter nodes', () => {
       cy.visit('/');
       cy.findByTestId('close-intro-button').click();
       cy.findByTitle('Node list').should('exist').click();
@@ -138,6 +139,8 @@ describe('Create Workspace', () => {
       cy.findAllByPlaceholderText('Search').filter(':visible').type(hostname2);
       cy.findByText(hostname1).should('not.exist');
       cy.findByText(hostname3).should('not.exist');
+
+      cy.deleteNodesByApi();
     });
 
     it('should reset the form after successfully create a workspace', () => {
@@ -159,7 +162,29 @@ describe('Create Workspace', () => {
 
     it('should close the progress dialog automatically when "Close after finish" option is checked', () => {
       const workspaceName = generate.serviceName({ prefix: 'ws' });
-      createWorkspace(node, workspaceName);
+      cy.visit('/');
+
+      // Wait until the page is loaded
+      cy.wait(1000);
+
+      cy.closeIntroDialog();
+
+      // Create a new workspace
+      cy.findByTitle('Create a new workspace').click();
+      cy.findByText('QUICK CREATE').should('exist').click();
+
+      // Step1: workspace name
+      if (workspaceName) {
+        // type the workspaceName by parameter
+        cy.findByDisplayValue('workspace', { exact: false })
+          .clear()
+          .type(workspaceName);
+      }
+      cy.findAllByText('NEXT').filter(':visible').click();
+
+      // Step2: select nodes
+      cy.contains('p:visible', 'Click here to select nodes').click();
+      cy.addNode(node);
 
       // Step3: set volume
       cy.findAllByText('NEXT').eq(1).filter(':visible').click();
@@ -184,12 +209,35 @@ describe('Create Workspace', () => {
     it('should able to add a volume', () => {
       const workspaceName = generate.serviceName({ prefix: 'ws' });
       const volumePath = '/home/ohara/workspace1';
-      createWorkspace(node, workspaceName);
+      cy.visit('/');
 
+      // Wait until the page is loaded
+      cy.wait(1000);
+
+      cy.closeIntroDialog();
+
+      // Create a new workspace
+      cy.findByTitle('Create a new workspace').click();
+      cy.findByText('QUICK CREATE').should('exist').click();
+
+      // Step1: workspace name
+      if (workspaceName) {
+        // type the workspaceName by parameter
+        cy.findByDisplayValue('workspace', { exact: false })
+          .clear()
+          .type(workspaceName);
+      }
+      cy.findAllByText('NEXT').filter(':visible').click();
+
+      // Step2: select nodes
+      cy.contains('p:visible', 'Click here to select nodes').click();
+      cy.addNode(node);
+
+      // Step3: volume
       // It should be disabled by default
       cy.findByLabelText(/volume path/i).should('be.disabled');
 
-      // Set up volume
+      // Add a new volume
       cy.findAllByText('Enable volumes').click();
       cy.findByLabelText(/volume path/i)
         .should('be.enabled')
@@ -317,7 +365,7 @@ describe('Create Workspace', () => {
     it('should not be able to use unstable workspace', () => {
       const workspaceName = generate.serviceName({ prefix: 'wk' });
 
-      // mock the API to create a zookeeper, return 500 error
+      // Mock create zookeeper API so it always returns an error
       cy.route({
         method: 'POST',
         url: 'api/zookeepers',
@@ -329,30 +377,29 @@ describe('Create Workspace', () => {
         },
       });
 
-      cy.createNodeIfNotExists(node);
-      cy.createWorkspace({
-        workspaceName,
-        node,
-      });
+      cy.createWorkspace({ workspaceName });
 
-      cy.closeIntroDialog();
+      // Close the intro dialog and get back to home route, this also fix Cypress
+      // sometimes fail to assert snackbar message issue
+      cy.visit('/');
 
       // clicking the button of unstable workspace should show a snackbar
       cy.get('#app-bar')
         .find(`div.workspace-list > span[title="${workspaceName}"]`)
-        .as('unstableWorkspaceBtn')
         .click();
+
       cy.findByTestId('snackbar')
         .contains(`This is an unstable workspace: ${workspaceName}`)
         .should('exist');
 
-      // cannot use URL to access unstable workspace
+      // Cannot use browser's address bar to access the unstable workspace
       cy.visit(`/${workspaceName}`)
         .location()
         .should('not.eq', `/${workspaceName}`);
 
       // open the workspace list dialog
       cy.findByTestId('workspace-list-button').click();
+
       // buttons of unstable workspaces should be disabled
       cy.findByTestId('workspace-list-dialog')
         .should('exist')
@@ -362,29 +409,3 @@ describe('Create Workspace', () => {
     });
   });
 });
-
-function createWorkspace(node: NodeRequest, workspaceName: string) {
-  cy.visit('/');
-
-  // Wait until the page is loaded
-  cy.wait(1000);
-
-  cy.closeIntroDialog();
-
-  // Create a new workspace
-  cy.findByTitle('Create a new workspace').click();
-  cy.findByText('QUICK CREATE').should('exist').click();
-
-  // Step1: workspace name
-  if (workspaceName) {
-    // type the workspaceName by parameter
-    cy.findByDisplayValue('workspace', { exact: false })
-      .clear()
-      .type(workspaceName);
-  }
-  cy.findAllByText('NEXT').filter(':visible').click();
-
-  // Step2: select nodes
-  cy.contains('p:visible', 'Click here to select nodes').click();
-  cy.addNode(node);
-}

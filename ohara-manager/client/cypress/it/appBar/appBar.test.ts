@@ -15,7 +15,7 @@
  */
 
 import * as generate from '../../../src/utils/generate';
-import { NodeRequest } from '../../../src/api/apiInterface/nodeInterface';
+import { generateNodeIfNeeded } from '../../utils';
 
 describe('App Bar', () => {
   before(() => cy.deleteAllServices());
@@ -28,12 +28,7 @@ describe('App Bar', () => {
   // generate workspace name
   const name = generate.serviceName({ prefix: 'a', length: 10 });
   // generate fake node
-  const node: NodeRequest = {
-    hostname: generate.serviceName(),
-    port: generate.port(),
-    user: generate.userName(),
-    password: generate.password(),
-  };
+  const node = generateNodeIfNeeded();
 
   // Although context is identical to describe (https://docs.cypress.io/guides/core-concepts/writing-and-organizing-tests.html#Test-Structure)
   // We use context here to make a "second layer" to organize tests as

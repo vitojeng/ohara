@@ -22,8 +22,15 @@ import * as generate from '../../src/utils/generate';
 import { some } from 'lodash';
 import { NodeRequest } from '../../src/api/apiInterface/nodeInterface';
 import { State } from '../../src/api/apiInterface/topicInterface';
+import * as nodeApi from '../../src/api/nodeApi';
 import { deleteAllServices, generateNodeIfNeeded } from '../utils';
 import { FixtureResponse, SettingSection } from '../types';
+
+interface CreateWorkspaceOption {
+  workspaceName?: string;
+  node?: NodeRequest;
+  closeOnFailureOrFinish?: boolean;
+}
 
 // Utility commands
 Cypress.Commands.add('createJar', (file: Cypress.FixtureRequest) => {
@@ -99,6 +106,36 @@ Cypress.Commands.add('createNodeIfNotExists', (nodeToCreate: NodeRequest) => {
     });
 });
 
+Cypress.Commands.add('deleteNode', (hostname, isInsideNodeList = false) => {
+  if (isInsideNodeList) return removeNode();
+
+  // Open node list
+  cy.findByTitle(/node list/i)
+    .should('exist')
+    .click();
+
+  cy.findByText(hostname).then(($el) => {
+    if ($el.length > 0) {
+      removeNode();
+    }
+  });
+
+  cy.findByText(hostname).should('not.exist');
+
+  function removeNode() {
+    cy.findByTestId(`delete-node-${hostname}`).should('be.visible').click();
+    cy.findByTestId('delete-dialog').findByText('DELETE').click();
+    cy.findByText(hostname).should('not.exist');
+  }
+});
+
+Cypress.Commands.add('deleteNodesByApi', () => {
+  cy.wrap(null).then(async () => {
+    const { data: nodes } = await nodeApi.getAll();
+    await Promise.all(nodes.map((node) => nodeApi.remove(node.hostname)));
+  });
+});
+
 Cypress.Commands.add('addNode', (node = generateNodeIfNeeded) => {
   cy.get('body').then(($body) => {
     // the node has not been added yet, added directly
@@ -126,12 +163,8 @@ Cypress.Commands.add(
     workspaceName,
     node = generateNodeIfNeeded(),
     closeOnFailureOrFinish = true,
-  }: {
-    workspaceName?: string;
-    node?: NodeRequest;
-    closeOnFailureOrFinish?: boolean;
-  } = {}) => {
-    // Click the quickstart dialog
+  }: CreateWorkspaceOption = {}) => {
+    // Click the quick start dialog
     cy.visit('/');
 
     // Wait until page is loaded

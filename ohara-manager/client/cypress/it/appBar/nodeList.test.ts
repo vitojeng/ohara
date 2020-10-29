@@ -15,6 +15,7 @@
  */
 
 import * as generate from '../../../src/utils/generate';
+import { generateNodeIfNeeded } from '../../utils';
 
 describe('App Bar', () => {
   before(() => cy.deleteAllServices());
@@ -32,27 +33,8 @@ describe('App Bar', () => {
   });
 
   context('Node List', () => {
-    it('should be able to add a random node in node list', () => {
-      const hostname = generate.serviceName();
-      const port = generate.port().toString();
-      const userName = generate.userName();
-      const password = generate.password();
-
-      // create a node
-      cy.findByTitle(/create node/i).click();
-
-      // cancel create node
-      cy.findByText('CANCEL').click();
-
-      // Note: we replace this .click() by .trigger() in defaultCommands.ts
-      // since the cypress command click could not found the button
-      // open again
-      cy.findByTitle(/create node/i).click();
-      cy.findByLabelText(/hostname/i).type(hostname);
-      cy.findByLabelText(/port/i).type(port);
-      cy.findByLabelText(/user/i).type(userName);
-      cy.findByLabelText(/password/i).type(password);
-      cy.findByText('CREATE').click();
+    it('should be able to add a node', () => {
+      const { hostname } = createNode();
 
       // check the node information
       cy.findByTestId(`view-node-${hostname}`).click();
@@ -66,9 +48,9 @@ describe('App Bar', () => {
       cy.get('body:visible').trigger('keydown', { keyCode: 27, which: 27 });
 
       // update node user
-      const newUserName = generate.userName();
+      const newUser = generate.userName();
       cy.findByTestId(`edit-node-${hostname}`).click();
-      cy.get('input[name=user]').clear().type(newUserName);
+      cy.get('input[name=user]').clear().type(newUser);
       cy.findByText('SAVE').click();
 
       // check the node information again
@@ -76,40 +58,23 @@ describe('App Bar', () => {
       cy.findAllByText(/^user$/i)
         .filter(':visible')
         .siblings('td')
-        .contains(newUserName)
+        .contains(newUser)
         .should('exist');
 
       // press "ESC" back to node list
       cy.get('body:visible').trigger('keydown', { keyCode: 27, which: 27 });
 
-      // delete the fake node we just added
-      cy.findByTestId(`delete-node-${hostname}`).click();
-      // confirm dialog
-      cy.findByTestId('confirm-button-DELETE').click();
-
-      // will auto back to node list, and the node list should be empty
-      cy.findByText(hostname).should('not.exist');
+      cy.deleteNode(hostname, true);
     });
 
-    it('should able to edit a node', () => {
-      const hostname = generate.serviceName();
-      const port = generate.port().toString();
-      const userName = generate.userName();
-      const password = generate.password();
+    it('should be able to edit a node', () => {
+      const { hostname, port, user, password } = createNode();
 
-      // create a node
-      cy.findByTitle(/create node/i).click();
-
-      cy.findByLabelText(/hostname/i).type(hostname);
-      cy.findByLabelText(/port/i).type(port);
-      cy.findByLabelText(/user/i).type(userName);
-      cy.findByLabelText(/password/i).type(password);
-      cy.findByText('CREATE').click();
-
-      // Edit the node
-      const newUserName = generate.userName();
+      const newUser = generate.userName();
       const newPort = generate.port().toString();
       const newPassword = generate.password();
+
+      // Edit the node
       cy.findByTestId(`edit-node-${hostname}`).click();
 
       // 1. Assert each field has the correct node info that we used during the creation
@@ -124,9 +89,9 @@ describe('App Bar', () => {
         .type(newPort);
 
       cy.findByLabelText(/user/i)
-        .should('have.value', userName)
+        .should('have.value', user)
         .clear()
-        .type(newUserName);
+        .type(newUser);
 
       cy.findByLabelText(/password/i)
         .should('have.value', password)
@@ -143,29 +108,20 @@ describe('App Bar', () => {
       cy.findByText(hostname).should('not.exist');
     });
 
-    it('should able to filter nodes', () => {
-      const hostname1 = generate.serviceName();
-      cy.findByTitle('Create Node').should('be.visible').click();
-      cy.findByLabelText(/hostname/i).type(hostname1);
-      cy.findByLabelText(/port/i).type(generate.port().toString());
-      cy.findByLabelText(/user/i).type(generate.userName());
-      cy.findByLabelText(/password/i).type(generate.password());
-      cy.findByText('CREATE').click();
+    it('should be able to filter nodes', () => {
+      // Create first node
+      const { hostname: hostname1 } = createNode();
       cy.findByText(hostname1).should('be.visible');
 
+      // Create another node
       cy.visit('/');
       cy.findByTestId('close-intro-button').click();
       cy.findByTitle('Node list').should('exist').click();
 
-      const hostname2 = generate.serviceName();
-      cy.findByTitle('Create Node').should('be.visible').click();
-      cy.findByLabelText(/hostname/i).type(hostname2);
-      cy.findByLabelText(/port/i).type(generate.port().toString());
-      cy.findByLabelText(/user/i).type(generate.userName());
-      cy.findByLabelText(/password/i).type(generate.password());
-      cy.findByText('CREATE').click();
+      const { hostname: hostname2 } = createNode();
       cy.findByText(hostname2).should('be.visible');
 
+      // Test the search function
       cy.findAllByPlaceholderText('Search').filter(':visible').type(hostname2);
 
       cy.findByText(hostname1).should('not.exist');
@@ -180,13 +136,15 @@ describe('App Bar', () => {
       cy.findByText(hostname2).should('not.exist');
     });
 
-    it(`should not able to remove or edit a node when it's being used`, () => {
-      const node = {
-        hostname: generate.serviceName(),
-        port: generate.port(),
-        user: generate.userName(),
-        password: generate.password(),
-      };
+    it(`should be able to delete a node`, () => {
+      // Create a new node
+      const { hostname } = createNode();
+      cy.findByText(hostname).should('be.visible');
+      cy.deleteNode(hostname, true);
+    });
+
+    it(`should not be able to delete or edit a node when it's being used`, () => {
+      const node = generateNodeIfNeeded();
 
       // create workspace
       cy.createWorkspace({ node });
@@ -219,3 +177,27 @@ describe('App Bar', () => {
     });
   });
 });
+
+function createNode() {
+  const hostname = generate.serviceName();
+  const port = generate.port().toString();
+  const user = generate.userName();
+  const password = generate.password();
+
+  cy.findByTitle(/create node/i)
+    .should('be.visible')
+    .click();
+
+  cy.findByLabelText(/hostname/i).type(hostname);
+  cy.findByLabelText(/port/i).type(port);
+  cy.findByLabelText(/user/i).type(user);
+  cy.findByLabelText(/password/i).type(password);
+  cy.findByText('CREATE').click();
+
+  return {
+    hostname,
+    port,
+    user,
+    password,
+  };
+}

@@ -19,8 +19,7 @@ const chalk = require('chalk');
 const waitOn = require('wait-on');
 
 /* eslint-disable no-console */
-
-exports.checkClientBuildDir = (testMode) => {
+exports.isBuildDirExist = (testMode) => {
   if (!fs.existsSync('./client/build')) {
     console.log(
       chalk.red(
@@ -55,3 +54,37 @@ exports.waitOnService = (url) =>
       },
     );
   });
+
+exports.getDefaultEnv = () => {
+  const filePath = './client/cypress.env.json';
+  if (fs.existsSync(filePath)) {
+    return JSON.parse(fs.readFileSync(filePath));
+  }
+
+  return {};
+};
+
+exports.buildCypressEnv = (options) => {
+  const { node, ci, clientPort, serverPort, prefix } = options;
+  const { nodeHost, nodePort, nodeUser, nodePass } = node;
+
+  const env = [];
+  env.push(`port=${ci ? clientPort : serverPort}`);
+
+  if (nodeHost) {
+    env.push(`nodeHost=${nodeHost}`);
+  }
+  if (nodePort) {
+    env.push(`nodePort=${nodePort}`);
+  }
+  if (nodeUser) {
+    env.push(`nodeUser=${nodeUser}`);
+  }
+  if (nodePass) {
+    env.push(`nodePass=${nodePass}`);
+  }
+  if (prefix) {
+    env.push(`servicePrefix=${prefix}`);
+  }
+  return env.join(',');
+};

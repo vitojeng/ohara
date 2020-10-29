@@ -26,7 +26,7 @@ describe('App Bar', () => {
 
   before(() => {
     cy.deleteAllServices();
-    cy.createWorkspace({});
+    cy.createWorkspace();
   });
 
   beforeEach(() => {

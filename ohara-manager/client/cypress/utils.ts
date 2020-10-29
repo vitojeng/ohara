@@ -410,15 +410,16 @@ export const assertSettingsByDefinitions = (
   });
 };
 
-export function generateNodeIfNeeded(): NodeRequest {
+export const generateNodeIfNeeded = (): NodeRequest => {
   const nodeHost = Cypress.env('nodeHost');
   const nodePort = Cypress.env('nodePort');
   const nodeUser = Cypress.env('nodeUser');
   const nodePass = Cypress.env('nodePass');
+
   return {
     hostname: nodeHost || generate.serviceName({ prefix: 'node' }),
     port: nodePort ? Number(nodePort) : generate.port(),
     user: nodeUser || generate.userName(),
     password: nodePass || generate.password(),
   } as NodeRequest;
-}
+};

@@ -22,7 +22,7 @@ describe('App Bar', () => {
 
   before(() => {
     cy.deleteAllServices();
-    cy.createWorkspace({});
+    cy.createWorkspace();
 
     // Wait until event log is properly logged
     cy.findByTestId('snackbar')

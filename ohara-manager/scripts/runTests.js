@@ -15,35 +15,25 @@
  */
 
 const execa = require('execa');
-const yargs = require('yargs');
 const chalk = require('chalk');
+const path = require('path');
 const _ = require('lodash');
-const fs = require('fs');
 
 const mergeReports = require('./mergeReports');
 const utils = require('./scriptsUtils');
 const commonUtils = require('../utils/commonUtils');
-const { getConfig } = require('../utils/configHelpers');
-
-const { configurator, port } = getConfig();
 const {
+  API_ROOT,
+  PORT,
   testMode,
-  ci = false,
   nodeHost,
   nodePort,
   nodeUser,
   nodePass,
   servicePrefix,
-} = yargs.argv;
-
-const getDefaultEnv = () => {
-  const filePath = './client/cypress.env.json';
-  if (fs.existsSync(filePath)) {
-    return JSON.parse(fs.readFileSync(filePath));
-  }
-
-  return {};
-};
+  spec,
+  ci = false,
+} = require('../config');
 
 /* eslint-disable no-process-exit, no-console */
 const run = async (ci, apiRoot, serverPort = 5050, clientPort = 3000) => {
@@ -53,8 +43,14 @@ const run = async (ci, apiRoot, serverPort = 5050, clientPort = 3000) => {
   let copyJars;
   serverPort = serverPort === 0 ? commonUtils.randomPort() : serverPort;
 
-  const defaultEnv = getDefaultEnv();
+  const defaultEnv = utils.getDefaultEnv();
   const prefix = servicePrefix ? servicePrefix : defaultEnv.servicePrefix;
+  const node = {
+    nodeHost,
+    nodePort,
+    nodeUser,
+    nodePass,
+  };
 
   // Start ohara manager server
   console.log(chalk.blue('Starting ohara manager server'));
@@ -66,11 +62,10 @@ const run = async (ci, apiRoot, serverPort = 5050, clientPort = 3000) => {
     },
   );
 
-  console.log('server.pid', server.pid);
+  console.log('Server pid', server.pid);
 
   try {
-    const serverProcess = await server;
-    console.log(`server output: ${serverProcess.stdout}`);
+    await server;
   } catch (err) {
     console.log(err.message);
     process.exit(1);
@@ -79,8 +74,7 @@ const run = async (ci, apiRoot, serverPort = 5050, clientPort = 3000) => {
   // Wait until the server is ready
   await utils.waitOnService(`http://localhost:${serverPort}`);
 
-  // Start client server for generating instrument code
-  // by instrument-cra plugin
+  // Start client server for generating instrument code by instrument-cra plugin
   // This instrument plugin is only available in the development environment!
   // https://github.com/cypress-io/instrument-cra/issues/135
   if (ci && testMode !== 'api') {
@@ -102,9 +96,10 @@ const run = async (ci, apiRoot, serverPort = 5050, clientPort = 3000) => {
       },
     );
 
+    console.log('Client pid', client.pid);
+
     try {
-      const clientProcess = await client;
-      console.log(`client output: ${clientProcess.stdout}`);
+      await client;
     } catch (err) {
       console.log(err.message);
       process.exit(1);
@@ -124,8 +119,9 @@ const run = async (ci, apiRoot, serverPort = 5050, clientPort = 3000) => {
     {
       stdio: 'inherit',
     },
-  ); // We need these jars for test
-  console.log('copyJars.pid', copyJars.pid);
+  );
+
+  // We need these jars for test
   try {
     await copyJars;
   } catch (err) {
@@ -133,46 +129,25 @@ const run = async (ci, apiRoot, serverPort = 5050, clientPort = 3000) => {
     process.exit(1);
   }
 
-  const buildCypressEnv = () => {
-    const env = [];
-    env.push(`port=${ci ? clientPort : serverPort}`);
-
-    if (nodeHost) {
-      env.push(`nodeHost=${nodeHost}`);
-    }
-    if (nodePort) {
-      env.push(`nodePort=${nodePort}`);
-    }
-    if (nodeUser) {
-      env.push(`nodeUser=${nodeUser}`);
-    }
-    if (nodePass) {
-      env.push(`nodePass=${nodePass}`);
-    }
-    if (prefix) {
-      env.push(`servicePrefix=${prefix}`);
-    }
-
-    return env.join(',');
-  };
-
   // Run test
   console.log(chalk.blue(`Running ${testMode} tests with Cypress`));
+
   cypress = execa(
     'yarn',
     [
       `test:${testMode}:run`,
       '--config',
       `baseUrl=http://localhost:${ci ? clientPort : serverPort}`,
+      ...(spec ? ['--spec', path.join('..', 'client', 'cypress', spec)] : []),
       '--env',
-      buildCypressEnv(),
+      utils.buildCypressEnv({ node, clientPort, serverPort, prefix }),
     ],
     {
       cwd: 'client',
       stdio: 'inherit',
     },
   );
-  console.log('cypress.pid', cypress.pid);
+  console.log('Cypress pid', cypress.pid);
 
   const killSubProcess = () => {
     if (cypress) cypress.kill();
@@ -205,8 +180,8 @@ const run = async (ci, apiRoot, serverPort = 5050, clientPort = 3000) => {
 
 // Do not run the test if the build dir is not present
 // as this will cause the script to fail silently
-if (!utils.checkClientBuildDir(testMode)) {
+if (!utils.isBuildDirExist(testMode)) {
   process.exit(1);
 }
 
-run(ci, configurator, port);
+run(ci, API_ROOT, PORT);
