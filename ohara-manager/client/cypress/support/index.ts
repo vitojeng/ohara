@@ -14,24 +14,6 @@
  * limitations under the License.
  */
 
-// ***********************************************************
-// This example support/index.js is processed and
-// loaded automatically before your test files.
-//
-// This is a great place to put global configuration and
-// behavior that modifies Cypress.
-//
-// You can change the location of this file or turn off
-// automatically serving support files with the
-// 'supportFile' configuration option.
-//
-// You can read more here:
-// https://on.cypress.io/configuration
-// ***********************************************************
-
-// eslint complain we use an undef object which is cypress pre-defined object "chai"
-/* eslint-disable no-undef */
-
 import '@cypress/code-coverage/support';
 import _ from 'lodash';
 
@@ -60,14 +42,17 @@ after(async () => {
   });
 });
 
-const customAssertions = (chai, utils) => {
-  const customMethodA = (_super) => {
+const customAssertions = (chai: Chai.ChaiStatic, utils: Chai.ChaiUtils) => {
+  const customMethodA = (_super: Chai.AssertionStatic) => {
     return function a() {
       utils.flag(this, 'message', '[Type Assert]');
-      // eslint-disable-next-line
+      /* eslint-disable prefer-rest-params */
+      // @ts-ignore
       _super.apply(this, arguments);
+      /* eslint-enable prefer-rest-params */
     };
   };
+
   const customChainingA = () => {
     return function chainA() {
       utils.flag(this, 'object');

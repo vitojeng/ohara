@@ -2,7 +2,8 @@
   "extends": "../tsconfig",
   "compilerOptions": {
     "skipLibCheck": true,
-    "types": ["cypress", "@testing-library/cypress", "node"]
+    "types": ["cypress", "@testing-library/cypress", "node"],
+    "noImplicitThis": false
   },
-  "include": ["./**/*.ts", "./**/*.js"]
+  "include": ["./**/*"]
 }
