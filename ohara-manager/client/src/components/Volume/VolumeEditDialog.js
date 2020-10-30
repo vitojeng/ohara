@@ -18,18 +18,13 @@ import React from 'react';
 import { omit } from 'lodash';
 import PropTypes from 'prop-types';
 import { Field, reduxForm } from 'redux-form';
+import { connect } from 'react-redux';
 import { Dialog } from 'components/common/Dialog';
 import { InputField, AutoComplete } from 'components/common/Form';
 import { Form } from 'const';
 import * as hooks from 'hooks';
 
-const VolumeEditDialog = ({
-  isOpen,
-  onClose,
-  onConfirm,
-  volume,
-  nodeNames,
-}) => {
+let VolumeEditDialog = ({ isOpen, onClose, onConfirm, volume, nodeNames }) => {
   if (!volume) return null;
   const { path, nodeNames: oldNodeNames, name } = volume;
   const { displayName, usedBy } = volume.tags;
@@ -37,7 +32,7 @@ const VolumeEditDialog = ({
 
   return (
     <Dialog
-      confirmText="CREATE"
+      confirmText="SAVE"
       onClose={() => {
         onClose();
       }}
@@ -65,7 +60,7 @@ const VolumeEditDialog = ({
           helperText="custom volume name"
           id="Volume name"
           label="Name"
-          name="displayName"
+          name="tags.displayName"
           placeholder="volume"
           required
           type="text"
@@ -104,7 +99,7 @@ const VolumeEditDialog = ({
           id="Volume usedBy"
           label="Used By"
           margin="normal"
-          name="usedBy"
+          name="tags.usedBy"
           type="text"
         />
       </form>
@@ -136,6 +131,15 @@ VolumeEditDialog.propTypes = {
 VolumeEditDialog.defaultProps = {
   onClose: () => {},
 };
-export default reduxForm({
+
+VolumeEditDialog = reduxForm({
   form: Form.EDIT_VOLUME,
 })(VolumeEditDialog);
+
+VolumeEditDialog = connect((_, prop) => {
+  return {
+    initialValues: prop.volume,
+  };
+})(VolumeEditDialog);
+
+export default VolumeEditDialog;
