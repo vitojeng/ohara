@@ -82,7 +82,7 @@
   },
   "husky": {
     "hooks": {
-      "pre-commit": "lint-staged --allow-empty && yarn typecheck && yarn license:apply"
+      "pre-commit": "yarn typecheck && lint-staged --allow-empty"
     }
   },
   "lint-staged": {
