@@ -17,7 +17,7 @@
 import { isEmpty, isObject } from 'lodash';
 import { CellAction, ElementParameters } from '../../types';
 import * as generate from '../../../src/utils/generate';
-import { NodeRequest } from '../../../src/api/apiInterface/nodeInterface';
+import { generateNodeIfNeeded } from '../../utils';
 import { fetchServices, fetchServiceInfo } from '../../utils';
 import {
   SettingDef,
@@ -27,12 +27,7 @@ import { KIND } from '../../../src/const';
 import { SOURCE, SINK } from '../../../src/api/apiInterface/connectorInterface';
 
 describe('Property view', () => {
-  const node: NodeRequest = {
-    hostname: generate.serviceName(),
-    port: generate.port(),
-    user: generate.userName(),
-    password: generate.password(),
-  };
+  const node = generateNodeIfNeeded();
 
   before(() => {
     cy.deleteAllServices();

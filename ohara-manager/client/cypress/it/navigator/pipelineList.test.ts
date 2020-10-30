@@ -15,16 +15,11 @@
  */
 
 import * as generate from '../../../src/utils/generate';
-import { NodeRequest } from '../../../src/api/apiInterface/nodeInterface';
+import { generateNodeIfNeeded } from '../../utils';
 
 describe('Navigator', () => {
   before(() => {
-    const node: NodeRequest = {
-      hostname: generate.serviceName(),
-      port: generate.port(),
-      user: generate.userName(),
-      password: generate.password(),
-    };
+    const node = generateNodeIfNeeded();
 
     cy.deleteAllServices();
     cy.createWorkspace({ node });
@@ -159,7 +154,7 @@ describe('Navigator', () => {
     it('should render the UI after creation', () => {
       cy.findByTestId('new-pipeline-button').click();
 
-      cy.findByTestId('new-pipeline-dialog').within(() => {
+      cy.findVisibleDialog().within(() => {
         // Heading and close button
         cy.findByText(/^add a new pipeline$/i).should('exist');
         cy.findByTestId('close-button').should('exist');

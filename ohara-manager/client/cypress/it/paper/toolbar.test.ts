@@ -15,18 +15,13 @@
  */
 
 import * as generate from '../../../src/utils/generate';
-import { NodeRequest } from '../../../src/api/apiInterface/nodeInterface';
+import { generateNodeIfNeeded } from '../../utils';
 import { KIND, CELL_STATUS } from '../../../src/const';
 import { SOURCE, SINK } from '../../../src/api/apiInterface/connectorInterface';
 import { CellAction, ElementParameters } from '../../types';
 
 describe('Toolbar', () => {
-  const node: NodeRequest = {
-    hostname: generate.serviceName(),
-    port: generate.port(),
-    user: generate.userName(),
-    password: generate.password(),
-  };
+  const node = generateNodeIfNeeded();
 
   const { source, topic, stream, sink } = KIND;
   const controls = [source, topic, stream, sink];

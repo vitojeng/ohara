@@ -16,7 +16,7 @@
 
 import * as generate from '../../../src/utils/generate';
 import { ElementParameters } from '../../types';
-import { NodeRequest } from '../../../src/api/apiInterface/nodeInterface';
+import { generateNodeIfNeeded } from '../../utils';
 import { KIND, CELL_TYPE } from '../../../src/const';
 import { SOURCE, SINK } from '../../../src/api/apiInterface/connectorInterface';
 
@@ -24,12 +24,7 @@ const sources = Object.values(SOURCE).sort((a, b) => a.localeCompare(b));
 const sinks = Object.values(SINK).sort((a, b) => a.localeCompare(b));
 
 describe('ToolBox', () => {
-  const node: NodeRequest = {
-    hostname: generate.serviceName(),
-    port: generate.port(),
-    user: generate.userName(),
-    password: generate.password(),
-  };
+  const node = generateNodeIfNeeded();
 
   const sharedTopicName = generate.serviceName({ prefix: 'topic' });
   before(() => {
@@ -333,7 +328,7 @@ describe('ToolBox', () => {
 
 function assertPageTitle(pageTitle: string) {
   // We're now in the settings page
-  cy.findByTestId('workspace-settings-dialog').within(() => {
+  cy.findVisibleDialog().within(() => {
     cy.findByText(/^settings$/i).should('exist');
     cy.get('.section-page-header').should('have.text', pageTitle);
 

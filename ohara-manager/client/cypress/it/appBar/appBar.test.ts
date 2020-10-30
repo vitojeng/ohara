@@ -37,9 +37,7 @@ describe('App Bar', () => {
     it('should popup an intro dialog', () => {
       // find all the visible dialogs
       // and assert it should have only one element
-      cy.findAllByRole('dialog')
-        .filter(':visible')
-        .should('have.length', 1)
+      cy.findVisibleDialog()
         // the intro dialog should have "quick create" button
         .contains('button', 'QUICK CREATE');
 

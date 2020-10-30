@@ -19,16 +19,11 @@ import { CellAction, ElementParameters } from '../../types';
 import { KIND, CELL_STATUS } from '../../../src/const';
 import { ObjectAbstract } from '../../../src/api/apiInterface/pipelineInterface';
 import { fetchPipelines } from '../../utils';
-import { NodeRequest } from '../../../src/api/apiInterface/nodeInterface';
 import { SOURCE, SINK } from '../../../src/api/apiInterface/connectorInterface';
 import { PipelineRequest } from '../../../src/api/apiInterface/pipelineInterface';
+import { generateNodeIfNeeded } from '../../utils';
 
-const node: NodeRequest = {
-  hostname: generate.serviceName(),
-  port: generate.port(),
-  user: generate.userName(),
-  password: generate.password(),
-};
+const node = generateNodeIfNeeded();
 
 /* eslint-disable @typescript-eslint/no-unused-expressions */
 describe('Elements', () => {
@@ -132,7 +127,7 @@ describe('Elements', () => {
       cy.findByText(`Edit the property of ${sourceName}`).should('be.visible');
 
       // Close the dialog so it won't interfere test cleanup
-      cy.findByTestId('property-dialog').within(() => {
+      cy.findVisibleDialog().within(() => {
         cy.get('.MuiDialogTitle-root button').click();
       });
     });
@@ -164,7 +159,7 @@ describe('Elements', () => {
       cy.getCell(topicName).trigger('mouseover');
       cy.cellAction(topicName, CellAction.remove).click();
 
-      cy.findByTestId('delete-dialog').within(() => {
+      cy.findVisibleDialog().within(() => {
         // We should display a message to tell users why they cannot do so
         cy.findByText(
           `Before deleting this topic, you must stop the pipeline components link to it: ${sourceName}`,
@@ -186,7 +181,7 @@ describe('Elements', () => {
       cy.getCell(topicName).trigger('mouseover');
       cy.cellAction(topicName, CellAction.remove).click();
 
-      cy.findByTestId('delete-dialog').findByText('DELETE').click();
+      cy.findVisibleDialog().findByText('DELETE').click();
 
       // Topic should be removed by now, but the source connector should remain in Paper
       cy.get('#paper').within(() => {

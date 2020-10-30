@@ -316,20 +316,18 @@ Cypress.Commands.add(
     // add shared topics
     cy.findByTitle('Create Topic').should('be.enabled').click();
 
-    cy.findAllByRole('dialog')
-      .filter(':visible')
-      .within(() => {
-        cy.findAllByLabelText('Topic name', { exact: false })
-          .filter(':visible')
-          .type(name);
-        cy.findAllByLabelText('Partitions', { exact: false })
-          .filter(':visible')
-          .type('1');
-        cy.findAllByLabelText('Replication factor', { exact: false })
-          .filter(':visible')
-          .type('1');
-        cy.contains('button', 'CREATE').click();
-      });
+    cy.findVisibleDialog().within(() => {
+      cy.findAllByLabelText('Topic name', { exact: false })
+        .filter(':visible')
+        .type(name);
+      cy.findAllByLabelText('Partitions', { exact: false })
+        .filter(':visible')
+        .type('1');
+      cy.findAllByLabelText('Replication factor', { exact: false })
+        .filter(':visible')
+        .type('1');
+      cy.contains('button', 'CREATE').click();
+    });
 
     cy.get('.shared-topic:visible')
       .find('table')
@@ -354,4 +352,8 @@ Cypress.Commands.add('closeIntroDialog', () => {
     }
   });
   return cy.end();
+});
+
+Cypress.Commands.add('findVisibleDialog', () => {
+  cy.findAllByRole('dialog').filter(':visible').should('have.length', 1);
 });

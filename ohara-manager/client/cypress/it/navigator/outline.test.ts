@@ -17,19 +17,14 @@
 import * as generate from '../../../src/utils/generate';
 import { ElementParameters } from '../../types';
 import { KIND } from '../../../src/const';
-import { NodeRequest } from '../../../src/api/apiInterface/nodeInterface';
+import { generateNodeIfNeeded } from '../../utils';
 import { SOURCE, SINK } from '../../../src/api/apiInterface/connectorInterface';
 
 describe('Navigator', () => {
   const sharedTopicName = generate.serviceName({ prefix: 'topic' });
 
   before(() => {
-    const node: NodeRequest = {
-      hostname: generate.serviceName(),
-      port: generate.port(),
-      user: generate.userName(),
-      password: generate.password(),
-    };
+    const node = generateNodeIfNeeded();
 
     cy.deleteAllServices();
     cy.createWorkspace({ node });

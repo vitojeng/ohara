@@ -182,12 +182,7 @@ describe('Pipeline', () => {
       cy.findByText('SAVE').click();
 
       cy.switchSettingSection(SettingSection.dangerZone, 'Restart this worker');
-      cy.findAllByRole('dialog')
-        .filter(':visible')
-        .should('have.length', 1)
-        .within(() => {
-          cy.findByText('RESTART').click();
-        });
+      cy.findVisibleDialog().findByText('RESTART').click();
 
       cy.findByText('CLOSE').parent('button').should('be.enabled').click();
 
@@ -253,7 +248,7 @@ describe('Pipeline', () => {
         cy.findByText(`Edit the property of ${name}`).should('exist');
 
         // Close the dialog
-        cy.findByTestId('property-dialog').findByTestId('close-button').click();
+        cy.findVisibleDialog().findByTestId('close-button').click();
       });
     });
   });

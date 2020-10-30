@@ -47,20 +47,18 @@ describe('App Bar', () => {
       // add shared topics
       cy.switchSettingSection(SettingSection.topics);
       cy.findByTitle('Create Topic').should('be.enabled').click();
-      cy.findAllByRole('dialog')
-        .filter(':visible')
-        .within(() => {
-          cy.findAllByLabelText('Topic name', { exact: false })
-            .filter(':visible')
-            .type(t1);
-          cy.findAllByLabelText('Partitions', { exact: false })
-            .filter(':visible')
-            .type('1');
-          cy.findAllByLabelText('Replication factor', { exact: false })
-            .filter(':visible')
-            .type('1');
-          cy.contains('button', 'CREATE').click();
-        });
+      cy.findVisibleDialog().within(() => {
+        cy.findAllByLabelText('Topic name', { exact: false })
+          .filter(':visible')
+          .type(t1);
+        cy.findAllByLabelText('Partitions', { exact: false })
+          .filter(':visible')
+          .type('1');
+        cy.findAllByLabelText('Replication factor', { exact: false })
+          .filter(':visible')
+          .type('1');
+        cy.contains('button', 'CREATE').click();
+      });
       cy.findByText(t1)
         .parent('tr')
         // the new added topic should exist and running
@@ -95,17 +93,14 @@ describe('App Bar', () => {
             .click();
         });
 
-      cy.findAllByRole('dialog')
-        .filter(':visible')
-        .should('have.length', 1)
-        .within(() => {
-          // assert title
-          cy.findByText('View topic source').should('exist');
-          // assert content
-          cy.get('.react-json-view').should('exist');
+      cy.findVisibleDialog().within(() => {
+        // assert title
+        cy.findByText('View topic source').should('exist');
+        // assert content
+        cy.get('.react-json-view').should('exist');
 
-          cy.findByTestId('close-button').click();
-        });
+        cy.findByTestId('close-button').click();
+      });
     });
 
     it('should be able to change the topic settings', () => {

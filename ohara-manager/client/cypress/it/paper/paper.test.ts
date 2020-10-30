@@ -15,18 +15,13 @@
  */
 
 import * as generate from '../../../src/utils/generate';
-import { NodeRequest } from '../../../src/api/apiInterface/nodeInterface';
+import { generateNodeIfNeeded } from '../../utils';
 import { KIND } from '../../../src/const';
 import { ElementParameters, CellAction } from '../../types';
 import { isShabondi } from '../../../src/components/Pipeline/PipelineUtils';
 import { SOURCE, SINK } from '../../../src/api/apiInterface/connectorInterface';
 
-const node: NodeRequest = {
-  hostname: generate.serviceName(),
-  port: generate.port(),
-  user: generate.userName(),
-  password: generate.password(),
-};
+const node = generateNodeIfNeeded();
 
 /* eslint-disable @typescript-eslint/no-unused-expressions */
 describe('Paper', () => {

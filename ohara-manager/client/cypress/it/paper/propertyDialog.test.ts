@@ -16,7 +16,7 @@
 
 import * as generate from '../../../src/utils/generate';
 import { KIND } from '../../../src/const';
-import { NodeRequest } from '../../../src/api/apiInterface/nodeInterface';
+import { generateNodeIfNeeded } from '../../utils';
 import { fetchServiceInfo } from '../../utils';
 import { CellAction, ElementParameters } from '../../types';
 import {
@@ -33,12 +33,7 @@ type Data = {
   dataType: RecommendValue;
 };
 
-const node: NodeRequest = {
-  hostname: generate.serviceName(),
-  port: generate.port(),
-  user: generate.userName(),
-  password: generate.password(),
-};
+const node = generateNodeIfNeeded();
 
 /* eslint-disable @typescript-eslint/no-unused-expressions */
 describe('Property dialog', () => {
@@ -71,7 +66,7 @@ describe('Property dialog', () => {
       cy.getCell(sourceName).trigger('mouseover');
       cy.cellAction(sourceName, CellAction.config).click();
 
-      cy.findByTestId('property-dialog').within(() => {
+      cy.findVisibleDialog().within(() => {
         // Title and close button
         cy.findByText(`Edit the property of ${sourceName}`).should('exist');
         cy.findByTestId('close-button').should('exist');
@@ -112,7 +107,7 @@ describe('Property dialog', () => {
       cy.getCell(sourceName).trigger('mouseover');
       cy.cellAction(sourceName, CellAction.config).click();
 
-      cy.findByTestId('property-dialog').then(async () => {
+      cy.findVisibleDialog().then(async () => {
         const workerDefs = await fetchServiceInfo(KIND.source, {
           group: 'worker',
           name: 'workspace1',
@@ -183,7 +178,7 @@ describe('Property dialog', () => {
       cy.getCell(sourceName).trigger('mouseover');
       cy.cellAction(sourceName, CellAction.config).click();
 
-      cy.findByTestId('property-dialog').within(() => {
+      cy.findVisibleDialog().within(() => {
         cy.findByTestId('sidebar').within(() => {
           // Common section should be expanded
           cy.findByText('Common')
@@ -406,7 +401,7 @@ describe('Property dialog', () => {
       cy.getCell(sourceName).trigger('mouseover');
       cy.cellAction(sourceName, CellAction.config).click();
 
-      cy.findByTestId('property-dialog').within(() => {
+      cy.findVisibleDialog().within(() => {
         // The button is there and not being disabled
         cy.findByText('SAVE CHANGES').should('exist').click();
 

@@ -124,5 +124,13 @@ declare namespace Cypress {
     ) => Chainable<null>;
     createSharedTopic: (name?: string) => Chainable<null>;
     closeIntroDialog: () => Chainable<null>;
+
+    /**
+     * Use `cy.findAllByRole()` to get all dialog and filter out the invisible ones
+     * @example cy.findVisibleDialog().findByText('DELETE').click();
+     * @example cy.findVisibleDialog().within(() => cy.findByText('Delete').click());
+     */
+
+    findVisibleDialog: () => Chainable<HTMLElement>;
   }
 }
