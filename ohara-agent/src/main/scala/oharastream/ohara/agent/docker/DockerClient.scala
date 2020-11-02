@@ -197,7 +197,7 @@ object DockerClient {
                 .mkString(" "),
               volumeMaps
                 .map {
-                  case (volumePath, localPath) => s"""-v \"$volumePath:$localPath\""""
+                  case (volumeName, containerPath) => s"""-v \"$volumeName:$containerPath\""""
                 }
                 .mkString(" "),
               // add label so we can distinguish the containers from others

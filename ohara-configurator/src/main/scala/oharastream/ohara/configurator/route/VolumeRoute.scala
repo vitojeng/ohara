@@ -19,29 +19,80 @@ package oharastream.ohara.configurator.route
 import akka.http.scaladsl.server
 import oharastream.ohara.agent.ServiceCollie
 import oharastream.ohara.client.configurator.ClusterInfo
-import oharastream.ohara.client.configurator.VolumeApi.{Creation, Updating, Volume}
+import oharastream.ohara.client.configurator.VolumeApi._
 import oharastream.ohara.common.setting.ObjectKey
 import oharastream.ohara.common.util.CommonUtils
-import oharastream.ohara.configurator.route.hook.{HookBeforeDelete, HookOfAction}
+import oharastream.ohara.configurator.route.hook._
 import oharastream.ohara.configurator.store.DataStore
 import spray.json.DeserializationException
 
 import scala.concurrent.{ExecutionContext, Future}
 
 private[configurator] object VolumeRoute {
-  private[this] def toVolume(creation: Creation): Future[Volume] =
-    Future.successful(
-      Volume(
-        group = creation.group,
-        name = creation.name,
-        nodeNames = creation.nodeNames,
-        path = creation.path,
-        state = None,
-        error = None,
-        tags = creation.tags,
-        lastModified = CommonUtils.current()
+  private[this] def hookOfCreation: HookOfCreation[Creation, Volume] =
+    (creation: Creation) =>
+      Future.successful(
+        Volume(
+          group = creation.group,
+          name = creation.name,
+          nodeNames = creation.nodeNames,
+          path = creation.path,
+          state = None,
+          error = None,
+          tags = creation.tags,
+          lastModified = CommonUtils.current()
+        )
       )
-    )
+
+  private[this] def hookOfUpdating: HookOfUpdating[Updating, Volume] =
+    (key: ObjectKey, updating: Updating, previousOption: Option[Volume]) =>
+      hookOfCreation(previousOption match {
+        case None =>
+          if (updating.nodeNames.isEmpty)
+            throw DeserializationException("nodeNames is required", fieldNames = List("nodeNames"))
+          if (updating.path.isEmpty) throw DeserializationException("path is required", fieldNames = List("path"))
+          Creation(
+            group = key.group(),
+            name = key.name(),
+            nodeNames = updating.nodeNames.get,
+            path = updating.path.get,
+            tags = updating.tags.getOrElse(Map.empty)
+          )
+        case Some(previous) =>
+          Creation(
+            group = key.group(),
+            name = key.name(),
+            nodeNames = updating.nodeNames.getOrElse(previous.nodeNames),
+            path = updating.path.getOrElse(previous.path),
+            tags = updating.tags.getOrElse(previous.tags)
+          )
+      })
+
+  private[this] def hookOfGet(
+    implicit serviceCollie: ServiceCollie,
+    executionContext: ExecutionContext
+  ): HookOfGet[Volume] =
+    (volume: Volume) =>
+      serviceCollie.volumes().map(_.find(_.key == volume.key)).map {
+        case None => volume
+        case Some(runningVolume) =>
+          volume.copy(state = runningVolume.state, error = runningVolume.error)
+      }
+
+  private[this] def hookOfList(
+    implicit serviceCollie: ServiceCollie,
+    executionContext: ExecutionContext
+  ): HookOfList[Volume] =
+    (volumes: Seq[Volume]) =>
+      serviceCollie.volumes().map { runningVolumes =>
+        volumes.map { volume =>
+          runningVolumes.find(_.key == volume.key) match {
+            case None => volume
+            case Some(runningVolume) =>
+              volume.copy(state = runningVolume.state, error = runningVolume.error)
+          }
+        }
+      }
 
   private[this] def hookOfStart(
     implicit dataChecker: DataChecker,
@@ -147,52 +198,11 @@ private[configurator] object VolumeRoute {
     executionContext: ExecutionContext
   ): server.Route =
     RouteBuilder[Creation, Updating, Volume]()
-      .prefix("volumes")
-      .hookOfCreation(toVolume)
-      .hookOfUpdating(
-        (key, updating, previousOption) =>
-          toVolume(previousOption match {
-            case None =>
-              if (updating.nodeNames.isEmpty)
-                throw DeserializationException("nodeNames is required", fieldNames = List("nodeNames"))
-              if (updating.path.isEmpty) throw DeserializationException("path is required", fieldNames = List("path"))
-              Creation(
-                group = key.group(),
-                name = key.name(),
-                nodeNames = updating.nodeNames.get,
-                path = updating.path.get,
-                tags = updating.tags.getOrElse(Map.empty)
-              )
-            case Some(previous) =>
-              Creation(
-                group = key.group(),
-                name = key.name(),
-                nodeNames = updating.nodeNames.getOrElse(previous.nodeNames),
-                path = updating.path.getOrElse(previous.path),
-                tags = updating.tags.getOrElse(previous.tags)
-              )
-          })
-      )
-      .hookOfGet(
-        volume =>
-          serviceCollie.volumes().map(_.find(_.key == volume.key)).map {
-            case None => volume
-            case Some(runningVolume) =>
-              volume.copy(state = runningVolume.state, error = runningVolume.error)
-          }
-      )
-      .hookOfList(
-        volumes =>
-          serviceCollie.volumes().map { runningVolumes =>
-            volumes.map { volume =>
-              runningVolumes.find(_.key == volume.key) match {
-                case None => volume
-                case Some(runningVolume) =>
-                  volume.copy(state = runningVolume.state, error = runningVolume.error)
-              }
-            }
-          }
-      )
+      .prefix(PREFIX)
+      .hookOfCreation(hookOfCreation)
+      .hookOfUpdating(hookOfUpdating)
+      .hookOfGet(hookOfGet)
+      .hookOfList(hookOfList)
       .hookBeforeDelete(hookBeforeDelete)
       .hookOfPutAction(START_COMMAND, hookOfStart)
       .hookOfPutAction(STOP_COMMAND, hookOfStop)
