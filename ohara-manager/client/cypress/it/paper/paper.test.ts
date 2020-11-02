@@ -14,20 +14,20 @@
  * limitations under the License.
  */
 
+/* eslint-disable @typescript-eslint/no-unused-expressions */
 import * as generate from '../../../src/utils/generate';
-import { generateNodeIfNeeded } from '../../utils';
 import { KIND } from '../../../src/const';
 import { ElementParameters, CellAction } from '../../types';
+import { NodeRequest } from '../../../src/api/apiInterface/nodeInterface';
 import { isShabondi } from '../../../src/components/Pipeline/PipelineUtils';
 import { SOURCE, SINK } from '../../../src/api/apiInterface/connectorInterface';
 
-const node = generateNodeIfNeeded();
+const node: NodeRequest = generate.node();
 
-/* eslint-disable @typescript-eslint/no-unused-expressions */
 describe('Paper', () => {
   before(() => {
-    cy.deleteAllServices();
-    cy.createWorkspace({ node });
+    cy.deleteServicesByApi();
+    cy.createWorkspaceByApi({ node });
     cy.uploadStreamJar();
   });
 

@@ -15,13 +15,13 @@
  */
 
 import * as generate from '../../../src/utils/generate';
-import { generateNodeIfNeeded } from '../../utils';
+import { NodeRequest } from '../../../src/api/apiInterface/nodeInterface';
 
 describe('Create Workspace', () => {
   // generate node
-  const node = generateNodeIfNeeded();
+  const node: NodeRequest = generate.node();
 
-  before(() => cy.deleteAllServices());
+  before(() => cy.deleteServicesByApi());
 
   beforeEach(() => {
     cy.server();
@@ -145,7 +145,7 @@ describe('Create Workspace', () => {
 
     it('should reset the form after successfully create a workspace', () => {
       const workspaceName = generate.serviceName({ prefix: 'ws' });
-      cy.createWorkspace({ workspaceName });
+      cy.createWorkspaceByApi({ workspaceName });
 
       // after creation with specific workspace name, the workspace should use default name
       cy.findByTitle('Create a new workspace').click();

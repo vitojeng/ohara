@@ -139,7 +139,7 @@ describe('Pipeline', () => {
     const files = [source, sink];
 
     it('should able to open the dialog', () => {
-      cy.deleteAllServices();
+      cy.deleteServicesByApi();
       cy.createWorkspace();
       cy.uploadStreamJar();
       cy.createPipeline();

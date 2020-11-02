@@ -15,10 +15,9 @@
  */
 
 import * as generate from '../../../src/utils/generate';
-import { generateNodeIfNeeded } from '../../utils';
 
 describe('App Bar', () => {
-  before(() => cy.deleteAllServices());
+  before(() => cy.deleteServicesByApi());
 
   beforeEach(() => {
     // our tests should begin from home page
@@ -26,9 +25,8 @@ describe('App Bar', () => {
   });
 
   // generate workspace name
-  const name = generate.serviceName({ prefix: 'a', length: 10 });
+  const workspaceName = generate.serviceName({ prefix: 'a', length: 10 });
   // generate fake node
-  const node = generateNodeIfNeeded();
 
   // Although context is identical to describe (https://docs.cypress.io/guides/core-concepts/writing-and-organizing-tests.html#Test-Structure)
   // We use context here to make a "second layer" to organize tests as
@@ -97,8 +95,10 @@ describe('App Bar', () => {
 
   context('Add workspaces', () => {
     it('should have added two workspaces in list', () => {
-      // create workspace with default name "workspace1"
-      cy.createWorkspace({ node });
+      // create workspace with default name "workspace1". Note that we're not creating this workspace by API here
+      // as a workspace create by API won't have the event log message therefore, our test will fail when asserting
+      // the event log message
+      cy.createWorkspace();
 
       // there should have 2 element of workspace list link (workspace1 and new-add-button)
       cy.get('#app-bar')
@@ -123,15 +123,15 @@ describe('App Bar', () => {
       cy.findByText('There is only 1 currently').should('exist');
 
       // create workspace with random name
-      cy.createWorkspace({ workspaceName: name, node });
+      cy.createWorkspaceByApi({ workspaceName });
 
       // there should have 3 element of workspace list link now
       cy.get('#app-bar')
         .find('div.workspace-list > span')
         .should('have.length', 3)
         .first()
-        .contains('a', name.substring(0, 2).toUpperCase());
-      cy.location('pathname').should('equal', `/${name}`);
+        .contains('a', workspaceName.substring(0, 2).toUpperCase());
+      cy.location('pathname').should('equal', `/${workspaceName}`);
 
       // switch workspace from quick icon to default one
       cy.get('#app-bar')
@@ -159,7 +159,7 @@ describe('App Bar', () => {
         .filter(':enabled')
         .click();
       // the url should changed
-      cy.location('pathname').should('equal', `/${name}`);
+      cy.location('pathname').should('equal', `/${workspaceName}`);
     });
   });
 
@@ -213,7 +213,7 @@ describe('App Bar', () => {
 
   context('Not found page', () => {
     it('should display not found page', () => {
-      cy.deleteAllServices();
+      cy.deleteServicesByApi();
 
       cy.visit('/jladkf/safkj/ksjdl/jlkfsd/kjlfds')
         .contains('404')

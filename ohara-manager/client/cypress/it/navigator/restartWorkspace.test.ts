@@ -21,14 +21,7 @@ import { NodeRequest } from '../../../src/api/apiInterface/nodeInterface';
 import { RESOURCE } from '../../../src/api/utils/apiUtils';
 
 // Create two fake nodes
-const [node1, node2]: NodeRequest[] = Array(2)
-  .fill(0) // Avoid TS error
-  .map(() => ({
-    hostname: generate.serviceName(),
-    port: generate.port(),
-    user: generate.userName(),
-    password: generate.password(),
-  }));
+const node: NodeRequest = generate.node();
 
 const logs = {
   zookeeper: [
@@ -94,8 +87,8 @@ const retrySpecs = [
 
 describe('Restart workspace', () => {
   before(() => {
-    cy.deleteAllServices();
-    cy.createWorkspace({ node: node1 });
+    cy.deleteServicesByApi();
+    cy.createWorkspaceByApi();
   });
 
   beforeEach(() => {
@@ -106,9 +99,9 @@ describe('Restart workspace', () => {
 
   it('should be able to add node into workspace', () => {
     // Create a new node
-    cy.createNode(node2);
+    cy.createNode(node);
 
-    // Add node2 into workspace
+    // Add node into workspace
     cy.switchSettingSection(SettingSection.nodes);
     cy.get('.section-page-content').within(() => {
       cy.findByTitle('Add Node').click();
@@ -118,8 +111,8 @@ describe('Restart workspace', () => {
       cy.get('table')
         .should('have.length', 1)
         .within(($table) => {
-          // Check the node2 info and select it
-          cy.getTableCellByColumn($table, 'Hostname', node2.hostname)
+          // Check the node info and select it
+          cy.getTableCellByColumn($table, 'Hostname', node.hostname)
             .should('exist')
             .siblings('td')
             .first()
@@ -131,7 +124,7 @@ describe('Restart workspace', () => {
     });
 
     cy.get('.section-page-content').within(() => {
-      cy.findByText(node2.hostname)
+      cy.findByText(node.hostname)
         .should('exist')
         .siblings('td')
         .eq(3) // The "Used" column
@@ -154,8 +147,8 @@ describe('Restart workspace', () => {
           // assert the Services should be 0
           cy.getTableCellByColumn($table, 'Services', '0').should('exist');
 
-          // Check node2 hostname
-          cy.getTableCellByColumn($table, 'Name', node2.hostname)
+          // Check node hostname
+          cy.getTableCellByColumn($table, 'Name', node.hostname)
             .should('exist')
             .siblings('td')
             .first()
@@ -168,13 +161,13 @@ describe('Restart workspace', () => {
 
     cy.get('.section-page-content').within(() => {
       // Undo added node
-      cy.findByText(node2.hostname)
+      cy.findByText(node.hostname)
         .siblings('td')
         .last()
         .within(() => {
           cy.findByTitle('Undo add node').click();
         });
-      cy.findByText(node2.hostname).should('not.exist');
+      cy.findByText(node.hostname).should('not.exist');
     });
 
     // Adding node again
@@ -189,8 +182,8 @@ describe('Restart workspace', () => {
           // Assert the Services should be 0
           cy.getTableCellByColumn($table, 'Services', '0').should('exist');
 
-          // Check node2 hostname
-          cy.getTableCellByColumn($table, 'Name', node2.hostname)
+          // Check node hostname
+          cy.getTableCellByColumn($table, 'Name', node.hostname)
             .should('exist')
             .siblings('td')
             .first()
@@ -242,7 +235,7 @@ describe('Restart workspace', () => {
           .should('have.length', 1)
           .within(($table) => {
             // Select the newly added hostname
-            cy.getTableCellByColumn($table, 'Name', node2.hostname)
+            cy.getTableCellByColumn($table, 'Name', node.hostname)
               .should('exist')
               .siblings('td')
               .first()

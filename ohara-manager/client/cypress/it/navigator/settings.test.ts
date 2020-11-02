@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-import { generateNodeIfNeeded } from '../../utils';
 import * as generate from '../../../src/utils/generate';
 import { hashByGroupAndName } from '../../../src/utils/sha';
 import { SettingSection } from '../../types';
+import { NodeRequest } from '../../../src/api/apiInterface/nodeInterface';
 
 describe('Navigator', () => {
   // generate fake node
-  const node = generateNodeIfNeeded();
+  const node: NodeRequest = generate.node();
 
   // generate topics
   const t1 = generate.serviceName({ prefix: 't1' });
@@ -59,8 +59,8 @@ describe('Navigator', () => {
   const files = [source, sink, stream];
 
   before(() => {
-    cy.deleteAllServices();
-    cy.createWorkspace({ node });
+    cy.deleteServicesByApi();
+    cy.createWorkspaceByApi({ node });
   });
 
   beforeEach(() => {

@@ -17,7 +17,6 @@
 import { isEmpty, isObject } from 'lodash';
 import { CellAction, ElementParameters } from '../../types';
 import * as generate from '../../../src/utils/generate';
-import { generateNodeIfNeeded } from '../../utils';
 import { fetchServices, fetchServiceInfo } from '../../utils';
 import {
   SettingDef,
@@ -27,11 +26,9 @@ import { KIND } from '../../../src/const';
 import { SOURCE, SINK } from '../../../src/api/apiInterface/connectorInterface';
 
 describe('Property view', () => {
-  const node = generateNodeIfNeeded();
-
   before(() => {
-    cy.deleteAllServices();
-    cy.createWorkspace({ node });
+    cy.deleteServicesByApi();
+    cy.createWorkspaceByApi();
 
     // A stream is needed for our test to ensure the Toolbox stream list is visible
     cy.uploadStreamJar();

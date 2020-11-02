@@ -16,21 +16,13 @@
 
 import * as generate from '../../../src/utils/generate';
 import { KIND } from '../../../src/const';
-import { NodeRequest } from '../../../src/api/apiInterface/nodeInterface';
 import { ElementParameters } from '../../types';
 import { SOURCE, SINK } from '../../../src/api/apiInterface/connectorInterface';
 
-const node: NodeRequest = {
-  hostname: generate.serviceName(),
-  port: generate.port(),
-  user: generate.userName(),
-  password: generate.password(),
-};
-
 describe('Element connections', () => {
   before(() => {
-    cy.deleteAllServices();
-    cy.createWorkspace({ node });
+    cy.deleteServicesByApi();
+    cy.createWorkspaceByApi();
     cy.uploadStreamJar();
   });
 

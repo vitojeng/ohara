@@ -45,11 +45,7 @@ export const serviceName = ({
   return name;
 };
 
-interface Options {
-  length?: number;
-}
-
-export const randomString = (options?: Options) => {
+export const randomString = (options?: { length?: number }) => {
   const length = options?.length ?? 50;
 
   let string = '';
@@ -60,6 +56,17 @@ export const randomString = (options?: Options) => {
   }
 
   return string;
+};
+
+export const node = (options?: { prefix?: string }) => {
+  const prefix = options?.prefix ?? 'node';
+
+  return {
+    hostname: serviceName({ prefix }),
+    port: port(),
+    user: userName(),
+    password: password(),
+  };
 };
 
 export {

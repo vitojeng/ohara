@@ -15,14 +15,11 @@
  */
 
 import * as generate from '../../../src/utils/generate';
-import { generateNodeIfNeeded } from '../../utils';
 
 describe('Navigator', () => {
   before(() => {
-    const node = generateNodeIfNeeded();
-
-    cy.deleteAllServices();
-    cy.createWorkspace({ node });
+    cy.deleteServicesByApi();
+    cy.createWorkspaceByApi();
   });
 
   context('Pipeline list', () => {

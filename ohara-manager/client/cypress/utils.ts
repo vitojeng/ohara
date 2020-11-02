@@ -18,6 +18,8 @@
 
 // Note: Do not change the usage of absolute path
 // unless you have a solution to resolve TypeScript + Coverage
+import { isEmpty } from 'lodash';
+
 import * as generate from '../src/utils/generate';
 import * as nodeApi from '../src/api/nodeApi';
 import * as fileApi from '../src/api/fileApi';
@@ -31,6 +33,7 @@ import * as shabondiApi from '../src/api/shabondiApi';
 import * as pipelineApi from '../src/api/pipelineApi';
 import * as objectApi from '../src/api/objectApi';
 import * as inspectApi from '../src/api/inspectApi';
+import * as workspaceApi from '../src/api/workspaceApi';
 import { KIND } from '../src/const';
 import { wait, waitForRunning, waitForStopped } from './waitUtils';
 import { API, RESOURCE } from '../src/api/utils/apiUtils';
@@ -48,6 +51,7 @@ import {
   Necessary,
 } from '../src/api/apiInterface/definitionInterface';
 import { NodeRequest } from '../src/api/apiInterface/nodeInterface';
+import { GROUP } from '../src/const';
 
 export const waitFor = async <T extends BasicResponse>(
   resource: string,
@@ -67,23 +71,28 @@ export const createServicesInNodes = async ({
   withWorker = false,
   withBroker = false,
   withZookeeper = false,
+  withWorkspace = false,
+  useRandomName = true,
+  workspaceName = 'workspace1',
+  node = {},
 } = {}) => {
   const result: { [k: string]: any } = {};
+  const { serviceName } = generate;
 
-  const node = {
-    hostname: generate.serviceName({ prefix: 'node' }),
-    port: generate.port(),
-    user: generate.userName(),
-    password: generate.password(),
-  };
-  const nodeRes = await nodeApi.create(node);
+  // @ts-ignore
+  const _node: NodeRequest = isEmpty(node) ? generate.node() : node;
+  const zkName = useRandomName ? serviceName({ prefix: 'zk' }) : workspaceName;
+  const bkName = useRandomName ? serviceName({ prefix: 'bk' }) : workspaceName;
+  const wkName = useRandomName ? serviceName({ prefix: 'bk' }) : workspaceName;
+
+  const nodeRes = await nodeApi.create(_node);
   result.node = nodeRes.data;
 
   if (withZookeeper) {
     const zookeeper = {
-      name: generate.serviceName({ prefix: 'zk' }),
-      group: generate.serviceName({ prefix: 'group' }),
-      nodeNames: [node.hostname],
+      name: zkName,
+      group: GROUP.ZOOKEEPER,
+      nodeNames: [_node.hostname],
     };
     await zkApi.create(zookeeper);
     await zkApi.start(zookeeper);
@@ -92,9 +101,9 @@ export const createServicesInNodes = async ({
 
     if (withBroker) {
       const broker = {
-        name: generate.serviceName({ prefix: 'bk' }),
-        group: generate.serviceName({ prefix: 'group' }),
-        nodeNames: [node.hostname],
+        name: bkName,
+        group: GROUP.BROKER,
+        nodeNames: [_node.hostname],
         zookeeperClusterKey: {
           name: zookeeper.name,
           group: zookeeper.group,
@@ -107,9 +116,9 @@ export const createServicesInNodes = async ({
 
       if (withWorker) {
         const worker = {
-          name: generate.serviceName({ prefix: 'wk' }),
-          group: generate.serviceName({ prefix: 'group' }),
-          nodeNames: [node.hostname],
+          name: wkName,
+          group: GROUP.WORKER,
+          nodeNames: [_node.hostname],
           brokerClusterKey: {
             name: broker.name,
             group: broker.group,
@@ -119,6 +128,20 @@ export const createServicesInNodes = async ({
         await wkApi.start(worker);
         const wkRes = await waitFor(RESOURCE.WORKER, worker, waitForRunning);
         result.worker = wkRes.data;
+      }
+
+      if (withWorkspace) {
+        const workspace = {
+          name: workspaceName,
+          group: GROUP.WORKSPACE,
+          flag: 'created',
+          nodeNames: [_node.hostname],
+          worker: result.worker,
+          broker: result.broker,
+          zookeeper: result.zookeeper,
+        };
+
+        await workspaceApi.create(workspace);
       }
     }
   }

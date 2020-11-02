@@ -21,7 +21,7 @@ describe('App Bar', () => {
   const wkName = generate.serviceName();
 
   before(() => {
-    cy.deleteAllServices();
+    cy.deleteServicesByApi();
     cy.createWorkspace();
 
     // Wait until event log is properly logged

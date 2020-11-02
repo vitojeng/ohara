@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+/* eslint-disable @typescript-eslint/no-unused-expressions */
 import * as generate from '../../../src/utils/generate';
 import { CellAction, ElementParameters } from '../../types';
 import { KIND, CELL_STATUS } from '../../../src/const';
@@ -21,17 +22,13 @@ import { ObjectAbstract } from '../../../src/api/apiInterface/pipelineInterface'
 import { fetchPipelines } from '../../utils';
 import { SOURCE, SINK } from '../../../src/api/apiInterface/connectorInterface';
 import { PipelineRequest } from '../../../src/api/apiInterface/pipelineInterface';
-import { generateNodeIfNeeded } from '../../utils';
 
-const node = generateNodeIfNeeded();
-
-/* eslint-disable @typescript-eslint/no-unused-expressions */
 describe('Elements', () => {
   const sharedTopicName = generate.serviceName({ prefix: 'topic' });
 
   before(() => {
-    cy.deleteAllServices();
-    cy.createWorkspace({ node });
+    cy.deleteServicesByApi();
+    cy.createWorkspaceByApi();
     cy.createSharedTopic(sharedTopicName);
 
     // A stream is needed for our test to ensure the Toolbox stream list is visible

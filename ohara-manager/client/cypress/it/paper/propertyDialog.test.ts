@@ -16,7 +16,6 @@
 
 import * as generate from '../../../src/utils/generate';
 import { KIND } from '../../../src/const';
-import { generateNodeIfNeeded } from '../../utils';
 import { fetchServiceInfo } from '../../utils';
 import { CellAction, ElementParameters } from '../../types';
 import {
@@ -33,13 +32,10 @@ type Data = {
   dataType: RecommendValue;
 };
 
-const node = generateNodeIfNeeded();
-
-/* eslint-disable @typescript-eslint/no-unused-expressions */
 describe('Property dialog', () => {
   before(() => {
-    cy.deleteAllServices();
-    cy.createWorkspace({ node });
+    cy.deleteServicesByApi();
+    cy.createWorkspaceByApi();
     cy.uploadStreamJar();
   });
 

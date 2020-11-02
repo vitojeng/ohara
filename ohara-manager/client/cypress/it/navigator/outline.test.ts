@@ -17,17 +17,14 @@
 import * as generate from '../../../src/utils/generate';
 import { ElementParameters } from '../../types';
 import { KIND } from '../../../src/const';
-import { generateNodeIfNeeded } from '../../utils';
 import { SOURCE, SINK } from '../../../src/api/apiInterface/connectorInterface';
 
 describe('Navigator', () => {
   const sharedTopicName = generate.serviceName({ prefix: 'topic' });
 
   before(() => {
-    const node = generateNodeIfNeeded();
-
-    cy.deleteAllServices();
-    cy.createWorkspace({ node });
+    cy.deleteServicesByApi();
+    cy.createWorkspaceByApi();
     cy.uploadStreamJar();
     cy.createSharedTopic(sharedTopicName);
   });

@@ -17,6 +17,10 @@
 /// <reference types="cypress" />
 
 declare namespace Cypress {
+  import {
+    CreateWorkspaceOption,
+    CreateWorkspaceByApiOption,
+  } from './support/customCommands';
   interface FixtureRequest {
     fixturePath: string;
     name: string;
@@ -29,26 +33,42 @@ declare namespace Cypress {
     createNode: (node?: NodeRequest) => Chainable<NodeRequest>;
     createNodeIfNotExists: (node: NodeRequest) => Chainable<NodeResponse>;
     createWorkspace: (options?: CreateWorkspaceOption) => Chainable<null>;
+    /**
+     * Create a workspace by APIs, this is general fast then creating with UI (createWorkspace),
+     * you should opt to use this whenever possible. But a few things you should know before using this:
+     * 1. A cy.visit() is follow after all services are created with this command due or UI implementation
+     * 2. The snackbar message will not show up since it's created by APIs
+     * 3. This command basically utilize the `createServicesInNodes` function in the `utils.ts`
+     * @param options
+     * @param options.workspaceName The name of the workspace
+     * @param options.node Node used in the workspace
+     * @example cy.createWorkspaceByApi(); // Use default workspace name (which is `workspace1`) and default node (a random fake node)
+     * @example cy.deleteNode('myawesomeworkspace'); // Specify a workspace name
+     */
+    createWorkspaceByApi: (
+      options?: CreateWorkspaceByApiOption,
+    ) => Chainable<null>;
+
     produceTopicData: (
       workspaceName?: string,
       topicName?: string,
     ) => Chainable<void>;
-    deleteAllServices: () => Chainable<null>;
+
+    /**
+     * Delete all services. This command uses `deleteAllServices` under the hook
+     * @example cy.deleteServicesByApi();
+     */
+    deleteServicesByApi: () => Chainable<null>;
     /**
      * Get the _&lt;td /&gt;_ elements by required parameters.
      * <p> This function has the following combination:
-     *
-     * <p> 1. `columnName`: filter all _&lt;td /&gt;_ elements of specific column.
-     *
-     * <p> 2. `columnName + columnValue`: filter the _&lt;td /&gt;_ element of specific column and value.
-     *
-     * <p> 3. `columnName + rowFilter`: filter the _&lt;td /&gt;_ element of specific column in specific rows.
-     *
-     * <p> 4. `columnName + columnValue + rowFilter`: filter the _&lt;td /&gt;_ element of specific column in specific rows.
-     *
      * @param {string} columnName the filtered header of table cell
      * @param {string} columnValue the filtered value of table cell
      * @param {Function} rowFilter given a function to filter the result of elements
+     * @example `columnName`: filter all _&lt;td /&gt;_ elements of specific column.
+     * @example `columnName + columnValue`: filter the _&lt;td /&gt;_ element of specific column and value.
+     * @example `columnName + rowFilter`: filter the _&lt;td /&gt;_ element of specific column in specific rows.
+     * @example `columnName + columnValue + rowFilter`: filter the _&lt;td /&gt;_ element of specific column in specific rows.
      */
     getTableCellByColumn: (
       $table: JQuery<HTMLTableElement>,
@@ -56,8 +76,6 @@ declare namespace Cypress {
       columnValue?: string,
       rowFilter?: (row: JQuery<HTMLTableElement>) => boolean,
     ) => Chainable<JQuery<HTMLElement | HTMLElement[]>>;
-    // Paper
-    // Drag & Drop
     dragAndDrop: (
       shiftX: number,
       shiftY: number,
@@ -71,14 +89,12 @@ declare namespace Cypress {
      * @example cy.deleteNode('host123', true); // Assuming you're in the node list dialog, the open dialog step is skipped
      * @example cy.deleteNode('host123', false);
      */
-
     deleteNode: (hostname: string, isInsideNodeList?) => Chainable<null>;
 
     /**
      * Delete all nodes, note that you need to make sure these nodes are not used by any workspaces or services
      * @example cy.deleteNodesByApi();
      */
-
     deleteNodesByApi: () => Chainable<null>;
     addElement: (element: ElementParameters) => Chainable<null>;
     addElements: (elements: ElementParameters[]) => Chainable<null>;
@@ -91,7 +107,6 @@ declare namespace Cypress {
      * @example cy.getElement('mySource').should('have.text', 'running');
      * @example cy.getElement('myTopic').should('have.class', 'running');
      */
-
     getElementStatus: (
       name: string,
       isTopic?: boolean,
@@ -126,11 +141,10 @@ declare namespace Cypress {
     closeIntroDialog: () => Chainable<null>;
 
     /**
-     * Use `cy.findAllByRole()` to get all dialog and filter out the invisible ones
+     * Use `cy.findAllByRole()` to get all dialogs and filter out the invisible ones
      * @example cy.findVisibleDialog().findByText('DELETE').click();
      * @example cy.findVisibleDialog().within(() => cy.findByText('Delete').click());
      */
-
     findVisibleDialog: () => Chainable<HTMLElement>;
   }
 }

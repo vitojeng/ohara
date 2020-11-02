@@ -31,7 +31,7 @@ after(async () => {
     // which will print out to our browsers console
     // to indicate which objects are deleted
     Cypress.log({
-      name: 'Stage of After All',
+      name: 'All services were deleted',
       message: [],
       consoleProps: () =>
         _(res)

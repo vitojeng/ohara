@@ -25,8 +25,8 @@ describe('App Bar', () => {
   let hostname = '';
 
   before(() => {
-    cy.deleteAllServices();
-    cy.createWorkspace();
+    cy.deleteServicesByApi();
+    cy.createWorkspaceByApi();
   });
 
   beforeEach(() => {

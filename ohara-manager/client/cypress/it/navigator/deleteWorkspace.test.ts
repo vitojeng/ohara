@@ -15,19 +15,20 @@
  */
 
 import * as generate from '../../../src/utils/generate';
-import { generateNodeIfNeeded } from '../../utils';
 import { SettingSection, ElementParameters } from '../../types';
 import { KIND } from '../../../src/const';
+import { NodeRequest } from '../../../src/api/apiInterface/nodeInterface';
 import {
   SOURCE,
   SINK,
 } from './../../../src/api/apiInterface/connectorInterface';
+
 describe('Delete workspace', () => {
-  const node = generateNodeIfNeeded();
+  const node: NodeRequest = generate.node();
 
   before(() => {
-    cy.deleteAllServices();
-    cy.createWorkspace({ node });
+    cy.deleteServicesByApi();
+    cy.createWorkspaceByApi({ node });
   });
 
   beforeEach(() => cy.visit('/'));
@@ -134,10 +135,10 @@ describe('Delete workspace', () => {
 
     // clean up
     cy.stopAndDeleteAllPipelines();
-    cy.deleteAllServices();
+    cy.deleteServicesByApi();
 
     // Reset the state, there should be a pre-created workspace available to next test
-    cy.createWorkspace({ workspaceName: workspace1, node });
+    cy.createWorkspaceByApi({ workspaceName: workspace1, node });
   });
 
   it('should clean up local state when a workspace is deleted', () => {

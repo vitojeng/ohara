@@ -16,7 +16,6 @@
 
 import * as generate from '../../../src/utils/generate';
 import { ElementParameters } from '../../types';
-import { generateNodeIfNeeded } from '../../utils';
 import { KIND, CELL_TYPE } from '../../../src/const';
 import { SOURCE, SINK } from '../../../src/api/apiInterface/connectorInterface';
 
@@ -24,12 +23,11 @@ const sources = Object.values(SOURCE).sort((a, b) => a.localeCompare(b));
 const sinks = Object.values(SINK).sort((a, b) => a.localeCompare(b));
 
 describe('ToolBox', () => {
-  const node = generateNodeIfNeeded();
-
   const sharedTopicName = generate.serviceName({ prefix: 'topic' });
+
   before(() => {
-    cy.deleteAllServices();
-    cy.createWorkspace({ node });
+    cy.deleteServicesByApi();
+    cy.createWorkspaceByApi();
     cy.createSharedTopic(sharedTopicName);
     cy.uploadStreamJar();
   });

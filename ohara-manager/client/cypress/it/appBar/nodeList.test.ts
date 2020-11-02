@@ -15,10 +15,10 @@
  */
 
 import * as generate from '../../../src/utils/generate';
-import { generateNodeIfNeeded } from '../../utils';
+import { NodeRequest } from '../../../src/api/apiInterface/nodeInterface';
 
 describe('App Bar', () => {
-  before(() => cy.deleteAllServices());
+  before(() => cy.deleteServicesByApi());
 
   beforeEach(() => {
     cy.visit('/');
@@ -144,10 +144,10 @@ describe('App Bar', () => {
     });
 
     it(`should not be able to delete or edit a node when it's being used`, () => {
-      const node = generateNodeIfNeeded();
+      const node: NodeRequest = generate.node();
 
       // create workspace
-      cy.createWorkspace({ node });
+      cy.createWorkspaceByApi({ node });
 
       // click node list
       cy.findByTitle(/node list/i).click();

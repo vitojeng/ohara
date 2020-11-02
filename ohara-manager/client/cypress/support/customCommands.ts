@@ -23,14 +23,23 @@ import { some } from 'lodash';
 import { NodeRequest } from '../../src/api/apiInterface/nodeInterface';
 import { State } from '../../src/api/apiInterface/topicInterface';
 import * as nodeApi from '../../src/api/nodeApi';
-import { deleteAllServices, generateNodeIfNeeded } from '../utils';
+import {
+  deleteAllServices,
+  generateNodeIfNeeded,
+  createServicesInNodes,
+} from '../utils';
 import { FixtureResponse, SettingSection } from '../types';
 
-interface CreateWorkspaceOption {
+export interface CreateWorkspaceOption {
   workspaceName?: string;
   node?: NodeRequest;
   closeOnFailureOrFinish?: boolean;
 }
+
+export type CreateWorkspaceByApiOption = Omit<
+  CreateWorkspaceOption,
+  'closeOnFailureOrFinish'
+>;
 
 // Utility commands
 Cypress.Commands.add('createJar', (file: Cypress.FixtureRequest) => {
@@ -55,36 +64,33 @@ Cypress.Commands.add('createJar', (file: Cypress.FixtureRequest) => {
     });
 });
 
-Cypress.Commands.add(
-  'createNode',
-  (node: NodeRequest = generateNodeIfNeeded()) => {
-    // if the intro dialog appears, we should close it
-    cy.get('body').then(($body) => {
-      if ($body.find('[data-testid="intro-dialog"]').length > 0) {
-        cy.findByTestId('close-intro-button').filter(':visible').click();
-      }
-    });
+Cypress.Commands.add('createNode', (node: NodeRequest = generate.node()) => {
+  // if the intro dialog appears, we should close it
+  cy.get('body').then(($body) => {
+    if ($body.find('[data-testid="intro-dialog"]').length > 0) {
+      cy.findByTestId('close-intro-button').filter(':visible').click();
+    }
+  });
 
-    cy.findByTestId('nodes-dialog-open-button').click();
-    cy.findByTestId('nodes-dialog').should('exist');
+  cy.findByTestId('nodes-dialog-open-button').click();
+  cy.findByTestId('nodes-dialog').should('exist');
 
-    cy.findByRole('table').then(($table) => {
-      if ($table.find(`td:contains(${node.hostname})`).length === 0) {
-        cy.findByTitle('Create Node').click();
-        cy.findByLabelText(/hostname/i).type(node.hostname);
-        cy.findByLabelText(/port/i).type(`${node.port}`);
-        cy.findByLabelText(/user/i).type(node.user);
-        cy.findByLabelText(/password/i).type(node.password);
-        cy.findByText('CREATE').click();
-      }
-    });
+  cy.findByRole('table').then(($table) => {
+    if ($table.find(`td:contains(${node.hostname})`).length === 0) {
+      cy.findByTitle('Create Node').click();
+      cy.findByLabelText(/hostname/i).type(node.hostname);
+      cy.findByLabelText(/port/i).type(`${node.port}`);
+      cy.findByLabelText(/user/i).type(node.user);
+      cy.findByLabelText(/password/i).type(node.password);
+      cy.findByText('CREATE').click();
+    }
+  });
 
-    cy.findByTestId('nodes-dialog-close-button').click();
-    cy.findByTestId('nodes-dialog').should('not.exist');
+  cy.findByTestId('nodes-dialog-close-button').click();
+  cy.findByTestId('nodes-dialog').should('not.exist');
 
-    return cy.wrap(node);
-  },
-);
+  return cy.wrap(node);
+});
 
 Cypress.Commands.add('createNodeIfNotExists', (nodeToCreate: NodeRequest) => {
   cy.request('api/nodes')
@@ -130,9 +136,16 @@ Cypress.Commands.add('deleteNode', (hostname, isInsideNodeList = false) => {
 });
 
 Cypress.Commands.add('deleteNodesByApi', () => {
-  cy.wrap(null).then(async () => {
+  cy.wrap(null, { log: false }).then(async () => {
     const { data: nodes } = await nodeApi.getAll();
     await Promise.all(nodes.map((node) => nodeApi.remove(node.hostname)));
+
+    Cypress.log({
+      name: 'deleteNodesByApi',
+      displayName: `Command`,
+      message: `All nodes were deleted!`,
+      consoleProps: () => ({ ...nodes }),
+    });
   });
 });
 
@@ -159,11 +172,13 @@ Cypress.Commands.add('addNode', (node = generateNodeIfNeeded) => {
 
 Cypress.Commands.add(
   'createWorkspace',
-  ({
-    workspaceName,
-    node = generateNodeIfNeeded(),
-    closeOnFailureOrFinish = true,
-  }: CreateWorkspaceOption = {}) => {
+  (options: CreateWorkspaceOption = {}) => {
+    const {
+      workspaceName,
+      node = generateNodeIfNeeded(),
+      closeOnFailureOrFinish = true,
+    } = options;
+
     // Click the quick start dialog
     cy.visit('/');
 
@@ -221,10 +236,45 @@ Cypress.Commands.add(
   },
 );
 
-Cypress.Commands.add('deleteAllServices', () => {
-  cy.log(`Begin delete all services...`)
-    .then(async () => await deleteAllServices())
-    .then(() => cy.log(`Finish delete all services!`));
+Cypress.Commands.add(
+  'createWorkspaceByApi',
+  (options: CreateWorkspaceByApiOption = {}) => {
+    const { workspaceName = 'workspace1', node } = options;
+
+    cy.wrap(null, { log: false }).then(async () => {
+      const result = await createServicesInNodes({
+        withWorker: true,
+        withBroker: true,
+        withZookeeper: true,
+        withWorkspace: true,
+        useRandomName: false,
+        workspaceName,
+        node,
+      });
+
+      Cypress.log({
+        name: 'createWorkspaceByApi',
+        displayName: `Command`,
+        message: `${workspaceName} created!`,
+        consoleProps: () => result,
+      });
+    });
+
+    // Reloads the page in order to fetch definition APIs
+    cy.visit('/', { log: false });
+  },
+);
+
+Cypress.Commands.add('deleteServicesByApi', () => {
+  cy.wrap(null, { log: false }).then(async () => {
+    const result = await deleteAllServices();
+    Cypress.log({
+      name: 'deleteServicesByApi',
+      displayName: `Command`,
+      message: `All services were deleted!`,
+      consoleProps: () => result,
+    });
+  });
 });
 
 Cypress.Commands.add(

@@ -24,23 +24,13 @@ import * as generate from '../../src/utils/generate';
 import * as nodeApi from '../../src/api/nodeApi';
 import { NODE_STATE } from '../../src/api/apiInterface/nodeInterface';
 import { deleteAllServices } from '../utils';
-
-const generateNode = () => {
-  const params = {
-    hostname: generate.serviceName({ prefix: 'node' }),
-    port: generate.port(),
-    user: generate.userName(),
-    password: generate.password(),
-    tags: {},
-  };
-  return params;
-};
+import { NodeRequest } from '../../src/api/apiInterface/nodeInterface';
 
 describe('Node API', () => {
   beforeEach(() => deleteAllServices());
 
   it('createNode', async () => {
-    const params = generateNode();
+    const params: NodeRequest = generate.node();
 
     const result = await nodeApi.create(params);
 
@@ -86,7 +76,7 @@ describe('Node API', () => {
   });
 
   it('updateNode', async () => {
-    const params = generateNode();
+    const params: NodeRequest = generate.node();
     await nodeApi.create(params);
 
     const newParams = Object.assign({}, params);
@@ -128,7 +118,7 @@ describe('Node API', () => {
   });
 
   it('fetchNode', async () => {
-    const params = generateNode();
+    const params: NodeRequest = generate.node();
     await nodeApi.create(params);
 
     const result = await nodeApi.get(params.hostname);
@@ -170,8 +160,8 @@ describe('Node API', () => {
   });
 
   it('fetchNodes', async () => {
-    const paramsOne = generateNode();
-    const paramsTwo = generateNode();
+    const paramsOne: NodeRequest = generate.node();
+    const paramsTwo: NodeRequest = generate.node();
 
     await nodeApi.create(paramsOne);
     await nodeApi.create(paramsTwo);
@@ -189,7 +179,7 @@ describe('Node API', () => {
   });
 
   it('deleteNode', async () => {
-    const params = generateNode();
+    const params: NodeRequest = generate.node();
     await nodeApi.create(params);
     await nodeApi.remove(params.hostname);
 
