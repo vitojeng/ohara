@@ -17,7 +17,6 @@
 package oharastream.ohara.configurator.route
 
 import java.lang
-import java.nio.charset.StandardCharsets
 
 import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport._
 import akka.http.scaladsl.server
@@ -44,7 +43,7 @@ import oharastream.ohara.client.database.DatabaseClient
 import oharastream.ohara.client.kafka.ConnectorAdmin
 import oharastream.ohara.common.data.Serializer
 import oharastream.ohara.common.setting.{ClassType, ConnectorKey, ObjectKey, TopicKey}
-import oharastream.ohara.common.util.{CommonUtils, Releasable, VersionUtils}
+import oharastream.ohara.common.util.{ByteUtils, CommonUtils, Releasable, VersionUtils}
 import oharastream.ohara.configurator.Configurator.Mode
 import oharastream.ohara.configurator.fake.{FakeConnectorAdmin, FakeServiceCollie}
 import oharastream.ohara.configurator.store.DataStore
@@ -80,12 +79,16 @@ private[configurator] object InspectRoute {
               offset = offset,
               // only Ohara source connectors have this header
               sourceClass = swallowException(
-                headers.find(_.key() == Header.SOURCE_CLASS_KEY).map(h => new String(h.value(), StandardCharsets.UTF_8))
+                headers
+                  .find(_.key() == Header.SOURCE_CLASS_KEY)
+                  .map(_.value())
+                  .map(ByteUtils.toString)
               ),
               sourceKey = swallowException(
                 headers
                   .find(_.key() == Header.SOURCE_KEY_KEY)
-                  .map(h => new String(h.value(), StandardCharsets.UTF_8))
+                  .map(_.value())
+                  .map(ByteUtils.toString)
                   .map(ObjectKey.toObjectKey)
               ),
               value = swallowException(Some(JsonSupport.toJson(Serializer.ROW.from(bytes)))),

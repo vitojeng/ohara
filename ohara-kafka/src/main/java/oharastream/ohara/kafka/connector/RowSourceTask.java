@@ -16,7 +16,6 @@
 
 package oharastream.ohara.kafka.connector;
 
-import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -127,8 +126,7 @@ public abstract class RowSourceTask extends SourceTask {
    */
   @VisibleForTesting byte[] keyInBytes = null;
 
-  @VisibleForTesting
-  byte[] classNameInBytes = getClass().getName().getBytes(StandardCharsets.UTF_8);
+  @VisibleForTesting byte[] classNameInBytes = ByteUtils.toBytes(getClass().getName());
 
   /**
    * convert the row to byte array. This method is open to subclasses if they are another idea of
@@ -229,8 +227,7 @@ public abstract class RowSourceTask extends SourceTask {
         ConnectorUtils.ignoredMessageNumberCounter(taskSetting.connectorKey());
     ignoredMessageSizeCounter =
         ConnectorUtils.ignoredMessageSizeCounter(taskSetting.connectorKey());
-    keyInBytes =
-        ObjectKey.toJsonString(taskSetting.connectorKey()).getBytes(StandardCharsets.UTF_8);
+    keyInBytes = ByteUtils.toBytes(ObjectKey.toJsonString(taskSetting.connectorKey()));
     run(taskSetting);
   }
 

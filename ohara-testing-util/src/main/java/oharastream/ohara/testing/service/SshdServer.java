@@ -19,11 +19,11 @@ package oharastream.ohara.testing.service;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
+import oharastream.ohara.common.util.ByteUtils;
 import oharastream.ohara.common.util.CommonUtils;
 import oharastream.ohara.common.util.Releasable;
 import org.apache.sshd.server.Environment;
@@ -97,7 +97,7 @@ public interface SshdServer extends Releasable {
                                   if (err != null)
                                     try {
                                       try {
-                                        err.write(e.getMessage().getBytes(StandardCharsets.UTF_8));
+                                        err.write(ByteUtils.toBytes(e.getMessage()));
                                         err.write('\n');
                                       } finally {
                                         err.flush();
