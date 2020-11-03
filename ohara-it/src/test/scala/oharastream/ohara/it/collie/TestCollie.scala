@@ -63,11 +63,6 @@ class TestCollie extends IntegrationTest {
 
   @ParameterizedTest(name = "{displayName} with {argumentsWithNames}")
   @MethodSource(value = Array("parameters"))
-  def testSingleCluster(platform: ContainerPlatform): Unit =
-    close(platform.setup())(resourceRef => testZookeeperBrokerWorker(1, resourceRef))(_ => ())
-
-  @ParameterizedTest(name = "{displayName} with {argumentsWithNames}")
-  @MethodSource(value = Array("parameters"))
   def testMultiClusters(platform: ContainerPlatform): Unit =
     close(platform.setup())(resourceRef => testZookeeperBrokerWorker(2, resourceRef))(_ => ())
 

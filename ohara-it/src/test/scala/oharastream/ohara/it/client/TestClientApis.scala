@@ -18,6 +18,7 @@ package oharastream.ohara.it.client
 
 import java.util.concurrent.TimeUnit
 
+import oharastream.ohara.client.configurator.NodeApi
 import oharastream.ohara.it.{ContainerPlatform, IntegrationTest}
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.condition.EnabledIfEnvironmentVariable
@@ -30,7 +31,37 @@ import scala.jdk.CollectionConverters._
 
 @Tag("integration-test-client")
 @EnabledIfEnvironmentVariable(named = "ohara.it.docker", matches = ".*")
-class TestLog extends IntegrationTest {
+class TestClientApis extends IntegrationTest {
+  @ParameterizedTest(name = "{displayName} with {argumentsWithNames}")
+  @MethodSource(value = Array("parameters"))
+  def testListNodes(platform: ContainerPlatform): Unit =
+    close(platform.setup()) { resourceRef =>
+      val services =
+        result(resourceRef.nodeApi.list()).flatMap(_.services)
+      services should not be Seq.empty
+      services.find(_.name == NodeApi.CONFIGURATOR_SERVICE_NAME) should not be None
+    }(_ => ())
+
+  @ParameterizedTest(name = "{displayName} with {argumentsWithNames}")
+  @MethodSource(value = Array("parameters"))
+  def testResources(platform: ContainerPlatform): Unit =
+    close(platform.setup()) { resourceRef =>
+      val nodes = result(resourceRef.nodeApi.list())
+      nodes should not be Seq.empty
+      nodes.foreach { node =>
+        nodes.exists(_.hostname == node.hostname) shouldBe true
+        node.state shouldBe NodeApi.State.AVAILABLE
+        node.error shouldBe None
+        node.resources should not be Seq.empty
+        node.resources.size should be >= 1
+        node.resources.foreach { resource =>
+          resource.value.toInt should be >= 1
+          resource.name.isEmpty shouldBe false
+          resource.unit.isEmpty shouldBe false
+        }
+      }
+    }(_ => ())
+
   @ParameterizedTest(name = "{displayName} with {argumentsWithNames}")
   @MethodSource(value = Array("parameters"))
   def testQueryConfigurator(platform: ContainerPlatform): Unit =
@@ -50,6 +81,6 @@ class TestLog extends IntegrationTest {
     }(_ => ())
 }
 
-object TestLog {
+object TestClientApis {
   def parameters: java.util.stream.Stream[Arguments] = ContainerPlatform.all.map(o => Arguments.of(o)).asJava.stream()
 }
