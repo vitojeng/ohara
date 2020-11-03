@@ -167,7 +167,7 @@ describe('Pipeline', () => {
         'Worker plugins and shared jars',
       );
 
-      cy.get('div.plugins').findByTitle('Add File').click();
+      cy.get('.plugins').findByTitle('Add File').click();
 
       cy.findByText('ohara-it-sink.jar')
         .siblings('td')

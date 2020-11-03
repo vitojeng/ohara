@@ -15,13 +15,14 @@
  */
 
 import React from 'react';
-import { capitalize, get, isEmpty, isObjectLike, toString } from 'lodash';
+import { capitalize, get, isEmpty } from 'lodash';
 import VisibilityIcon from '@material-ui/icons/Visibility';
 import ReactJson from 'react-json-view';
 
 import * as hooks from 'hooks';
 import { Table } from 'components/common/Table';
 import { Dialog } from 'components/common/Dialog';
+import { convertToString } from './utils';
 import {
   StyledTableRow,
   StyledTableCell,
@@ -63,26 +64,21 @@ const ViewTopic = () => {
               <StyledTableCell key={rowIdx + '_view'}>
                 <VisibilityIcon
                   data-testid={`detail-view-icon-${rowIdx}`}
-                  onClick={() => {
-                    setViewTopicMessage(message);
-                  }}
+                  onClick={() => setViewTopicMessage(message)}
                 />
               </StyledTableCell>
               {headers.map((header, headerIdx) => {
+                const key = rowIdx + '_' + headerIdx;
+                const value = message.value[header];
                 const align = headerIdx === lastItem ? 'right' : 'left';
-                return message.value[header] ? (
-                  <StyledTableCell align={align} key={rowIdx + '_' + headerIdx}>
-                    {isObjectLike(message.value[header])
-                      ? isEmpty(message.value[header])
-                        ? null
-                        : JSON.stringify(message.value[header])
-                      : toString(message.value[header])}
+                const cellValue = convertToString(value);
+
+                return cellValue ? (
+                  <StyledTableCell align={align} key={key}>
+                    {cellValue}
                   </StyledTableCell>
                 ) : (
-                  <StyledTableCell
-                    align={align}
-                    key={rowIdx + '_' + headerIdx}
-                  />
+                  <StyledTableCell align={align} key={key} />
                 );
               })}
             </>

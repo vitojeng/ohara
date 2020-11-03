@@ -15,7 +15,7 @@
  */
 
 export {};
-const SINGLE_COMMAND_TIMEOUT = 5000;
+const SINGLE_COMMAND_TIMEOUT = 6000;
 
 Cypress.Commands.overwrite('get', (originFn, subject, options) => {
   // we only wait a few seconds for simple command instead of using defaultCommandTimeout

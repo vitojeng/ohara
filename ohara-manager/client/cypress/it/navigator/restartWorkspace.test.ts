@@ -277,7 +277,7 @@ describe('Restart workspace', () => {
       // close the settings dialog
       cy.findByTestId('workspace-settings-dialog-close-button')
         .should('be.visible')
-        .click({ force: true });
+        .click();
 
       cy.switchSettingSection(section, sectionItem);
       cy.get('.section-page-content').within(() => {
@@ -348,7 +348,7 @@ describe('Restart workspace', () => {
 
       cy.findByTestId('snackbar').should(
         'have.text',
-        'Successfully Restart workspace workspace1.',
+        'Successfully restarted workspace workspace1.',
       );
 
       cy.findByText('100%');
@@ -381,7 +381,7 @@ describe('Restart workspace', () => {
 
       cy.findByTestId('snackbar').should(
         'have.text',
-        'Successfully Restart workspace workspace1.',
+        'Successfully restarted workspace workspace1.',
       );
 
       cy.findByText('100%');
@@ -415,7 +415,7 @@ describe('Restart workspace', () => {
 
       cy.findByTestId('snackbar').should(
         'have.text',
-        'Successfully Restart workspace workspace1.',
+        'Successfully restarted workspace workspace1.',
       );
 
       cy.findByText('100%');
@@ -475,7 +475,7 @@ describe('Restart workspace', () => {
 
     cy.findByTestId('snackbar').should(
       'have.text',
-      'Successfully Restart workspace workspace1.',
+      'Successfully restarted workspace workspace1.',
     );
 
     cy.findByText('100%');
@@ -512,7 +512,7 @@ describe('Restart workspace', () => {
 
     cy.findByTestId('snackbar').should(
       'have.text',
-      'Successfully Restart workspace workspace1.',
+      'Successfully restarted workspace workspace1.',
     );
 
     cy.findByText('100%');

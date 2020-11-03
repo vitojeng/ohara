@@ -330,8 +330,6 @@ function assertPageTitle(pageTitle: string) {
     cy.findByText(/^settings$/i).should('exist');
     cy.get('.section-page-header').should('have.text', pageTitle);
 
-    cy.findByTestId('workspace-settings-dialog-close-button').click({
-      force: true,
-    });
+    cy.findByTestId('workspace-settings-dialog-close-button').click();
   });
 }

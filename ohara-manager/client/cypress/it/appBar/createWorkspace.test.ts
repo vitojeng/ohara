@@ -57,9 +57,8 @@ describe('Create Workspace', () => {
       cy.findByText('SAVE').click();
       cy.findAllByText('NEXT').filter(':visible').click();
 
-      // 1. assert the node data should appear when click back button
-      // 2. Fix cypress detached DOM issue: https://docs.cypress.io/guides/references/error-messages.html#Ignore-built-in-error-checking
-      cy.findAllByText('BACK').filter(':visible').click({ force: true });
+      // assert the node data should appear when click back button
+      cy.findAllByText('BACK').filter(':visible').click();
       cy.contains('h6', 'Hostname')
         .siblings('div')
         .invoke('html')

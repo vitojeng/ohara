@@ -388,9 +388,7 @@ Cypress.Commands.add(
           .should('equal', State.RUNNING);
       });
 
-    cy.findByTestId('workspace-settings-dialog-close-button').click({
-      force: true,
-    });
+    cy.findByTestId('workspace-settings-dialog-close-button').click();
   },
 );
 

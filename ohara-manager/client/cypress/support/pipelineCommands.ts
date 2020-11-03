@@ -380,7 +380,5 @@ Cypress.Commands.add('uploadStreamJar', () => {
   // click save button
   cy.findAllByText('SAVE').filter(':visible').click();
 
-  cy.findByTestId('workspace-settings-dialog-close-button').click({
-    force: true,
-  });
+  cy.findByTestId('workspace-settings-dialog-close-button').click();
 });

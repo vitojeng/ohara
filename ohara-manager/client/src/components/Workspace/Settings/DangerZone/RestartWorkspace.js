@@ -205,7 +205,7 @@ const RestartWorkspace = (props) => {
       action: () => {
         return new Promise((resolve) => {
           // Log a success message to Event Log
-          eventLog.info(`Successfully Restart workspace ${workspace.name}.`);
+          eventLog.info(`Successfully restarted workspace ${workspace.name}.`);
 
           updateWorkspace({
             ...workspace,
