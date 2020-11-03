@@ -287,9 +287,7 @@ object RouteBuilder {
           hookOfPutActions.get(subName).orElse(hookOfFinalPutAction) match {
             case None => routeToOfficialUrl(s"/$prefix/$subName")
             case Some(f) =>
-              complete {
-                store.value[Res](key).flatMap(res => f(res, subName, params)).map(_ => StatusCodes.Accepted)
-              }
+              complete(store.value[Res](key).flatMap(res => f(res, subName, params)).map(_ => StatusCodes.Accepted))
           }
         }
 

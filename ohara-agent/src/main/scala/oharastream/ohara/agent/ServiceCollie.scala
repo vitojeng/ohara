@@ -203,17 +203,22 @@ abstract class ServiceCollie extends Releasable {
     */
   final def createLocalVolumes(key: ObjectKey, path: String, nodeNames: Set[String])(
     implicit executionContext: ExecutionContext
-  ): Future[Unit] =
-    Future
-      .traverse(nodeNames)(
-        nodeName =>
-          containerClient.volumeCreator
-            .nodeName(nodeName)
-            .path(path)
-            .name(key.toPlain)
-            .create()
-      )
-      .map(_ => ())
+  ): Future[Unit] = {
+    containerClient
+      .volumes(key.toPlain)
+      .flatMap { cvs =>
+        Future
+          .traverse(nodeNames.diff(cvs.map(_.nodeName).toSet))(
+            nodeName =>
+              containerClient.volumeCreator
+                .nodeName(nodeName)
+                .path(path)
+                .name(key.toPlain)
+                .create()
+          )
+          .map(_ => ())
+      }
+  }
 
   /**
     * list all volumes

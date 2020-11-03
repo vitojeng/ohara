@@ -103,6 +103,14 @@ class TestVolumeRoute extends OharaTest {
     result(volumeApi.get(volume.key)).state shouldBe None
   }
 
+  @Test
+  def testAddNode(): Unit = {
+    val volume = result(volumeApi.request.path(CommonUtils.randomString(5)).nodeNames(Set(nodeNames.head)).create())
+    volume.nodeNames shouldBe Set(nodeNames.head)
+    result(volumeApi.addNode(volume.key, nodeNames.last))
+    result(volumeApi.get(volume.key)).nodeNames shouldBe nodeNames
+  }
+
   @AfterEach
   def tearDown(): Unit = Releasable.close(configurator)
 }

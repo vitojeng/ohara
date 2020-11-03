@@ -206,5 +206,12 @@ private[configurator] object VolumeRoute {
       .hookBeforeDelete(hookBeforeDelete)
       .hookOfPutAction(START_COMMAND, hookOfStart)
       .hookOfPutAction(STOP_COMMAND, hookOfStop)
+      .hookOfFinalPutAction((volume: Volume, nodeName: String, _: Map[String, String]) => {
+        serviceCollie
+          .createLocalVolumes(volume.key, volume.path, volume.nodeNames)
+          // update the new data
+          .flatMap(_ => store.add(volume.newNodeNames(volume.nodeNames + nodeName)))
+          .flatMap(_ => Future.unit)
+      })
       .build()
 }

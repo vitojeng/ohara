@@ -82,6 +82,11 @@ object VolumeApi {
     override val tags: Map[String, JsValue],
     override val lastModified: Long
   ) extends Data {
+    def newNodeNames(newNodeNames: Set[String]): Volume = this.copy(
+      nodeNames = newNodeNames,
+      lastModified = CommonUtils.current()
+    )
+
     override def kind: String = KIND
 
     override def raw: Map[String, JsValue] = VOLUME_FORMAT.write(this).asJsObject.fields
@@ -200,6 +205,11 @@ object VolumeApi {
       override def update()(implicit executionContext: ExecutionContext): Future[Volume] =
         put(ObjectKey.of(group, name), updating)
     }
+
+    final def addNode(objectKey: ObjectKey, nodeName: String)(
+      implicit executionContext: ExecutionContext
+    ): Future[Unit] =
+      exec.put[ErrorApi.Error](urlBuilder.key(objectKey).postfix(nodeName).build())
   }
 
   def access: Access = new Access
