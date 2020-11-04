@@ -113,22 +113,28 @@ trait BaseQueryHandler extends Releasable {
           case (s, value) =>
             Cell.of(
               s.newName,
-              s.dataType match {
-                case DataType.BOOLEAN                 => value.asInstanceOf[Boolean]
-                case DataType.SHORT                   => value.asInstanceOf[Short]
-                case DataType.INT                     => value.asInstanceOf[Int]
-                case DataType.LONG                    => value.asInstanceOf[Long]
-                case DataType.FLOAT                   => value.asInstanceOf[Float]
-                case DataType.DOUBLE                  => value.asInstanceOf[Double]
-                case DataType.BYTE                    => value.asInstanceOf[Byte]
-                case DataType.STRING                  => value.asInstanceOf[String]
-                case DataType.BYTES | DataType.OBJECT => value
-                case _ =>
-                  throw new IllegalArgumentException(s"${s.newName()} column unsupported the ${s.dataType()} type...")
-              }
+              convertToValue(s, value)
             )
         }: _*
     )
+
+  private[source] def convertToValue(column: Column, value: Any): Any = {
+    // Confirm all data type is java.lang.*
+    column.dataType match {
+      case DataType.BOOLEAN => java.lang.Boolean.valueOf(value.asInstanceOf[Boolean])
+      case DataType.SHORT   => java.lang.Short.valueOf(value.asInstanceOf[Short])
+      case DataType.INT     => java.lang.Integer.valueOf(value.asInstanceOf[Int])
+      case DataType.LONG    => java.lang.Long.valueOf(value.asInstanceOf[Long])
+      case DataType.FLOAT   => java.lang.Float.valueOf(value.asInstanceOf[Float])
+      case DataType.DOUBLE  => java.lang.Double.valueOf(value.asInstanceOf[Double])
+      case DataType.BYTE    => java.lang.Byte.valueOf(value.asInstanceOf[Byte])
+      case DataType.BYTES   => value.asInstanceOf[Array[java.lang.Byte]]
+      case DataType.STRING  => java.lang.String.valueOf(value.asInstanceOf[String])
+      case DataType.OBJECT  => value
+      case _ =>
+        throw new IllegalArgumentException(s"${column.newName()} column unsupported the ${column.dataType} type...")
+    }
+  }
 
   private[this] def values(schemaColumnName: String, dbColumnInfo: Seq[ColumnInfo[_]]): Any =
     dbColumnInfo
