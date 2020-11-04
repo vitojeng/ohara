@@ -191,6 +191,16 @@ private[configurator] object VolumeRoute {
             serviceCollie.removeVolumes(volumeKey)
         }
 
+  private[route] def addNewNode(
+    volume: Volume,
+    nodeName: String
+  )(implicit store: DataStore, serviceCollie: ServiceCollie, executionContext: ExecutionContext): Future[Unit] =
+    serviceCollie
+      .createLocalVolumes(volume.key, volume.path, volume.nodeNames)
+      // update the new data
+      .flatMap(_ => store.add(volume.newNodeNames(volume.nodeNames + nodeName)))
+      .flatMap(_ => Future.unit)
+
   def apply(
     implicit store: DataStore,
     dataChecker: DataChecker,
@@ -206,12 +216,6 @@ private[configurator] object VolumeRoute {
       .hookBeforeDelete(hookBeforeDelete)
       .hookOfPutAction(START_COMMAND, hookOfStart)
       .hookOfPutAction(STOP_COMMAND, hookOfStop)
-      .hookOfFinalPutAction((volume: Volume, nodeName: String, _: Map[String, String]) => {
-        serviceCollie
-          .createLocalVolumes(volume.key, volume.path, volume.nodeNames)
-          // update the new data
-          .flatMap(_ => store.add(volume.newNodeNames(volume.nodeNames + nodeName)))
-          .flatMap(_ => Future.unit)
-      })
+      .hookOfFinalPutAction((volume: Volume, nodeName: String, _: Map[String, String]) => addNewNode(volume, nodeName))
       .build()
 }

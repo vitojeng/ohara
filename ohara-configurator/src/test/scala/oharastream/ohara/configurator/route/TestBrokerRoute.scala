@@ -17,7 +17,7 @@
 package oharastream.ohara.configurator.route
 
 import oharastream.ohara.client.configurator.ZookeeperApi.ZookeeperClusterInfo
-import oharastream.ohara.client.configurator.{BrokerApi, ClusterState, NodeApi, WorkerApi, ZookeeperApi}
+import oharastream.ohara.client.configurator.{BrokerApi, ClusterState, NodeApi, VolumeApi, WorkerApi, ZookeeperApi}
 import oharastream.ohara.common.rule.OharaTest
 import oharastream.ohara.common.setting.ObjectKey
 import oharastream.ohara.common.util.{CommonUtils, Releasable}
@@ -34,6 +34,7 @@ class TestBrokerRoute extends OharaTest {
   private[this] val configurator = Configurator.builder.fake(0, 0).build()
   private[this] val zookeeperApi = ZookeeperApi.access.hostname(configurator.hostname).port(configurator.port)
   private[this] val brokerApi    = BrokerApi.access.hostname(configurator.hostname).port(configurator.port)
+  private[this] val volumeApi    = VolumeApi.access.hostname(configurator.hostname).port(configurator.port)
 
   private[this] val zkKey                                      = ObjectKey.of(CommonUtils.randomString(10), CommonUtils.randomString(10))
   private[this] var zookeeperClusterInfo: ZookeeperClusterInfo = _
@@ -618,6 +619,24 @@ class TestBrokerRoute extends OharaTest {
         .jvmPerformanceOptions("-XX:+UnlockExperimentalVMOptions -XX:+UseZGC")
         .create()
     ).jvmPerformanceOptions.get shouldBe "-XX:+UnlockExperimentalVMOptions -XX:+UseZGC"
+
+  @Test
+  def testVolumes(): Unit = {
+    val volume = result(volumeApi.request.path(CommonUtils.randomString(5)).nodeNames(Set(nodeNames.head)).create())
+    result(volumeApi.start(volume.key))
+    val broker = result(
+      brokerApi.request
+        .zookeeperClusterKey(zookeeperClusterInfo.key)
+        .nodeNames(Set(nodeNames.head))
+        .logDirs(Set(volume.key))
+        .create()
+    )
+    result(brokerApi.start(broker.key))
+    result(brokerApi.get(broker.key)).nodeNames shouldBe Set(nodeNames.head)
+
+    result(brokerApi.addNode(broker.key, nodeNames.last))
+    result(brokerApi.get(broker.key)).nodeNames shouldBe Set(nodeNames.head, nodeNames.last)
+  }
 
   @AfterEach
   def tearDown(): Unit = Releasable.close(configurator)

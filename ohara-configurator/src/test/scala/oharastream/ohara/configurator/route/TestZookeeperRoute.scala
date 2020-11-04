@@ -16,7 +16,7 @@
 
 package oharastream.ohara.configurator.route
 
-import oharastream.ohara.client.configurator.{BrokerApi, ClusterState, NodeApi, ZookeeperApi}
+import oharastream.ohara.client.configurator.{BrokerApi, ClusterState, NodeApi, VolumeApi, ZookeeperApi}
 import oharastream.ohara.common.rule.OharaTest
 import oharastream.ohara.common.setting.ObjectKey
 import oharastream.ohara.common.util.{CommonUtils, Releasable}
@@ -38,6 +38,7 @@ class TestZookeeperRoute extends OharaTest {
     */
   private[this] val numberOfDefaultNodes = 3 * numberOfCluster
   private[this] val zookeeperApi         = ZookeeperApi.access.hostname(configurator.hostname).port(configurator.port)
+  private[this] val volumeApi            = VolumeApi.access.hostname(configurator.hostname).port(configurator.port)
 
   private[this] val nodeNames: Set[String] = Set("n0", "n1")
 
@@ -496,6 +497,25 @@ class TestZookeeperRoute extends OharaTest {
         .setting("state", JsString("this is illegal field"))
         .update()
     ).state shouldBe None
+
+  @Test
+  def testVolumes(): Unit = {
+    val volume = result(volumeApi.request.path(CommonUtils.randomString(5)).nodeNames(Set(nodeNames.head)).create())
+    result(volumeApi.start(volume.key))
+    val zookeeper = result(
+      zookeeperApi.request
+        .name(CommonUtils.randomString(5))
+        .nodeNames(Set(nodeNames.head))
+        .initHeap(12345)
+        .dataDir(volume.key)
+        .update()
+    )
+    result(zookeeperApi.start(zookeeper.key))
+    result(zookeeperApi.get(zookeeper.key)).nodeNames shouldBe Set(nodeNames.head)
+
+    an[IllegalArgumentException] should be thrownBy result(zookeeperApi.addNode(zookeeper.key, nodeNames.last))
+    result(zookeeperApi.get(zookeeper.key)).nodeNames shouldBe Set(nodeNames.head)
+  }
 
   @AfterEach
   def tearDown(): Unit = Releasable.close(configurator)

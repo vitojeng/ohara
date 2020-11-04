@@ -27,6 +27,7 @@ import oharastream.ohara.agent._
 import oharastream.ohara.client.configurator.BrokerApi.BrokerClusterInfo
 import oharastream.ohara.client.configurator.ShabondiApi.ShabondiClusterInfo
 import oharastream.ohara.client.configurator.StreamApi.StreamClusterInfo
+import oharastream.ohara.client.configurator.VolumeApi.Volume
 import oharastream.ohara.client.configurator.WorkerApi.WorkerClusterInfo
 import oharastream.ohara.client.configurator.ZookeeperApi.ZookeeperClusterInfo
 import oharastream.ohara.client.configurator.{ClusterCreation, ClusterInfo, ClusterUpdating, ErrorApi, JsonRefiner}
@@ -185,18 +186,30 @@ package object route {
       )
       .hookOfPutAction(START_COMMAND, hookOfStartAction[Cluster](hookOfStart))
       .hookOfPutAction(STOP_COMMAND, hookOfStopAction[Cluster](hookBeforeStop))
-      .hookOfFinalPutAction((clusterInfo: Cluster, nodeName: String, _: Map[String, String]) => {
+      .hookOfFinalPutAction((clusterInfo: Cluster, newNode: String, _: Map[String, String]) => {
         // A BIT hard-code here to reuse the checker :(
-        rm.check[JsArray]("nodeNames", JsArray(JsString(nodeName)))
-        collie.creator
-          .settings(clusterInfo.settings)
-          .nodeName(nodeName)
-          .threadPool(executionContext)
-          .create()
-          // we have to update the nodeNames of stored cluster info. Otherwise, the following Get/List request
-          // will see the out-of-date nodeNames
-          .flatMap(_ => store.add(clusterInfo.newNodeNames(clusterInfo.nodeNames + nodeName)))
-          .flatMap(_ => Future.unit)
+        rm.check[JsArray]("nodeNames", JsArray(JsString(newNode)))
+
+        // 1) deploy volume on new node
+        // 2) deploy cluster on new node
+        // 3) TODO: rollback the volume if it fails to deploy cluster (and remove following hard-code check)
+        if (clusterInfo.isInstanceOf[ZookeeperClusterInfo])
+          throw new UnsupportedOperationException(s"zookeeper collie doesn't support to add node to a running cluster")
+        Future
+          .traverse(clusterInfo.volumeMaps.keySet)(key => store.value[Volume](key))
+          .flatMap(Future.traverse(_)(volume => VolumeRoute.addNewNode(volume, newNode)))
+          .flatMap(
+            _ =>
+              collie.creator
+                .settings(clusterInfo.settings)
+                .nodeName(newNode)
+                .threadPool(executionContext)
+                .create()
+                // we have to update the nodeNames of stored cluster info. Otherwise, the following Get/List request
+                // will see the out-of-date nodeNames
+                .flatMap(_ => store.add(clusterInfo.newNodeNames(clusterInfo.nodeNames + newNode)))
+                .flatMap(_ => Future.unit)
+          )
       })
       .hookOfFinalDeleteAction(
         (key: ObjectKey, nodeName: String, _: Map[String, String]) =>
