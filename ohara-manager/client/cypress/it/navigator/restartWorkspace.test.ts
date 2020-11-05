@@ -54,11 +54,6 @@ const logs = {
 
 const restartSpecs = [
   {
-    section: SettingSection.zookeeper,
-    sectionItem: `${SettingSection.zookeeper} nodes`,
-    logs: logs.zookeeper,
-  },
-  {
     section: SettingSection.broker,
     sectionItem: `${SettingSection.broker} nodes`,
     logs: logs.broker,
@@ -71,10 +66,6 @@ const restartSpecs = [
 ];
 
 const retrySpecs = [
-  {
-    resourceType: RESOURCE.ZOOKEEPER,
-    group: 'zookeeper',
-  },
   {
     resourceType: RESOURCE.BROKER,
     group: 'broker',
@@ -131,94 +122,6 @@ describe('Restart workspace', () => {
         .invoke('html')
         .should('be.empty'); // There is no service assigned to this node yet
     });
-  });
-
-  it('should show a restart notification after adding a new node to zookeeper', () => {
-    cy.switchSettingSection(SettingSection.zookeeper, 'Zookeeper nodes');
-
-    cy.get('.section-page-content').within(() => {
-      cy.findByTitle('Add Node').click();
-    });
-
-    cy.findVisibleDialog().within(() => {
-      cy.get('table')
-        .should('have.length', 1)
-        .within(($table) => {
-          // assert the Services should be 0
-          cy.getTableCellByColumn($table, 'Services', '0').should('exist');
-
-          // Check node hostname
-          cy.getTableCellByColumn($table, 'Name', node.hostname)
-            .should('exist')
-            .siblings('td')
-            .first()
-            .find('input[type="checkbox"]')
-            .click();
-        });
-
-      cy.findByText('SAVE').click();
-    });
-
-    cy.get('.section-page-content').within(() => {
-      // Undo added node
-      cy.findByText(node.hostname)
-        .siblings('td')
-        .last()
-        .within(() => {
-          cy.findByTitle('Undo add node').click();
-        });
-      cy.findByText(node.hostname).should('not.exist');
-    });
-
-    // Adding node again
-    cy.get('.section-page-content').within(() => {
-      cy.findByTitle('Add Node').click();
-    });
-
-    cy.findVisibleDialog().within(() => {
-      cy.get('table')
-        .should('have.length', 1)
-        .within(($table) => {
-          // Assert the Services should be 0
-          cy.getTableCellByColumn($table, 'Services', '0').should('exist');
-
-          // Check node hostname
-          cy.getTableCellByColumn($table, 'Name', node.hostname)
-            .should('exist')
-            .siblings('td')
-            .first()
-            .find('input[type="checkbox"]')
-            .click();
-        });
-
-      cy.findByText('SAVE').click();
-    });
-
-    // Back to Settings dialog
-    cy.get('.section-page-header').within(() => {
-      cy.get('button').click();
-    });
-
-    // The zookeeper section should have 1 change notification
-    cy.contains('h2', SettingSection.zookeeper)
-      .parent('section')
-      .find('ul')
-      .as('list')
-      .contains('span', '1');
-
-    // click the discard button in indicator again
-    cy.findAllByRole('alert')
-      .scrollIntoView()
-      .should('have.length', 1)
-      .within(() => {
-        cy.contains('button', 'DISCARD').click();
-      });
-
-    cy.findVisibleDialog().findByText('DISCARD').click();
-
-    // the zookeeper section should not have any change notifications or indicators now
-    cy.findAllByRole('alert').should('not.exist');
-    cy.get('@list').contains('span', '1').should('not.exist');
   });
 
   it('should be able to restart from indicator after adding node to each service', () => {

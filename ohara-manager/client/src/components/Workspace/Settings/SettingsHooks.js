@@ -39,7 +39,6 @@ import WorkerNodesPage from './pages/WorkerNodesPage';
 import WorkerPluginsPage from './pages/WorkerPluginsPage';
 import WorkspaceFilesPage from './pages/WorkspaceFilesPage';
 import WorkspaceNodesPage from './pages/WorkspaceNodesPage';
-import ZookeeperNodesPage from './pages/ZookeeperNodesPage';
 
 /*
     Available props for component
@@ -85,7 +84,6 @@ export const useConfig = ({
     countOfChangedWorkerNodes,
     countOfChangedWorkerPlugins,
     countOfChangedWorkerSharedJars,
-    countOfChangedZookeeperNodes,
   } = useShouldBeRestartWorkspace();
 
   const menu = [
@@ -165,27 +163,6 @@ export const useConfig = ({
           type: SETTINGS_COMPONENT_TYPE.PAGE,
           componentProps: {
             children: <AutofillPage />,
-          },
-        },
-      ],
-    },
-    {
-      heading: 'Zookeeper',
-      components: [
-        // Feature is disabled because it's not implemented in 0.10
-        // {
-        //   icon: <TuneIcon />,
-        //   title: 'Zookeeper settings',
-        //   type: SETTINGS_COMPONENT_TYPE.PAGE,
-        // },
-        {
-          badge: { count: countOfChangedZookeeperNodes },
-          icon: <StorageIcon />,
-          title: 'Zookeeper nodes',
-          subTitle: 'Nodes running the zookeeper',
-          type: SETTINGS_COMPONENT_TYPE.PAGE,
-          componentProps: {
-            children: <ZookeeperNodesPage />,
           },
         },
       ],

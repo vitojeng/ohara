@@ -133,19 +133,17 @@ export const useDiscardWorkspaceChangedSettingsAction = () => {
   const broker = hooks.useBroker();
   const worker = hooks.useWorker();
   const workspace = hooks.useWorkspace();
-  const zookeeper = hooks.useZookeeper();
   const updateWorkspace = hooks.useUpdateWorkspaceAction();
 
   return useCallback(() => {
-    updateWorkspace({ ...workspace, broker, worker, zookeeper });
-  }, [updateWorkspace, workspace, broker, worker, zookeeper]);
+    updateWorkspace({ ...workspace, broker, worker });
+  }, [updateWorkspace, workspace, broker, worker]);
 };
 
 export const useShouldBeRestartWorkspace = () => {
   const broker = hooks.useBroker();
   const worker = hooks.useWorker();
   const workspace = hooks.useWorkspace();
-  const zookeeper = hooks.useZookeeper();
 
   const memoizedValue = useMemo(() => {
     const countOfChangedBrokerNodes = workspace?.broker?.nodeNames
@@ -174,33 +172,24 @@ export const useShouldBeRestartWorkspace = () => {
         )
       : 0;
 
-    const countOfChangedZookeeperNodes = workspace?.zookeeper?.nodeNames
-      ? size(xor(zookeeper?.nodeNames, workspace.zookeeper.nodeNames))
-      : 0;
-
     const shouldBeRestartBroker = countOfChangedBrokerNodes > 0;
     const shouldBeRestartWorker =
       countOfChangedWorkerNodes > 0 ||
       countOfChangedWorkerPlugins > 0 ||
       countOfChangedWorkerSharedJars > 0;
-    const shouldBeRestartZookeeper = countOfChangedZookeeperNodes > 0;
     const shouldBeRestartWorkspace =
-      shouldBeRestartBroker ||
-      shouldBeRestartWorker ||
-      shouldBeRestartZookeeper;
+      shouldBeRestartBroker || shouldBeRestartWorker;
 
     return {
       countOfChangedBrokerNodes,
       countOfChangedWorkerNodes,
       countOfChangedWorkerPlugins,
       countOfChangedWorkerSharedJars,
-      countOfChangedZookeeperNodes,
       shouldBeRestartBroker,
       shouldBeRestartWorker,
       shouldBeRestartWorkspace,
-      shouldBeRestartZookeeper,
     };
-  }, [broker, worker, workspace, zookeeper]);
+  }, [broker, worker, workspace]);
 
   return memoizedValue;
 };

@@ -33,7 +33,7 @@ export interface ElementParameters {
 export enum SettingSection {
   topics = 'Topics',
   autofill = 'Autofill',
-  zookeeper = 'Zookeeper',
+  // zookeeper = 'Zookeeper',
   broker = 'Broker',
   worker = 'Worker',
   stream = 'Stream',

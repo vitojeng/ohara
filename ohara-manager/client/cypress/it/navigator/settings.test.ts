@@ -414,64 +414,11 @@ describe('Navigator', () => {
     });
   });
 
-  context('Zookeeper Settings', () => {
-    it('should have one node in zookeeper after creating workspace', () => {
-      cy.switchSettingSection(SettingSection.zookeeper);
-
-      // there should have one zookeeper node
-      cy.get('div.section-page-content').within(() => {
-        cy.get('tbody tr').should('have.length', 1);
-        cy.get('tbody tr').contains('td', node.hostname);
-      });
-    });
-
-    it('should be able to view node information of zookeeper', () => {
-      cy.switchSettingSection(SettingSection.zookeeper);
-
-      cy.findAllByTitle('View node').filter(':visible').click();
-
-      cy.findVisibleDialog().within(() => {
-        cy.get('table')
-          .first()
-          .within(($table) => {
-            // assert each field
-            cy.getTableCellByColumn($table, 'Hostname', node.hostname).should(
-              'exist',
-            );
-            cy.getTableCellByColumn(
-              $table,
-              'Port',
-              node.port.toString(),
-            ).should('exist');
-            cy.getTableCellByColumn($table, 'User', node.user).should('exist');
-            cy.getTableCellByColumn($table, 'Password', node.password).should(
-              'exist',
-            );
-          });
-
-        cy.get('table')
-          .last<HTMLTableElement>()
-          .within(($table) => {
-            // assert zookeeper should exist in services list
-            // the name of zookeeper should be as same as "workspace"
-            cy.getTableCellByColumn($table, 'Name', 'workspace1').should(
-              'exist',
-            );
-
-            // assert zookeeper should exist in services type
-            cy.getTableCellByColumn($table, 'Type', 'zookeeper').should(
-              'exist',
-            );
-          });
-      });
-    });
-  });
-
   context('Broker Settings', () => {
     it('should have one node in broker after creating workspace', () => {
       cy.switchSettingSection(SettingSection.broker);
 
-      // there should have one zookeeper node
+      // there should have one broker node
       cy.get('div.section-page-content').within(() => {
         cy.get('tbody tr').should('have.length', 1);
         cy.get('tbody tr').contains('td', node.hostname);
@@ -522,7 +469,7 @@ describe('Navigator', () => {
     it('should have one node in worker after creating workspace', () => {
       cy.switchSettingSection(SettingSection.worker);
 
-      // there should have one zookeeper node
+      // there should have one worker node
       cy.get('div.section-page-content').within(() => {
         cy.get('tbody tr').should('have.length', 1);
         cy.get('tbody tr').contains('td', node.hostname);
