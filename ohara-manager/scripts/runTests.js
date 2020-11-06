@@ -18,6 +18,7 @@ const execa = require('execa');
 const chalk = require('chalk');
 const path = require('path');
 const _ = require('lodash');
+const { v4: uuid } = require('uuid');
 
 const mergeReports = require('./mergeReports');
 const utils = require('./scriptsUtils');
@@ -40,11 +41,12 @@ const run = async (ci, apiRoot, serverPort = 5050, clientPort = 3000) => {
   let server;
   let client;
   let cypress;
-  let copyJars;
   serverPort = serverPort === 0 ? commonUtils.randomPort() : serverPort;
 
   const defaultEnv = utils.getDefaultEnv();
   const prefix = servicePrefix ? servicePrefix : defaultEnv.servicePrefix;
+  const SERVER_UID = `${prefix}-ohara-manager-${uuid().substr(0, 8)}`;
+  const CLIENT_UID = `${prefix}-ohara-manager-client-${uuid().substr(0, 8)}`;
   const node = {
     nodeHost,
     nodePort,
@@ -52,11 +54,37 @@ const run = async (ci, apiRoot, serverPort = 5050, clientPort = 3000) => {
     nodePass,
   };
 
+  // Kill all processes when users exist with ctrl + c
+  process.on('SIGINT', function () {
+    killSubProcess();
+    process.exit();
+  });
+
+  // Ensure all processes are killed before node exits
+  process.on('exit', () => {
+    killSubProcess();
+    process.exit();
+  });
+
   // Start ohara manager server
   console.log(chalk.blue('Starting ohara manager server'));
   server = execa(
     'forever',
-    ['start', 'start.js', '--configurator', apiRoot, '--port', serverPort],
+    [
+      'start',
+      '--uid',
+      SERVER_UID,
+      '--append',
+      '--minUptime',
+      1000,
+      '--spinSleepTime',
+      1000,
+      'start.js',
+      '--configurator',
+      apiRoot,
+      '--port',
+      serverPort,
+    ],
     {
       stdio: 'inherit',
     },
@@ -82,6 +110,13 @@ const run = async (ci, apiRoot, serverPort = 5050, clientPort = 3000) => {
     client = execa(
       'forever',
       [
+        '--uid',
+        CLIENT_UID,
+        '--append',
+        '--minUptime',
+        1000,
+        '--spinSleepTime',
+        1000,
         'start',
         '-c',
         'node -r @cypress/instrument-cra',
@@ -109,21 +144,12 @@ const run = async (ci, apiRoot, serverPort = 5050, clientPort = 3000) => {
     await utils.waitOnService(`http://localhost:${clientPort}`);
   }
 
-  copyJars = execa(
-    'yarn',
-    [
-      'copy:jars',
-      // indicate this command is running under QA mode
-      '--ci',
-    ],
-    {
-      stdio: 'inherit',
-    },
-  );
-
   // We need these jars for test
   try {
-    await copyJars;
+    // --ci: indicate this command is running under QA mode
+    execa.sync('yarn', ['copy:jars', '--ci'], {
+      stdio: 'inherit',
+    });
   } catch (err) {
     console.log(err.message);
     process.exit(1);
@@ -138,6 +164,7 @@ const run = async (ci, apiRoot, serverPort = 5050, clientPort = 3000) => {
       `test:${testMode}:run`,
       '--config',
       `baseUrl=http://localhost:${ci ? clientPort : serverPort}`,
+      // No docs for this yet. To specify a test spec: --spec `it/appBar/elements.test.ts` or --spec `e2e/pipeline.test.ts`
       ...(spec ? ['--spec', path.join('..', 'client', 'cypress', spec)] : []),
       '--env',
       utils.buildCypressEnv({ node, clientPort, serverPort, prefix }),
@@ -149,12 +176,21 @@ const run = async (ci, apiRoot, serverPort = 5050, clientPort = 3000) => {
   );
   console.log('Cypress pid', cypress.pid);
 
-  const killSubProcess = () => {
+  function killSubProcess() {
     if (cypress) cypress.kill();
     if (client) client.kill();
     if (server) server.kill();
-    if (copyJars) copyJars.kill();
-  };
+
+    const processes = execa.sync('forever', ['list']).stdout.trim();
+    const hasTargetProcess =
+      processes.includes(SERVER_UID) || processes.includes(CLIENT_UID);
+
+    // Processes started with forever need to clean with forever command
+    if (hasTargetProcess) {
+      execa.sync('forever', ['stop', SERVER_UID]);
+      execa.sync('forever', ['stop', CLIENT_UID]);
+    }
+  }
 
   try {
     await cypress;
@@ -169,7 +205,6 @@ const run = async (ci, apiRoot, serverPort = 5050, clientPort = 3000) => {
       chalk.blue('Cleaning up all services. This might take a while...'),
     );
 
-    killSubProcess();
     console.log(chalk.green('Successfully cleaned up all the services!'));
     process.exit(0);
   } catch (error) {
