@@ -196,17 +196,17 @@ Cypress.Commands.add(
         .type(workspaceName);
     }
 
-    cy.findAllByText('NEXT').filter(':visible').click();
+    cy.findByTestId('setup-workspace-form').findByText('NEXT').click();
 
     // Step2: select nodes
     cy.contains('p:visible', 'Click here to select nodes').click();
     cy.addNode(node);
 
     // Step3: skip volume setup
-    cy.findAllByText('NEXT').eq(1).filter(':visible').click();
+    cy.findByTestId('setup-volume-form').findByText('NEXT').click();
 
     // Step4: create workspace
-    cy.findAllByText('SUBMIT').filter(':visible').click();
+    cy.findByTestId('review-form').findByText('SUBMIT').click();
 
     cy.findByTestId('create-workspace-progress-dialog').should('be.visible');
     cy.findByTestId('stepper-close-button').should('be.visible');

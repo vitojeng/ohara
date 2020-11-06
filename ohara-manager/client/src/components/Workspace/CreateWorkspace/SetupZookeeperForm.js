@@ -25,11 +25,18 @@ import { Form } from 'const';
 const SetupZookeeperForm = (props) => {
   const { handleSubmit, previousStep } = props;
   return (
-    <form onSubmit={handleSubmit}>
+    <form data-testid="setup-zookeeper-form" onSubmit={handleSubmit}>
       <Paper className="fields"></Paper>
       <div className="buttons">
-        <Button onClick={previousStep}>BACK</Button>
-        <Button color="primary" onClick={handleSubmit} variant="contained">
+        <Button data-testid="back-button" onClick={previousStep}>
+          BACK
+        </Button>
+        <Button
+          color="primary"
+          data-testid="next-button"
+          onClick={handleSubmit}
+          variant="contained"
+        >
           NEXT
         </Button>
       </div>

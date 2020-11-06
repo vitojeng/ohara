@@ -71,7 +71,7 @@ let SetupVolumeForm = ({
   enabled,
 }) => {
   return (
-    <form onSubmit={handleSubmit}>
+    <form data-testid="setup-volume-form" onSubmit={handleSubmit}>
       <Paper className="fields">
         <Field
           component={CheckboxField}
@@ -92,9 +92,12 @@ let SetupVolumeForm = ({
         />
       </Paper>
       <div className="buttons">
-        <Button onClick={previousStep}>BACK</Button>
+        <Button data-testid="back-button" onClick={previousStep}>
+          BACK
+        </Button>
         <Button
           color="primary"
+          data-testid="next-button"
           disabled={invalid || pristine || submitting || !!asyncValidating}
           endIcon={asyncValidating ? <CircularProgress size={16} /> : null}
           type="submit"

@@ -36,13 +36,13 @@ describe('Create Workspace', () => {
       // first visit will popup the quick create dialog
       cy.findByText('QUICK CREATE').click();
 
-      // type workspace name
+      // Workspace name
       cy.findByDisplayValue('workspace', { exact: false })
         .clear()
         .type(workspaceName);
-      cy.findAllByText('NEXT').filter(':visible').click();
+      cy.findByTestId('setup-workspace-form').findByText('NEXT').click();
 
-      // add node
+      // Node
       cy.contains('p:visible', 'Click here to select nodes').click();
       cy.findByTitle('Create Node').click();
       cy.findByLabelText(/hostname/i).type(nodeHost);
@@ -55,16 +55,16 @@ describe('Create Workspace', () => {
         .find('input[type="checkbox"]')
         .click();
       cy.findByText('SAVE').click();
-      cy.findAllByText('NEXT').filter(':visible').click();
+      cy.findByTestId('setup-nodes-form').findByText('NEXT').click();
 
-      // assert the node data should appear when click back button
-      cy.findAllByText('BACK').filter(':visible').click();
+      // Volume
+      cy.findByTestId('setup-volume-form').findByText('BACK').click();
       cy.contains('h6', 'Hostname')
         .siblings('div')
         .invoke('html')
         .should('equal', nodeHost);
 
-      // close dialog
+      // Close the dialog
       cy.findByTestId('fullscreen-dialog-close-button').click();
 
       // back to create workspace dialog again

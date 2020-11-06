@@ -34,7 +34,7 @@ const ReviewForm = (props) => {
   const values = hooks.useReduxFormValues(Form.CREATE_WORKSPACE);
 
   return (
-    <form onSubmit={handleSubmit}>
+    <form data-testid="review-form" onSubmit={handleSubmit}>
       <Paper className="summary">
         <Table>
           <TableBody>
@@ -92,8 +92,15 @@ const ReviewForm = (props) => {
         </Table>
       </Paper>
       <div className="buttons">
-        <Button onClick={previousStep}>BACK</Button>
-        <Button color="primary" onClick={handleSubmit} variant="contained">
+        <Button data-testid="back-button" onClick={previousStep}>
+          BACK
+        </Button>
+        <Button
+          color="primary"
+          data-testid="submit-button"
+          onClick={handleSubmit}
+          variant="contained"
+        >
           SUBMIT
         </Button>
       </div>
