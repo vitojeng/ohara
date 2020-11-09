@@ -22,11 +22,10 @@ const { v4: uuid } = require('uuid');
 
 const mergeReports = require('./mergeReports');
 const utils = require('./scriptsUtils');
-const commonUtils = require('../utils/commonUtils');
+const { randomPort } = require('../utils/commonUtils');
 const {
   API_ROOT,
   PORT,
-  testMode,
   nodeHost,
   nodePort,
   nodeUser,
@@ -37,14 +36,15 @@ const {
 } = require('../config');
 
 /* eslint-disable no-process-exit, no-console */
-const run = async (ci, apiRoot, serverPort = 5050, clientPort = 3000) => {
+const run = async (options) => {
+  const { ci, apiRoot, clientPort = 3000, testMode, prefix } = options;
+  const isRandom = options.serverPort === 0; // Use a random port when it's explicitly set to 0
+  const serverPort = isRandom ? randomPort() : options.serverPort || 5050;
+
   let server;
   let client;
   let cypress;
-  serverPort = serverPort === 0 ? commonUtils.randomPort() : serverPort;
 
-  const defaultEnv = utils.getDefaultEnv();
-  const prefix = servicePrefix ? servicePrefix : defaultEnv.servicePrefix;
   const SERVER_UID = `${prefix}-ohara-manager-${uuid().substr(0, 8)}`;
   const CLIENT_UID = `${prefix}-ohara-manager-client-${uuid().substr(0, 8)}`;
   const node = {
@@ -213,10 +213,20 @@ const run = async (ci, apiRoot, serverPort = 5050, clientPort = 3000) => {
   }
 };
 
+const testMode = process.env.CYPRESS_TEST_MODE;
+const defaultEnv = utils.getDefaultEnv();
+const prefix = servicePrefix ? servicePrefix : defaultEnv.servicePrefix;
+
 // Do not run the test if the build dir is not present
 // as this will cause the script to fail silently
 if (!utils.isBuildDirExist(testMode)) {
   process.exit(1);
 }
 
-run(ci, API_ROOT, PORT);
+run({
+  ci,
+  apiRoot: API_ROOT,
+  serverPort: PORT,
+  testMode,
+  prefix,
+});

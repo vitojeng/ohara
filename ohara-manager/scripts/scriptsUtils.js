@@ -18,9 +18,9 @@ const fs = require('fs');
 const chalk = require('chalk');
 const waitOn = require('wait-on');
 
-/* eslint-disable no-console */
 exports.isBuildDirExist = (testMode) => {
   if (!fs.existsSync('./client/build')) {
+    /* eslint-disable no-console */
     console.log(
       chalk.red(
         `Couldn't find the build directory, please run ${chalk.blue(
@@ -28,7 +28,7 @@ exports.isBuildDirExist = (testMode) => {
         )} to build the static files that are needed in the ${testMode.toUpperCase()} test`,
       ),
     );
-
+    /* eslint-enable no-console */
     return false;
   }
 
@@ -46,8 +46,10 @@ exports.waitOnService = (url) =>
       },
       (err) => {
         if (err) {
+          /* eslint-disable no-console */
           console.error('error waiting for url', url);
           console.error(err.message);
+          /* eslint-enable no-console */
           return reject(err);
         }
         resolve(); // success!

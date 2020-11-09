@@ -37,7 +37,7 @@ describe('Delete workspace', () => {
     // Delete workspace1
     deleteWorkspace();
 
-    // Create a new workspace
+    // Create a new workspace1
     cy.createWorkspace({ node });
 
     // click restart workspace should be OK
@@ -48,12 +48,14 @@ describe('Delete workspace', () => {
 
     cy.findVisibleDialog().findByText('RESTART').click();
 
+    // After the restart, close the dialog
     cy.findVisibleDialog()
       .findByText('CLOSE')
       .parent('button')
       .should('be.enabled')
       .click();
 
+    // Workspace1 should be created
     cy.location('pathname').should('equal', '/workspace1');
   });
 

@@ -16,6 +16,7 @@
 
 export {};
 
+const _ = require('lodash');
 const fs = require('fs');
 const path = require('path');
 const browserify = require('@cypress/browserify-preprocessor');
@@ -36,15 +37,17 @@ module.exports = (
     }),
   );
 
-  const configFile = process.env.CYPRESS_CONFIG_FILE;
+  const testMode = process.env.CYPRESS_TEST_MODE;
 
-  // using default configuration if not assign a config file
-  if (!configFile) return config;
+  // using default configuration if no testMode supplied
+  if (!testMode) return config;
 
-  const configForEnvironment = getConfigurationByFile(configFile);
+  const currentConfig = getConfigByTestMode(testMode);
 
   // we overwrite default config by cypress.{api|it|e2e}.json file
-  const newConfig = Object.assign({}, config, configForEnvironment);
+  const newConfig = _.merge({}, config, currentConfig, {
+    env: { testMode }, // Adding this so our tests are able to access the current test mode
+  });
 
   // Default base URL
   if (!newConfig.baseUrl) newConfig.baseUrl = 'http://localhost:3000';
@@ -52,11 +55,11 @@ module.exports = (
   return newConfig;
 };
 
-function getConfigurationByFile(file: string) {
+function getConfigByTestMode(testMode: string) {
   const pathToConfigFile = path.resolve(
     './cypress',
     'configs',
-    `cypress.${file}.json`,
+    `cypress.${testMode}.json`,
   );
   return JSON.parse(fs.readFileSync(pathToConfigFile, 'utf-8'));
 }

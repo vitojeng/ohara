@@ -434,15 +434,14 @@ export const assertSettingsByDefinitions = (
 };
 
 export const generateNodeIfNeeded = (): NodeRequest => {
-  const nodeHost = Cypress.env('nodeHost');
-  const nodePort = Cypress.env('nodePort');
-  const nodeUser = Cypress.env('nodeUser');
-  const nodePass = Cypress.env('nodePass');
+  if (Cypress.env('testMode') === 'e2e') {
+    return {
+      hostname: Cypress.env('nodeHost'),
+      port: Cypress.env('nodePort'),
+      user: Cypress.env('nodeUser'),
+      password: Cypress.env('nodePass'),
+    } as NodeRequest;
+  }
 
-  return {
-    hostname: nodeHost || generate.serviceName({ prefix: 'node' }),
-    port: nodePort ? Number(nodePort) : generate.port(),
-    user: nodeUser || generate.userName(),
-    password: nodePass || generate.password(),
-  } as NodeRequest;
+  return generate.node() as NodeRequest;
 };
