@@ -420,8 +420,9 @@ describe('Navigator', () => {
 
       // there should have one broker node
       cy.get('div.section-page-content').within(() => {
+        cy.findByRole('progressbar').should('be.visible');
         cy.get('tbody tr').should('have.length', 1);
-        cy.get('tbody tr').contains('td', node.hostname);
+        cy.findByText(node.hostname);
       });
     });
 

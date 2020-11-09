@@ -25,7 +25,7 @@ interface NodeService {
   name: string;
   clusterKeys: ObjectKey[];
 }
-interface Resource {
+export interface Resource {
   name: string;
   value: number;
   unit: string;

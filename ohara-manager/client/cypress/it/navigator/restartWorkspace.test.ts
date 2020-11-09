@@ -54,11 +54,6 @@ const logs = {
 
 const restartSpecs = [
   {
-    section: SettingSection.broker,
-    sectionItem: `${SettingSection.broker} nodes`,
-    logs: logs.broker,
-  },
-  {
     section: SettingSection.worker,
     sectionItem: `${SettingSection.worker} nodes`,
     logs: logs.worker,

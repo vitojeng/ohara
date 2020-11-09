@@ -141,15 +141,10 @@ export const useDiscardWorkspaceChangedSettingsAction = () => {
 };
 
 export const useShouldBeRestartWorkspace = () => {
-  const broker = hooks.useBroker();
   const worker = hooks.useWorker();
   const workspace = hooks.useWorkspace();
 
   const memoizedValue = useMemo(() => {
-    const countOfChangedBrokerNodes = workspace?.broker?.nodeNames
-      ? size(xor(broker?.nodeNames, workspace.broker.nodeNames))
-      : 0;
-
     const countOfChangedWorkerNodes = workspace?.worker?.nodeNames
       ? size(xor(worker?.nodeNames, workspace.worker.nodeNames))
       : 0;
@@ -172,24 +167,20 @@ export const useShouldBeRestartWorkspace = () => {
         )
       : 0;
 
-    const shouldBeRestartBroker = countOfChangedBrokerNodes > 0;
     const shouldBeRestartWorker =
       countOfChangedWorkerNodes > 0 ||
       countOfChangedWorkerPlugins > 0 ||
       countOfChangedWorkerSharedJars > 0;
-    const shouldBeRestartWorkspace =
-      shouldBeRestartBroker || shouldBeRestartWorker;
+    const shouldBeRestartWorkspace = shouldBeRestartWorker;
 
     return {
-      countOfChangedBrokerNodes,
       countOfChangedWorkerNodes,
       countOfChangedWorkerPlugins,
       countOfChangedWorkerSharedJars,
-      shouldBeRestartBroker,
       shouldBeRestartWorker,
       shouldBeRestartWorkspace,
     };
-  }, [broker, worker, workspace]);
+  }, [worker, workspace]);
 
   return memoizedValue;
 };

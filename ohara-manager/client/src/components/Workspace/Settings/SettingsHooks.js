@@ -32,13 +32,13 @@ import { useShouldBeRestartWorkspace } from 'hooks';
 import { SETTINGS_COMPONENT_TYPE, KIND } from 'const';
 import DeleteConfirmDialogContent from './DeleteConfirmDialogContent';
 import AutofillPage from './pages/AutofillPage';
-import BrokerNodesPage from './pages/BrokerNodesPage';
 import StreamJarsPage from './pages/StreamJarsPage';
 import TopicPage from './pages/TopicPage';
 import WorkerNodesPage from './pages/WorkerNodesPage';
 import WorkerPluginsPage from './pages/WorkerPluginsPage';
 import WorkspaceFilesPage from './pages/WorkspaceFilesPage';
 import WorkspaceNodesPage from './pages/WorkspaceNodesPage';
+import BrokerNodes from 'components/broker/BrokerNodes';
 
 /*
     Available props for component
@@ -183,7 +183,7 @@ export const useConfig = ({
           subTitle: 'Nodes running the broker',
           type: SETTINGS_COMPONENT_TYPE.PAGE,
           componentProps: {
-            children: <BrokerNodesPage />,
+            children: <BrokerNodes />,
           },
         },
       ],
