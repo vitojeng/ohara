@@ -52,14 +52,6 @@ const logs = {
   worker: ['Stop worker', 'update worker', 'Start worker', 'Restart workspace'],
 };
 
-const restartSpecs = [
-  {
-    section: SettingSection.worker,
-    sectionItem: `${SettingSection.worker} nodes`,
-    logs: logs.worker,
-  },
-];
-
 const retrySpecs = [
   {
     resourceType: RESOURCE.BROKER,
@@ -116,76 +108,6 @@ describe('Restart workspace', () => {
         .eq(3) // The "Used" column
         .invoke('html')
         .should('be.empty'); // There is no service assigned to this node yet
-    });
-  });
-
-  it('should be able to restart from indicator after adding node to each service', () => {
-    restartSpecs.forEach((spec) => {
-      const { section, sectionItem, logs } = spec;
-
-      cy.switchSettingSection(section, sectionItem);
-      cy.get('.section-page-content').within(() => {
-        cy.findByTitle('Add Node').click();
-      });
-
-      cy.findVisibleDialog().within(() => {
-        cy.get('table')
-          .should('have.length', 1)
-          .within(($table) => {
-            // Select the newly added hostname
-            cy.getTableCellByColumn($table, 'Name', node.hostname)
-              .should('exist')
-              .siblings('td')
-              .first()
-              .find('input[type="checkbox"]')
-              .click();
-          });
-
-        cy.findByText('SAVE').click();
-      });
-
-      // Back to Settings dialog
-      cy.get('.section-page-header').within(() => {
-        cy.get('button').click();
-      });
-
-      // Restart by clicking on the restart indicator
-      cy.findAllByRole('alert')
-        .scrollIntoView()
-        .should('have.length', 1)
-        .within(() => {
-          cy.contains('button', 'RESTART').click();
-        });
-
-      // Confirm the "restart" changes
-      cy.findVisibleDialog().contains('button', 'RESTART').click();
-
-      cy.findVisibleDialog().within(() => {
-        // Assert the log
-        logs.forEach((log) => {
-          cy.findByText(log, { exact: false }).should('exist');
-        });
-
-        cy.findByText('CLOSE').parent('button').should('be.enabled').click();
-      });
-
-      // close the snackbar
-      cy.findByTestId('snackbar').find('button:visible').click();
-
-      // close the settings dialog
-      cy.findByTestId('workspace-settings-dialog-close-button')
-        .should('be.visible')
-        .click();
-
-      cy.switchSettingSection(section, sectionItem);
-      cy.get('.section-page-content').within(() => {
-        cy.get('table')
-          .should('have.length', 1)
-          .within(($table) => {
-            // assert the Services should be 1 now
-            cy.getTableCellByColumn($table, 'Services', '1').should('exist');
-          });
-      });
     });
   });
 

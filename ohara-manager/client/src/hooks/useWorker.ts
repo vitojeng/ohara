@@ -14,17 +14,24 @@
  * limitations under the License.
  */
 
-import { ClusterData } from 'api/apiInterface/clusterInterface';
-import {
-  NodeData,
-  Resource as Resource0,
-} from 'api/apiInterface/nodeInterface';
-import { ObjectKey } from 'api/apiInterface/basicInterface';
+import { useQuery, QueryResult } from 'react-query';
+import { get } from 'api/workerApi';
+import { Worker, Key } from 'types';
 
-export type Key = ObjectKey;
-export type Object = Record<string, any>;
-export type Workspace = Record<string, any>;
-export type Broker = ClusterData;
-export type Worker = ClusterData;
-export type Node = NodeData;
-export type Resource = Resource0;
+function getWorker(_: object, name: string): Promise<Worker> {
+  const key: Key = {
+    name,
+    group: 'worker',
+  };
+  return get(key).then((res) => res.data);
+}
+
+export default function useWorker(
+  name: string,
+  config?: Record<string, any>,
+): QueryResult<Worker> {
+  return useQuery(['worker', name], getWorker, {
+    enabled: !!name,
+    ...config,
+  });
+}

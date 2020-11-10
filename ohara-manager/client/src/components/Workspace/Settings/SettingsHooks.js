@@ -34,11 +34,11 @@ import DeleteConfirmDialogContent from './DeleteConfirmDialogContent';
 import AutofillPage from './pages/AutofillPage';
 import StreamJarsPage from './pages/StreamJarsPage';
 import TopicPage from './pages/TopicPage';
-import WorkerNodesPage from './pages/WorkerNodesPage';
 import WorkerPluginsPage from './pages/WorkerPluginsPage';
 import WorkspaceFilesPage from './pages/WorkspaceFilesPage';
 import WorkspaceNodesPage from './pages/WorkspaceNodesPage';
 import BrokerNodes from 'components/broker/BrokerNodes';
+import WorkerNodes from 'components/worker/WorkerNodes';
 
 /*
     Available props for component
@@ -204,7 +204,7 @@ export const useConfig = ({
           subTitle: 'Nodes running the worker',
           type: SETTINGS_COMPONENT_TYPE.PAGE,
           componentProps: {
-            children: <WorkerNodesPage />,
+            children: <WorkerNodes />,
           },
         },
         {

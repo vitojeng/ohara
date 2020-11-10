@@ -145,10 +145,6 @@ export const useShouldBeRestartWorkspace = () => {
   const workspace = hooks.useWorkspace();
 
   const memoizedValue = useMemo(() => {
-    const countOfChangedWorkerNodes = workspace?.worker?.nodeNames
-      ? size(xor(worker?.nodeNames, workspace.worker.nodeNames))
-      : 0;
-
     const countOfChangedWorkerPlugins = workspace?.worker?.pluginKeys
       ? size(
           xor(
@@ -168,13 +164,10 @@ export const useShouldBeRestartWorkspace = () => {
       : 0;
 
     const shouldBeRestartWorker =
-      countOfChangedWorkerNodes > 0 ||
-      countOfChangedWorkerPlugins > 0 ||
-      countOfChangedWorkerSharedJars > 0;
+      countOfChangedWorkerPlugins > 0 || countOfChangedWorkerSharedJars > 0;
     const shouldBeRestartWorkspace = shouldBeRestartWorker;
 
     return {
-      countOfChangedWorkerNodes,
       countOfChangedWorkerPlugins,
       countOfChangedWorkerSharedJars,
       shouldBeRestartWorker,
