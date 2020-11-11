@@ -37,7 +37,7 @@ import TopicPage from './pages/TopicPage';
 import WorkerPluginsPage from './pages/WorkerPluginsPage';
 import WorkspaceFilesPage from './pages/WorkspaceFilesPage';
 import WorkspaceNodesPage from './pages/WorkspaceNodesPage';
-import BrokerNodes from 'components/broker/BrokerNodes';
+import BrokerNodesAndVolumes from 'components/broker/BrokerNodesAndVolumes';
 import WorkerNodes from 'components/worker/WorkerNodes';
 
 /*
@@ -179,11 +179,11 @@ export const useConfig = ({
         {
           badge: { count: countOfChangedBrokerNodes },
           icon: <StorageIcon />,
-          title: 'Broker nodes',
+          title: 'Broker nodes and volumes',
           subTitle: 'Nodes running the broker',
           type: SETTINGS_COMPONENT_TYPE.PAGE,
           componentProps: {
-            children: <BrokerNodes />,
+            children: <BrokerNodesAndVolumes />,
           },
         },
       ],

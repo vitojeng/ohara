@@ -15,13 +15,15 @@
  */
 
 import React, { useState } from 'react';
+import Box from '@material-ui/core/Box';
 import * as hooks from 'hooks';
-import BrokerNodeTable from './BrokerNodeTable';
 import AddBrokerNodeDialog from './AddBrokerNodeDialog';
+import BrokerNodeTable from './BrokerNodeTable';
+import BrokerVolumeTable from './BrokerVolumeTable';
 import NodeDetailDialog from 'components/Node/NodeDetailDialog';
 import { Node } from 'types';
 
-const BrokerNodeDialog: React.FC = () => {
+const BrokerNodesAndVolumes: React.FC = () => {
   const workspaceName = hooks.useWorkspaceName() as string;
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [isViewDialogOpen, setIsViewDialogOpen] = useState(false);
@@ -30,7 +32,7 @@ const BrokerNodeDialog: React.FC = () => {
   return (
     <React.Fragment>
       <BrokerNodeTable
-        name={workspaceName}
+        brokerName={workspaceName}
         onAddIconClick={(): void => {
           setIsAddDialogOpen(true);
         }}
@@ -43,6 +45,10 @@ const BrokerNodeDialog: React.FC = () => {
           setIsViewDialogOpen(true);
         }}
       />
+
+      <Box mt={5}>
+        <BrokerVolumeTable brokerName={workspaceName} />
+      </Box>
 
       <AddBrokerNodeDialog
         brokerName={workspaceName}
@@ -64,4 +70,4 @@ const BrokerNodeDialog: React.FC = () => {
   );
 };
 
-export default BrokerNodeDialog;
+export default BrokerNodesAndVolumes;

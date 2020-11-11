@@ -39,6 +39,7 @@ export default function useAddBrokerNode(): MutationResultPair<
   return useMutation(addBrokerNode, {
     onSuccess: async (_, variables) => {
       await queryCache.invalidateQueries(['broker', variables.name]);
+      queryCache.invalidateQueries('volumes');
     },
   });
 }

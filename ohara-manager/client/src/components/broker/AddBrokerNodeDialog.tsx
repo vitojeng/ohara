@@ -17,6 +17,7 @@
 import React, { useMemo } from 'react';
 import { filter, includes, map } from 'lodash';
 import { Form, FormRenderProps } from 'react-final-form';
+import { FormApi } from 'final-form';
 import { Select } from 'mui-rff';
 import MenuItem from '@material-ui/core/MenuItem';
 
@@ -57,11 +58,15 @@ const AddBrokerNodeDialog: React.FC<AddBrokerNodeDialogProps> = ({
 
   const hasNodesToBeSelected = nodesToBeSelected?.length > 0 || false;
 
-  async function handleSubmit(values: FormData): Promise<void> {
+  async function handleSubmit(
+    values: FormData,
+    form: FormApi<FormData>,
+  ): Promise<void> {
     const { nodeName } = values;
     if (broker) {
       await addBrokerNode({ name: broker.name as string, nodeName });
     }
+    setTimeout(form.reset);
     onClose();
   }
 
@@ -88,7 +93,9 @@ const AddBrokerNodeDialog: React.FC<AddBrokerNodeDialogProps> = ({
               nodesToBeSelected,
               (node: Node): JSX.Element => {
                 return (
-                  <MenuItem value={node.hostname}>{node.hostname}</MenuItem>
+                  <MenuItem key={node.hostname} value={node.hostname}>
+                    {node.hostname}
+                  </MenuItem>
                 );
               },
             )}

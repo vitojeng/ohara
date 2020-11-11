@@ -18,8 +18,10 @@
 import React, { useMemo, memo } from 'react';
 import MaterialTable from 'material-table';
 import { filter, includes, map, isArray } from 'lodash';
+import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
 import Tooltip from '@material-ui/core/Tooltip';
+import Typography from '@material-ui/core/Typography';
 
 import MuiTableIcons from 'components/common/Table/MuiTableIcons';
 import useBroker from 'hooks/useBroker';
@@ -33,18 +35,23 @@ import { getServiceCountOfNode } from 'utils/nodeUtils';
 const refetchInterval = 5000;
 
 interface BrokerNodeTableProps {
-  name: string;
+  brokerName: string;
   onAddIconClick?: () => void;
   onColumnClick?: (node: Node, columnName: string) => void;
   onViewIconClick?: (node: Node) => void;
 }
 
-const BrokerNodeTable: React.FC<BrokerNodeTableProps> = (props) => {
+const BrokerNodeTable: React.FC<BrokerNodeTableProps> = ({
+  brokerName,
+  onAddIconClick,
+  onColumnClick,
+  onViewIconClick,
+}) => {
   const {
     data: broker,
     isLoading: isBrokerLoading,
     refetch: refetchBroker,
-  } = useBroker(props.name);
+  } = useBroker(brokerName);
 
   const {
     data: nodes,
@@ -60,89 +67,101 @@ const BrokerNodeTable: React.FC<BrokerNodeTableProps> = (props) => {
   }, [broker, nodes]);
 
   return (
-    <MaterialTable
-      actions={[
-        {
-          icon: 'refresh',
-          tooltip: 'Refresh',
-          isFreeAction: true,
-          onClick: (): void => {
-            refetchBroker();
-            refetchNodes();
+    <React.Fragment>
+      <MaterialTable
+        actions={[
+          {
+            icon: 'refresh',
+            tooltip: 'Refresh',
+            isFreeAction: true,
+            onClick: (): void => {
+              refetchBroker();
+              refetchNodes();
+            },
           },
-        },
-        {
-          icon: 'add',
-          tooltip: 'Add node',
-          isFreeAction: true,
-          onClick: (): void => {
-            if (props.onAddIconClick) {
-              props.onAddIconClick();
-            }
-          },
-        },
-        {
-          icon: 'visibility',
-          tooltip: 'View node',
-          onClick: (_, data: Node | Node[]): void => {
-            if (props.onViewIconClick) {
-              if (isArray(data)) {
-                props.onViewIconClick(data[0]);
-              } else {
-                props.onViewIconClick(data);
+          {
+            icon: 'add',
+            tooltip: 'Add node',
+            isFreeAction: true,
+            onClick: (): void => {
+              if (onAddIconClick) {
+                onAddIconClick();
               }
-            }
+            },
           },
-        },
-      ]}
-      columns={[
-        { title: 'Name', field: 'hostname' },
-        {
-          title: 'Resources',
-          render: (node: Node): JSX.Element[] => {
-            return map(node.resources, (resource) => (
-              <ResourceBarChart resource={resource} />
-            ));
+          {
+            icon: 'visibility',
+            tooltip: 'View node',
+            onClick: (_, data: Node | Node[]): void => {
+              if (onViewIconClick) {
+                if (isArray(data)) {
+                  onViewIconClick(data[0]);
+                } else {
+                  onViewIconClick(data);
+                }
+              }
+            },
           },
-        },
-        {
-          title: 'Services',
-          render: (node: Node): JSX.Element => {
-            const count = getServiceCountOfNode(node);
-            return (
-              <Tooltip title="View services">
-                <Button
-                  color="primary"
-                  component="div"
-                  disabled={!(count > 0)}
-                  onClick={(): void => {
-                    if (props.onColumnClick) {
-                      props.onColumnClick(node, 'services');
-                    }
-                  }}
-                >
-                  {count}
-                </Button>
-              </Tooltip>
-            );
+        ]}
+        columns={[
+          { title: 'Name', field: 'hostname' },
+          {
+            title: 'Resources',
+            render: (node: Node): JSX.Element[] => {
+              return map(node.resources, (resource) => (
+                <ResourceBarChart resource={resource} />
+              ));
+            },
           },
-        },
-        {
-          title: 'State',
-          field: 'state',
-          render: (node: Node): JSX.Element => <NodeStateChip node={node} />,
-        },
-      ]}
-      data={brokerNodes}
-      icons={MuiTableIcons}
-      isLoading={isNodesLoading || isBrokerLoading}
-      options={{
-        actionsColumnIndex: -1,
-        search: false,
-        paging: brokerNodes?.length > 5,
-      }}
-      title="Broker nodes"
-    />
+          {
+            title: 'Services',
+            render: (node: Node): JSX.Element => {
+              const count = getServiceCountOfNode(node);
+              return (
+                <Tooltip title="View services">
+                  <Button
+                    color="primary"
+                    component="div"
+                    disabled={!(count > 0)}
+                    onClick={(): void => {
+                      if (onColumnClick) {
+                        onColumnClick(node, 'services');
+                      }
+                    }}
+                  >
+                    {count}
+                  </Button>
+                </Tooltip>
+              );
+            },
+          },
+          {
+            title: 'State',
+            field: 'state',
+            render: (node: Node): JSX.Element => <NodeStateChip node={node} />,
+          },
+        ]}
+        data={brokerNodes}
+        icons={MuiTableIcons}
+        isLoading={isNodesLoading || isBrokerLoading}
+        options={{
+          actionsColumnIndex: -1,
+          search: false,
+          paging: brokerNodes?.length > 5,
+        }}
+        title="Broker nodes"
+      />
+      <Box mt={0.5}>
+        <Typography
+          color="textSecondary"
+          display="block"
+          gutterBottom
+          variant="caption"
+        >
+          The nodes hosting the broker cluster.
+        </Typography>
+      </Box>
+    </React.Fragment>
   );
 };
 
