@@ -23,12 +23,14 @@ import oharastream.ohara.common.annotations.VisibleForTesting
 import oharastream.ohara.common.util.CommonUtils
 import oharastream.ohara.kafka.connector.{RowSinkRecord, RowSinkTask, TaskSetting}
 import com.typesafe.scalalogging.Logger
+import oharastream.ohara.common.data.{Cell, Column, Row}
 
 import scala.concurrent.duration.Duration
 import scala.jdk.CollectionConverters._
 
 class ConsoleSinkTask extends RowSinkTask {
-  private[this] val LOG = Logger(classOf[ConsoleSinkTask])
+  private[this] val LOG                  = Logger(classOf[ConsoleSinkTask])
+  private[this] var columns: Seq[Column] = _
   @VisibleForTesting
   private[console] var freq: Duration = CONSOLE_FREQUENCE_DEFAULT
   @VisibleForTesting
@@ -36,6 +38,7 @@ class ConsoleSinkTask extends RowSinkTask {
   @VisibleForTesting
   private[console] var lastLog: Long = -1
   override protected def run(config: TaskSetting): Unit = {
+    this.columns = config.columns().asScala.toSeq
     divider = config.stringOption(CONSOLE_ROW_DIVIDER).orElse(CONSOLE_ROW_DIVIDER_DEFAULT)
     freq = Duration(
       config
@@ -50,10 +53,26 @@ class ConsoleSinkTask extends RowSinkTask {
     // do nothing
   }
 
-  override protected def putRecords(records: util.List[RowSinkRecord]): Unit =
+  override protected def putRecords(records: util.List[RowSinkRecord]): Unit = {
     if (!records.isEmpty && (lastLog == -1 || CommonUtils.current() - lastLog >= freq.toMillis)) {
       try {
-        LOG.info(records.asScala.map(_.row()).mkString(divider))
+        LOG.info(
+          records.asScala
+            .map {
+              if (columns.nonEmpty) replaceName(_, columns)
+              else _.row()
+            }
+            .mkString(divider)
+        )
       } finally lastLog = CommonUtils.current()
     }
+  }
+
+  private[console] def replaceName(record: RowSinkRecord, columns: Seq[Column]): Row = {
+    Row.of(
+      columns.sortBy(_.order()).map { c =>
+        Cell.of(c.newName(), record.row().cell(c.name()).value())
+      }: _*
+    )
+  }
 }
