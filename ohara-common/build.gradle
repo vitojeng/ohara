@@ -21,7 +21,6 @@ dependencies {
   implementation libs.commonsLang
   implementation libs.slf4jApi
   implementation libs.slf4jLog4j
-  implementation libs.commonsIo
   implementation libs.guava
   // we import the jackson from kafka
   implementation libs.kafkaConnectJson

@@ -39,7 +39,6 @@ import java.util.function.BiPredicate;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import oharastream.ohara.common.setting.ObjectKey;
-import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -638,11 +637,15 @@ public final class CommonUtils {
   /**
    * Delete the file or folder
    *
-   * @param path path to file or folder
+   * @param file path to file or folder
    */
-  public static void deleteFiles(File path) {
+  public static void deleteFiles(File file) {
     try {
-      FileUtils.forceDelete(path);
+      if (file.isDirectory()) {
+        var fs = file.listFiles();
+        if (fs != null) for (var f : fs) deleteFiles(f);
+      }
+      Files.deleteIfExists(file.toPath());
     } catch (IOException e) {
       throw new IllegalStateException(e);
     }
