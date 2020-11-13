@@ -16,7 +16,7 @@
 
 const cp = require('child_process');
 
-/* eslint-disable no-console, no-process-exit */
+const { logger } = require('../utils/commonUtils');
 
 // Kill both server and client processes
 try {
@@ -31,14 +31,16 @@ try {
 
 try {
   if (process.platform === 'win32') {
-    console.warn('Windows cannot delete tasklist due to security issue!');
+    logger.warn('Windows cannot delete tasklist due to security issue!');
   } else {
     cp.execSync('pkill -f start.js', { stdio: 'inherit' });
   }
 } catch (error) {
   if (error.status === 1) {
     // Couldn't find any processes, exit with success status
+    /* eslint-disable no-process-exit */
     process.exit(0);
+    /* eslint-enable no-process-exit */
   }
 
   // Real error, throw it out

@@ -18,6 +18,7 @@ const fs = require('fs');
 const execa = require('execa');
 const package = require('../package.json');
 
+const { logger } = require('../utils/commonUtils');
 const srcBase = '../ohara-it/build/libs';
 const distBase = './client/cypress/fixtures/jars';
 const files = [
@@ -30,7 +31,6 @@ const files = [
 const filesExist = files.every((file) => fs.existsSync(`${distBase}/${file}`));
 
 if (!filesExist) {
-  /* eslint-disable no-process-exit, no-console */
   const args = process.argv.slice(2);
   // Only rebuild the jars if not in QA
   if (!args || args.shift() !== '--ci') {
@@ -40,10 +40,12 @@ if (!filesExist) {
         stdio: 'inherit',
       });
 
-      console.log(`build jars output: ${value.stdout}`);
+      logger.log(`build jars output: ${value.stdout}`);
     } catch (err) {
-      console.log(err.message);
+      logger.error(err.message);
+      /* eslint-disable no-process-exit */
       process.exit(1);
+      /* eslint-enable no-process-exit */
     }
   }
 

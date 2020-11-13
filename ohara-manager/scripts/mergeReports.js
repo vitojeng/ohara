@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-const chalk = require('chalk');
 const path = require('path');
 const { isEmpty } = require('lodash');
 const { readdirSync, unlinkSync, existsSync } = require('fs');
 const { mergeFiles } = require('junit-report-merger');
 
-/* eslint-disable no-console */
+const { logger } = require('../utils/commonUtils');
+
 // Cypress team is considering to support generating single test
 // report in a test run. But the issue is still pending, so we're
 // manually merging test reports here. See the below issue for
@@ -42,10 +42,8 @@ const merge = ({ reportDistPath, filesToBeMerged, reject, resolve }) => {
     if (err) reject(err);
     deleteFiles(filesToBeMerged); // Delete reports that were just merged
 
-    console.log(
-      chalk.green(
-        `Merged all test reports!\nYou can view report at ${reportDistPath}`,
-      ),
+    logger.success(
+      `Merged all test reports!\nYou can view report at ${reportDistPath}`,
     );
 
     resolve();
@@ -65,7 +63,7 @@ const mergeReports = (fileName) =>
     };
 
     if (isEmpty(files)) {
-      console.log(chalk.red(`No report found in ${reportDistPath}!`));
+      logger.error(`No report found in ${reportDistPath}!`);
       reject();
     }
 

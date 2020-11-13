@@ -18,17 +18,15 @@ const fs = require('fs');
 const chalk = require('chalk');
 const waitOn = require('wait-on');
 
+const { logger } = require('../utils/commonUtils');
+
 exports.isBuildDirExist = (testMode) => {
   if (!fs.existsSync('./client/build')) {
-    /* eslint-disable no-console */
-    console.log(
-      chalk.red(
-        `Couldn't find the build directory, please run ${chalk.blue(
-          'yarn setup',
-        )} to build the static files that are needed in the ${testMode.toUpperCase()} test`,
-      ),
+    logger.error(
+      `Couldn't find the build directory, please run ${chalk.blue(
+        'yarn setup',
+      )} to build the static files that are needed in the ${testMode.toUpperCase()} test`,
     );
-    /* eslint-enable no-console */
     return false;
   }
 
@@ -46,10 +44,8 @@ exports.waitOnService = (url) =>
       },
       (err) => {
         if (err) {
-          /* eslint-disable no-console */
-          console.error('error waiting for url', url);
-          console.error(err.message);
-          /* eslint-enable no-console */
+          logger.error('error waiting for url', url);
+          logger.error(err.message);
           return reject(err);
         }
         resolve(); // success!

@@ -20,22 +20,22 @@ const { isNumber } = require('lodash');
 const net = require('net');
 const URL = require('url').URL;
 
+const { logger } = require('./commonUtils');
 const utils = require('./commonUtils');
 
-/* eslint-disable no-process-exit, no-console */
-
+/* eslint-disable no-process-exit */
 const validateUrl = async (url) => {
   const regex = /https?:\/\/[-a-z0-9._+~#=:]{2,256}\/v[0-9]/gi;
   const validUrl = chalk.bold.green('http://localhost:5050/v0');
 
   if (!regex.test(url)) {
-    console.log();
-    console.log(
+    logger.log();
+    logger.log(
       `--configurator: ${chalk.bold.red(
         url,
       )} is invalid\n\nThe valid configurator URL should be something like: ${validUrl}`,
     );
-    console.log();
+    logger.log();
 
     // Throw an error here won't stop the node process
     // since we're inside an async function, that's a promise rejection
@@ -50,7 +50,7 @@ const validateUrl = async (url) => {
     return new Promise((resolve) => {
       const socket = new net.Socket();
       const onError = (err) => {
-        console.log(err.message);
+        logger.error(err.message);
         socket.destroy();
         resolve(false);
       };
@@ -63,26 +63,22 @@ const validateUrl = async (url) => {
         resolve(true);
       });
     }).catch((error) => {
-      console.log(error.message);
+      logger.error(error.message);
     });
   };
 
   const printSuccessMsg = () =>
-    console.log(
-      chalk.green(
-        `Successfully connected to the configurator: ${chalk.bold.underline(
-          url,
-        )}`,
-      ),
+    logger.success(
+      `Successfully connected to the configurator: ${chalk.bold.underline(
+        url,
+      )}`,
     );
 
   const printFailMsg = () => {
-    console.log(
-      chalk.yellow(
-        `Couldn't connect to the configurator url you provided: ${chalk.bold(
-          url,
-        )}, retrying...`,
-      ),
+    logger.warn(
+      `Couldn't connect to the configurator url you provided: ${chalk.bold(
+        url,
+      )}, retrying...`,
     );
   };
 
@@ -98,15 +94,15 @@ const validateUrl = async (url) => {
     await utils.sleep(3000); // wait for 3 sec and make another request
   }
   if (!isReady) {
-    console.log();
-    console.log(
+    logger.log();
+    logger.log(
       `--configurator: we're not able to connect to ${chalk.bold.red(
         url,
       )}\n\nPlease make sure your Configurator is running at ${chalk.bold.green(
         url,
       )}`,
     );
-    console.log();
+    logger.log();
     process.exit(1);
   }
   printSuccessMsg();
@@ -116,22 +112,22 @@ const validatePort = (port) => {
   const isValidPort = port >= 0 && port <= 65535;
 
   if (!isNumber(port)) {
-    console.log();
-    console.log(`--port: ${chalk.red(port)} is not a number`);
-    console.log();
+    logger.log();
+    logger.log(`--port: ${chalk.red(port)} is not a number`);
+    logger.log();
     process.exit(1);
   }
 
   if (!isValidPort) {
-    console.log();
-    console.log(
+    logger.log();
+    logger.log(
       `--port: ${chalk.red(
         port,
       )} is invalid\n\nValid port number is between the range of ${chalk.green(
         0,
       )} and ${chalk.green(65535)}`,
     );
-    console.log();
+    logger.log();
     process.exit(1);
   }
 };

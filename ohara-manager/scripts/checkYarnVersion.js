@@ -16,7 +16,8 @@
 
 const cp = require('child_process');
 
-/* eslint-disable no-console */
+// Don't use any third-party library in this script as it runs "before" installing these dependencies
+
 try {
   const yarnVersion = cp.execSync('yarn -v').toString().trim();
   const minor = parseFloat(yarnVersion.slice(2));
@@ -30,8 +31,10 @@ try {
     );
   }
 
+  /* eslint-disable no-console */
   console.log(`👌 Yarn version check passed! You're using yarn ${yarnVersion}`);
   console.log('📦 Installing Ohara Manager dependencies');
+  /* eslint-enable no-console */
 } catch (error) {
   throw new Error(error);
 }

@@ -17,14 +17,13 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const compression = require('compression');
-const chalk = require('chalk');
 const path = require('path');
 const morgan = require('morgan');
 const { createProxyMiddleware } = require('http-proxy-middleware');
 
 const { API_ROOT, PORT } = require('./config');
+const { logger } = require('./utils/commonUtils');
 
-/* eslint-disable no-console */
 const app = express();
 // The same limit as the backend setting
 app.use(bodyParser.json({ limit: '10mb' }));
@@ -70,5 +69,5 @@ app.get('*', (req, res) => {
 });
 
 app.listen(PORT, () => {
-  console.log(chalk.green(`Ohara manager is running at port: ${PORT}`));
+  logger.success(`Ohara manager is running at port: ${PORT}`);
 });
