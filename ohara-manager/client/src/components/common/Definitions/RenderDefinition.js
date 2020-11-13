@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import { Field } from 'react-final-form';
 import { toNumber, isEmpty, includes } from 'lodash';
 

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useState } from 'react';
+import { useState } from 'react';
 import PropTypes from 'prop-types';
 import { toLower } from 'lodash';
 import styled, { css } from 'styled-components';
@@ -87,10 +87,10 @@ const DeleteDialog = ({
 
   return (
     <Dialog
+      PaperComponent={DrabblePaper}
       maxWidth={maxWidth}
       onClose={onClose}
       open={open}
-      PaperComponent={DrabblePaper}
     >
       <div data-testid={testId}>
         <StyledDialogTitle disableTypography>

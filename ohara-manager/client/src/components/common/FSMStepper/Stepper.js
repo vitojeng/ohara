@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import PropTypes from 'prop-types';
 import { capitalize } from 'lodash';
 import MuiStepper from '@material-ui/core/Stepper';

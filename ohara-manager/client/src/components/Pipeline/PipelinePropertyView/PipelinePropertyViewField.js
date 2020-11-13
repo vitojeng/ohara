@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import PropTypes from 'prop-types';
 import Typography from '@material-ui/core/Typography';
 import InfoIcon from '@material-ui/icons/Info';

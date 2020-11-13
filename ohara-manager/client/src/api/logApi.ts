@@ -25,7 +25,7 @@ const logApi = (service: LOG_SERVICE) => new API(`${RESOURCE.LOG}/${service}`);
 const fetchServiceLog = (
   service: LOG_SERVICE,
   objectKey?: ObjectKey,
-  queryParams?: object,
+  queryParams?: Record<string, unknown>,
 ) => {
   return logApi(service).get<LogResponse>({
     name: objectKey?.name,
@@ -33,23 +33,35 @@ const fetchServiceLog = (
   });
 };
 
-export const getConfiguratorLog = (queryParams?: object) => {
+export const getConfiguratorLog = (queryParams?: Record<string, unknown>) => {
   return logApi(LOG_SERVICE.configurator).get<LogResponse>({ queryParams });
 };
 
-export const getZookeeperLog = (objectKey: ObjectKey, queryParams?: object) => {
+export const getZookeeperLog = (
+  objectKey: ObjectKey,
+  queryParams?: Record<string, unknown>,
+) => {
   return fetchServiceLog(LOG_SERVICE.zookeeper, objectKey, queryParams);
 };
 
-export const getBrokerLog = (objectKey: ObjectKey, queryParams?: object) => {
+export const getBrokerLog = (
+  objectKey: ObjectKey,
+  queryParams?: Record<string, unknown>,
+) => {
   return fetchServiceLog(LOG_SERVICE.broker, objectKey, queryParams);
 };
 
-export const getWorkerLog = (objectKey: ObjectKey, queryParams?: object) => {
+export const getWorkerLog = (
+  objectKey: ObjectKey,
+  queryParams?: Record<string, unknown>,
+) => {
   return fetchServiceLog(LOG_SERVICE.worker, objectKey, queryParams);
 };
 
-export const getShabondiLog = (objectKey: ObjectKey, queryParams?: object) => {
+export const getShabondiLog = (
+  objectKey: ObjectKey,
+  queryParams?: Record<string, unknown>,
+) => {
   return fetchServiceLog(LOG_SERVICE.shabondi, objectKey, queryParams)
     .then((res) => {
       res.title = `Get ${RESOURCE.LOG}/${LOG_SERVICE.shabondi} "${objectKey.name}" info successfully.`;
@@ -61,7 +73,10 @@ export const getShabondiLog = (objectKey: ObjectKey, queryParams?: object) => {
     });
 };
 
-export const getStreamLog = (objectKey: ObjectKey, queryParams?: object) => {
+export const getStreamLog = (
+  objectKey: ObjectKey,
+  queryParams?: Record<string, unknown>,
+) => {
   return fetchServiceLog(LOG_SERVICE.stream, objectKey, queryParams)
     .then((res) => {
       res.title = `Get ${RESOURCE.LOG}/${LOG_SERVICE.stream} "${objectKey.name}" info successfully.`;

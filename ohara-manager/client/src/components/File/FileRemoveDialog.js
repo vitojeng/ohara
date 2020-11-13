@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import PropTypes from 'prop-types';
 import { isFunction } from 'lodash';
 import { DeleteDialog } from 'components/common/Dialog';

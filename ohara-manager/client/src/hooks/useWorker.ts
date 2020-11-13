@@ -18,7 +18,7 @@ import { useQuery, QueryResult } from 'react-query';
 import { get } from 'api/workerApi';
 import { Worker, Key } from 'types';
 
-function getWorker(_: object, name: string): Promise<Worker> {
+function getWorker(_: Record<string, never>, name: string): Promise<Worker> {
   const key: Key = {
     name,
     group: 'worker',

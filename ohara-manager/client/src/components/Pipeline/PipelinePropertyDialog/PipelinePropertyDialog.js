@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 import PropTypes from 'prop-types';
 import _ from 'lodash';
 import Button from '@material-ui/core/Button';

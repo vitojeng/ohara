@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import { useRef } from 'react';
 import styled from 'styled-components';
 
 /**
@@ -36,7 +36,7 @@ import styled from 'styled-components';
  * </Dialog>
  */
 export default function RenderCount() {
-  const renders = React.useRef(0);
+  const renders = useRef(0);
 
   return <Circle>{++renders.current}</Circle>;
 }

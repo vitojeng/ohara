@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useState } from 'react';
+import { memo, useState } from 'react';
 import PropTypes from 'prop-types';
 import { isEqual } from 'lodash';
 
@@ -22,7 +22,7 @@ import { VirtualizedList } from 'components/common/List';
 import EventLogContentDialog from './EventLogContentDialog';
 import EventLogRow from './EventLogRow';
 
-const MemorizeList = React.memo(
+const MemorizeList = memo(
   ({ data, isLoading, onRowClick }) => (
     <VirtualizedList
       autoScrollToBottom

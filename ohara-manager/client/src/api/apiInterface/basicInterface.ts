@@ -35,7 +35,7 @@ export interface ApiError {
 export interface BasicResponse {
   status: number;
   // object or array
-  data: object | object[];
+  data: Record<string, any> | Record<string, any>[];
   // api message that could be used in SnackBar
   title: string;
   // additional information about this response

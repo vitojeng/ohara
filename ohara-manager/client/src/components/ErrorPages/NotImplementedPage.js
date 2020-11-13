@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import { useState, useEffect } from 'react';
 import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
 import CircularProgress from '@material-ui/core/CircularProgress';
@@ -24,10 +24,10 @@ import { Wrapper } from './ErrorPageStyles';
 import * as inspectApi from 'api/inspectApi';
 
 const NotFoundPage = () => {
-  const [managerVersion, setManagerVersion] = React.useState('');
-  const [configuratorVersion, setConfiguratorVersion] = React.useState('');
+  const [managerVersion, setManagerVersion] = useState('');
+  const [configuratorVersion, setConfiguratorVersion] = useState('');
 
-  React.useEffect(() => {
+  useEffect(() => {
     const fetchConfiguratorInfo = async () => {
       const info = await inspectApi.getConfiguratorInfo();
       setConfiguratorVersion(info.data.versionInfo.version);
@@ -35,7 +35,7 @@ const NotFoundPage = () => {
     fetchConfiguratorInfo();
   }, []);
 
-  React.useEffect(() => {
+  useEffect(() => {
     const fetchMangerInfo = async () => {
       const info = await inspectApi.getManagerInfo();
       setManagerVersion(info.data.version);

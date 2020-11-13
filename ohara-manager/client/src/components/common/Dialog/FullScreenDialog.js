@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
 import DialogContent from '@material-ui/core/DialogContent';
@@ -50,15 +49,15 @@ const FullScreenDialog = (props) => {
   } = props;
   return (
     <Dialog
-      data-testid={testId}
-      fullScreen
-      onClose={onClose}
-      open={open}
       PaperProps={{
         style: {
           backgroundColor: '#f5f6fa',
         },
       }}
+      data-testid={testId}
+      fullScreen
+      onClose={onClose}
+      open={open}
       {...other}
     >
       <AppBar>

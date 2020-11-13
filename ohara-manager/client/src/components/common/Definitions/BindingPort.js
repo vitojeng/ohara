@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import { omit } from 'lodash';
 import PropTypes from 'prop-types';
 import MenuItem from '@material-ui/core/MenuItem';
@@ -40,11 +39,11 @@ const BindingPort = (props) => {
   return (
     <TextField
       {...rest}
+      InputProps={restInput}
       error={hasError}
       fullWidth
       helperText={hasError ? meta.error : helperText}
       id={name}
-      InputProps={restInput}
       name={name}
       onChange={onChange}
       ref={refs}

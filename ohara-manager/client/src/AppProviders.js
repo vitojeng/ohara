@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import { cloneElement } from 'react';
 import PropTypes from 'prop-types';
 import { ThemeProvider } from 'styled-components';
 import {
@@ -28,7 +28,7 @@ import { ConfiguratorProvider, StoreProvider } from './context';
 
 const ContextProviderComposer = ({ contextProviders, children }) => {
   return contextProviders.reduceRight(
-    (children, parent) => React.cloneElement(parent, { children }),
+    (children, parent) => cloneElement(parent, { children }),
     children,
   );
 };

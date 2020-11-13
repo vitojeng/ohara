@@ -52,10 +52,13 @@ export const useFetchTopicsAction = () => {
 export const useCreateTopicAction = () => {
   const dispatch = useDispatch();
   const group = useTopicGroup();
-  const brokerClusterKey = {
-    group: hooks.useBrokerGroup(),
-    name: hooks.useWorkspaceName(),
-  };
+  const brokerClusterKey = useMemo(() => {
+    return {
+      group: hooks.useBrokerGroup(),
+      name: hooks.useWorkspaceName(),
+    };
+  }, []);
+
   return useCallback(
     (values) =>
       dispatch(

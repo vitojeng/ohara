@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
 import TextField from '@material-ui/core/TextField';
@@ -45,10 +44,10 @@ const Select = (props) => {
   return (
     <StyledSelect
       {...rest}
+      InputProps={restInput}
       error={error}
       helperText={error && meta.error}
       id={name}
-      InputProps={restInput}
       name={name}
       onChange={onChange}
       select={true}

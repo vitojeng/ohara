@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import { useEffect } from 'react';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
 import { useLocation, useParams } from 'react-router-dom';
@@ -63,7 +63,7 @@ const DataWindow = () => {
 
   hooks.useInitializeApp(workspaceName, pipelineName);
 
-  React.useEffect(() => {
+  useEffect(() => {
     function handleResize() {
       // when window resize, we force re-render the log data height
       // give it a little delay to avoid performance issue
@@ -74,7 +74,7 @@ const DataWindow = () => {
     return () => window.removeEventListener('resize', handleResize);
   }, []); // Empty array ensures that effect is only run on mount and unmount
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (isWorkspaceReady && !isTopicDataQueried) {
       setTopicQueryParams({ name: topicName, limit: topicLimit });
     }
@@ -86,7 +86,7 @@ const DataWindow = () => {
     topicName,
   ]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (isWorkspaceReady && !isLogQueried) {
       setLogQueryParams({
         logType,

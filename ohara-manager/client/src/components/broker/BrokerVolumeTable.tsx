@@ -44,7 +44,7 @@ const BrokerVolumeTable: React.FC<BrokerVolumeTableProps> = ({
   });
 
   const brokerVolumes: Volume[] = useMemo(() => {
-    const logDirs = broker?.['log__dirs'] as Key[];
+    const logDirs = broker?.log__dirs as Key[];
     if (logDirs) {
       return filter(volumes, (volume: Volume) =>
         some(logDirs, { name: volume?.name as string }),

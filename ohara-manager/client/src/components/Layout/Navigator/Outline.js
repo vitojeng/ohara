@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import PropTypes from 'prop-types';
 import Scrollbar from 'react-scrollbars-custom';
 import cx from 'classnames';

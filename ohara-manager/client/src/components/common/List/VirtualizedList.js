@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import { useMemo } from 'react';
 import PropTypes from 'prop-types';
 import { noop, times } from 'lodash';
 import styled, { css } from 'styled-components';
@@ -60,7 +60,7 @@ const VirtualizedList = (props) => {
     autoScrollToBottom,
   } = props;
   // Avoid duplicate creation of the cache data. And so we only initialize the cache once for each DOM rendering
-  const cache = React.useMemo(() => {
+  const cache = useMemo(() => {
     return new CellMeasurerCache({
       defaultHeight: 20,
       fixedWidth: true,

@@ -96,13 +96,13 @@ export const useSetDevToolLogQueryParams = () => {
 // data selector
 //topic tab
 export const useDevToolTopicData = () => {
-  const getTopicData = useMemo(selectors.makeGetDevToolTopicData, []);
+  const getTopicData = useMemo(() => selectors.makeGetDevToolTopicData(), []);
   return useSelector(
     useCallback((state) => getTopicData(state), [getTopicData]),
   );
 };
 // log tab
 export const useDevToolLog = () => {
-  const getLog = useMemo(selectors.makeGetDevToolLog, []);
+  const getLog = useMemo(() => selectors.makeGetDevToolLog(), []);
   return useSelector(useCallback((state) => getLog(state), [getLog]));
 };

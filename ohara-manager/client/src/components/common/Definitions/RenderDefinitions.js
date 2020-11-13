@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useRef, createRef } from 'react';
+import { useRef, createRef } from 'react';
 import PropTypes from 'prop-types';
 import { Form } from 'react-final-form';
 import RenderDefinition from './RenderDefinition';

@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import { omit } from 'lodash';
 import PropTypes from 'prop-types';
 import styled, { css } from 'styled-components';
@@ -63,16 +62,16 @@ const Duration = (props) => {
   return (
     <StyledTextField
       {...rest}
-      error={hasError}
-      fullWidth
-      helperText={hasError ? meta.error : helperText}
-      id={name}
       InputProps={{
         ...restInput,
         endAdornment: <InputAdornment position="end">Seconds</InputAdornment>,
         // Props for native input element
         inputProps: { min: 0 },
       }}
+      error={hasError}
+      fullWidth
+      helperText={hasError ? meta.error : helperText}
+      id={name}
       name={name}
       onChange={handleChange}
       ref={refs}

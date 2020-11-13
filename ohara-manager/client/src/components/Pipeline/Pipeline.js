@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 
-import React, { useEffect, useRef, createContext } from 'react';
+import { useEffect, useRef, createContext } from 'react';
+
+import * as React from 'react';
 import _ from 'lodash';
 
 import * as hooks from 'hooks';

@@ -14,7 +14,13 @@
  * limitations under the License.
  */
 
-import React, { useRef, Fragment, createRef } from 'react';
+import {
+  forwardRef,
+  useImperativeHandle,
+  useRef,
+  Fragment,
+  createRef,
+} from 'react';
 import { capitalize, flatten } from 'lodash';
 import PropTypes from 'prop-types';
 import { Form } from 'react-final-form';
@@ -26,7 +32,7 @@ import * as hooks from 'hooks';
 
 const scrollIntoViewOption = { behavior: 'smooth', block: 'start' };
 
-const PipelinePropertyForm = React.forwardRef((props, ref) => {
+const PipelinePropertyForm = forwardRef((props, ref) => {
   const files = hooks.useFiles();
   const nodes = hooks.useNodesInWorkspace();
 
@@ -52,7 +58,7 @@ const PipelinePropertyForm = React.forwardRef((props, ref) => {
     values: () => formRef.current.getState().values,
   };
 
-  React.useImperativeHandle(ref, () => apis);
+  useImperativeHandle(ref, () => apis);
 
   return (
     <Form

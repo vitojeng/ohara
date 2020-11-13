@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import { omit } from 'lodash';
 import PropTypes from 'prop-types';
 import TextField from '@material-ui/core/TextField';
@@ -31,11 +30,11 @@ const PositiveShort = (props) => {
   return (
     <TextField
       {...rest}
+      InputProps={{ inputProps: { min: 0, max: 32767 }, ...restInput }}
       error={hasError}
       fullWidth
       helperText={hasError ? meta.error : helperText}
       id={name}
-      InputProps={{ inputProps: { min: 0, max: 32767 }, ...restInput }}
       name={name}
       onChange={onChange}
       ref={refs}

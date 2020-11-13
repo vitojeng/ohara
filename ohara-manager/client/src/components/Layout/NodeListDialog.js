@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import _ from 'lodash';
 import PropTypes from 'prop-types';
 

@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import clx from 'classnames';
 import Scrollbar from 'react-scrollbars-custom';
 import ShareIcon from '@material-ui/icons/Share';

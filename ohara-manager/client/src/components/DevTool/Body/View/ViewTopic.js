@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import { useState } from 'react';
 import { capitalize, get, isEmpty } from 'lodash';
 import VisibilityIcon from '@material-ui/icons/Visibility';
 import ReactJson from 'react-json-view';
@@ -30,7 +30,7 @@ import {
 } from './ViewStyles';
 
 const ViewTopic = () => {
-  const [viewTopicMessage, setViewTopicMessage] = React.useState({});
+  const [viewTopicMessage, setViewTopicMessage] = useState({});
 
   const { data, isFetching } = hooks.useDevToolTopicData();
 

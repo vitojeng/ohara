@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import { useState } from 'react';
 import { omit } from 'lodash';
 import PropTypes from 'prop-types';
 import TextField from '@material-ui/core/TextField';
@@ -31,7 +31,7 @@ const ObjectKey = (props) => {
 
   const hasError = (meta.error && meta.touched) || (meta.error && meta.dirty);
 
-  const [objectKey, setObjectKey] = React.useState({
+  const [objectKey, setObjectKey] = useState({
     name: value.name ? value.name : '',
     group: value.group ? value.group : '',
   });
@@ -49,11 +49,11 @@ const ObjectKey = (props) => {
     <>
       <TextField
         {...rest}
+        InputProps={restInput}
         error={hasError}
         fullWidth
         helperText={hasError ? meta.error : helperText}
         id={name + 'Name'}
-        InputProps={restInput}
         label={label + ' (name)'}
         name={name + 'Name'}
         onChange={handleChange}
@@ -62,11 +62,11 @@ const ObjectKey = (props) => {
       />
       <TextField
         {...rest}
+        InputProps={restInput}
         error={hasError}
         fullWidth
         helperText={hasError ? meta.error : helperText}
         id={name + 'Name'}
-        InputProps={restInput}
         label={label + ' (group)'}
         name={name + 'Group'}
         onChange={handleChange}

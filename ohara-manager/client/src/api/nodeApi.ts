@@ -46,6 +46,6 @@ export const get = (hostname: string) => {
   return nodeApi.get<NodeResponse>({ name: hostname });
 };
 
-export const getAll = (queryParams?: object) => {
+export const getAll = (queryParams?: Record<string, unknown>) => {
   return nodeApi.get<NodeResponseList>({ queryParams });
 };

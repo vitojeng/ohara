@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import PropTypes from 'prop-types';
 import { merge, flatMap, find, map, sortBy } from 'lodash';
 

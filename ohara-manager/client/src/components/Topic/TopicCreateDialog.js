@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import PropTypes from 'prop-types';
 import { get, max, size } from 'lodash';
 import { Form, Field } from 'react-final-form';

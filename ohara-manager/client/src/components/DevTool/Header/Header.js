@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import { useEffect } from 'react';
 import { get, isEmpty } from 'lodash';
 import CloseIcon from '@material-ui/icons/Close';
 import IconButton from '@material-ui/core/IconButton';
@@ -46,7 +46,7 @@ const Header = () => {
   const prevSelectedCell = usePrevious(selectedCell);
   const prevTab = usePrevious(tabName);
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (
       !devToolDialog.isOpen ||
       (prevSelectedCell === selectedCell && prevTab === tabName)

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import { Component } from 'react';
 import PropTypes from 'prop-types';
 import Typography from '@material-ui/core/Typography';
 
@@ -25,7 +25,7 @@ import { Wrapper } from './ErrorPageStyles';
 
 // Error boundary is not supported in React Hooks, we need
 // to use our good old class component to handle App error
-class ErrorBoundary extends React.Component {
+class ErrorBoundary extends Component {
   state = { hasError: false };
 
   static getDerivedStateFromError() {

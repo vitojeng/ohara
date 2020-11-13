@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import { useState, createRef } from 'react';
 import AssignmentIcon from '@material-ui/icons/Assignment';
 import VpnKeyIcon from '@material-ui/icons/VpnKey';
 import LibraryBooksIcon from '@material-ui/icons/LibraryBooks';
@@ -77,7 +77,7 @@ export const useConfig = ({
   targetIsWorkspace,
   workspace,
 }) => {
-  const [isDeleteEnabled, setIsDeleteEnabled] = React.useState(false);
+  const [isDeleteEnabled, setIsDeleteEnabled] = useState(false);
 
   const {
     countOfChangedBrokerNodes,
@@ -329,7 +329,7 @@ function createRefs(menu, sections) {
   // Add a React ref object in each item
   const sectionsWithRefs = sections.map((section) => {
     const key = section.heading;
-    sectionRefs[key] = React.createRef();
+    sectionRefs[key] = createRef();
 
     return {
       ...section,

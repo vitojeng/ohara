@@ -32,7 +32,7 @@ export const useIsNodeLoading = () => {
 };
 
 export const useAllNodes = () => {
-  const fetchNodes = useCallback(hooks.useFetchNodesAction(), []);
+  const fetchNodes = hooks.useFetchNodesAction();
   const isLoaded = hooks.useIsNodeLoaded();
   useEffect(() => {
     if (!isLoaded) fetchNodes();
@@ -42,7 +42,7 @@ export const useAllNodes = () => {
 };
 
 export const useNodesInWorkspace = () => {
-  const getNodesByNames = useMemo(selectors.makeGetNodesByNames, []);
+  const getNodesByNames = useMemo(() => selectors.makeGetNodesByNames(), []);
   const workspace = hooks.useWorkspace();
   const { nodeNames } = workspace;
   return useSelector(
@@ -54,7 +54,7 @@ export const useNodesInWorkspace = () => {
 };
 
 export const useNodesInWorker = () => {
-  const getNodesByNames = useMemo(selectors.makeGetNodesByNames, []);
+  const getNodesByNames = useMemo(() => selectors.makeGetNodesByNames(), []);
   const worker = hooks.useWorker();
   const { nodeNames } = worker;
   return useSelector(
@@ -66,7 +66,7 @@ export const useNodesInWorker = () => {
 };
 
 export const useNodesInBroker = () => {
-  const getNodesByNames = useMemo(selectors.makeGetNodesByNames, []);
+  const getNodesByNames = useMemo(() => selectors.makeGetNodesByNames(), []);
   const broker = hooks.useBroker();
   const { nodeNames } = broker;
   return useSelector(
@@ -78,7 +78,7 @@ export const useNodesInBroker = () => {
 };
 
 export const useNodesInZookeeper = () => {
-  const getNodesByNames = useMemo(selectors.makeGetNodesByNames, []);
+  const getNodesByNames = useMemo(() => selectors.makeGetNodesByNames(), []);
   const zookeeper = hooks.useZookeeper();
   const { nodeNames } = zookeeper;
   return useSelector(
@@ -100,14 +100,14 @@ export const useCreateNodeAction = () => {
 
 export const useUpdateNodeAction = () => {
   const dispatch = useDispatch();
-  return function (values) {
+  return (values) => {
     dispatch(actions.updateNode.trigger(values));
   };
 };
 
 export const useFetchNodesAction = () => {
   const dispatch = useDispatch();
-  return function () {
+  return () => {
     dispatch(actions.fetchNodes.trigger());
   };
 };

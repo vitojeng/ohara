@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useState } from 'react';
+import { useState } from 'react';
 import PropTypes from 'prop-types';
 import { join, map, includes, isEmpty, isFunction, toUpper } from 'lodash';
 

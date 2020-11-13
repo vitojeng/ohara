@@ -74,7 +74,7 @@ interface Message {
   offset: number;
   sourceClass?: string;
   sourceKey?: string;
-  value?: object;
+  value?: Record<string, unknown>;
   error?: string;
 }
 export interface InspectTopicResponse extends BasicResponse {

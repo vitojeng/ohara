@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import PropTypes from 'prop-types';
 import { InputField } from 'components/common/Form';
 import { Dialog } from 'components/common/Dialog';

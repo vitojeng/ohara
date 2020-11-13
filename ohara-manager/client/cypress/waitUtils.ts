@@ -49,8 +49,8 @@ export const wait = async <T extends BasicResponse>({
 }: {
   api: API;
   objectKey: ObjectKey;
-  checkFn: (res: T, params?: object) => boolean;
-  checkParam?: object;
+  checkFn: (res: T, params?: Record<string, unknown>) => boolean;
+  checkParam?: Record<string, unknown>;
   maxRetry?: number;
   sleep?: number;
 }): Promise<T> => {

@@ -14,7 +14,14 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import {
+  forwardRef,
+  useContext,
+  useRef,
+  useState,
+  useEffect,
+  useImperativeHandle,
+} from 'react';
 import PropTypes from 'prop-types';
 import _ from 'lodash';
 import $ from 'jquery';
@@ -28,7 +35,7 @@ import { PipelineStateContext } from '../Pipeline';
 import * as paperUtils from './PaperUtils';
 import * as hooks from 'hooks';
 
-const Paper = React.forwardRef((props, ref) => {
+const Paper = forwardRef((props, ref) => {
   const {
     onChange = _.noop,
     onCellSelect = _.noop,
@@ -47,22 +54,22 @@ const Paper = React.forwardRef((props, ref) => {
   const eventLog = hooks.useEventLog();
 
   const { palette } = useTheme();
-  const { isMetricsOn } = React.useContext(PipelineStateContext);
+  const { isMetricsOn } = useContext(PipelineStateContext);
 
-  const graphRef = React.useRef(null);
-  const paperRef = React.useRef(null);
+  const graphRef = useRef(null);
+  const paperRef = useRef(null);
 
   // Ensure that we only call the event handler once, this prevent paper from
   // making too many network requests to the backend service
-  const cellAddRef = React.useRef(null);
-  const cellChangeRef = React.useRef(null);
-  const cellRemoveRef = React.useRef(null);
+  const cellAddRef = useRef(null);
+  const cellChangeRef = useRef(null);
+  const cellRemoveRef = useRef(null);
   // Prevent from getting stale event handlers
-  const onCellEventRef = React.useRef(null);
+  const onCellEventRef = useRef(null);
 
-  const [dragStartPosition, setDragStartPosition] = React.useState(null);
+  const [dragStartPosition, setDragStartPosition] = useState(null);
 
-  React.useEffect(() => {
+  useEffect(() => {
     const namespace = joint.shapes;
     graphRef.current = new joint.dia.Graph({}, { cellNamespace: namespace });
 
@@ -117,14 +124,14 @@ const Paper = React.forwardRef((props, ref) => {
   // the only exception is the onRemove as it doesn't any other parameters.
   const paperApi = ref.current;
 
-  React.useEffect(() => {
+  useEffect(() => {
     onCellEventRef.current = {
       onElementAdd,
       onChange,
     };
   }, [onChange, onElementAdd]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     const graph = graphRef.current;
     const paper = paperRef.current;
 
@@ -500,7 +507,7 @@ const Paper = React.forwardRef((props, ref) => {
     paperApi,
   ]);
 
-  React.useImperativeHandle(ref, () => {
+  useImperativeHandle(ref, () => {
     const graph = graphRef.current;
     const paper = paperRef.current;
 

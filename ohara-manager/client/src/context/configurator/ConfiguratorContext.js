@@ -14,25 +14,31 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import {
+  createContext,
+  useReducer,
+  useCallback,
+  useEffect,
+  useContext,
+} from 'react';
 import PropTypes from 'prop-types';
 import { fetchConfiguratorCreator } from './configuratorActions';
 import { reducer, initialState } from './configuratorReducer';
 import * as hooks from 'hooks';
 
-const ConfiguratorStateContext = React.createContext();
-const ConfiguratorDispatchContext = React.createContext();
+const ConfiguratorStateContext = createContext();
+const ConfiguratorDispatchContext = createContext();
 
 const ConfiguratorProvider = ({ children }) => {
-  const [state, dispatch] = React.useReducer(reducer, initialState);
+  const [state, dispatch] = useReducer(reducer, initialState);
   const showMessage = hooks.useShowMessage();
 
-  const fetchConfigurator = React.useCallback(
-    fetchConfiguratorCreator(state, dispatch, showMessage),
-    [state],
+  const fetchConfigurator = useCallback(
+    () => fetchConfiguratorCreator(state, dispatch, showMessage),
+    [state, dispatch, showMessage],
   );
 
-  React.useEffect(() => {
+  useEffect(() => {
     fetchConfigurator();
   }, [fetchConfigurator]);
 
@@ -50,7 +56,7 @@ ConfiguratorProvider.propTypes = {
 };
 
 const useConfiguratorState = () => {
-  const context = React.useContext(ConfiguratorStateContext);
+  const context = useContext(ConfiguratorStateContext);
   if (context === undefined) {
     throw new Error(
       'useConfiguratorState must be used within a ConfiguratorProvider',

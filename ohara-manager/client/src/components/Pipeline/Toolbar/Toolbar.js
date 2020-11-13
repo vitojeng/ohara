@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import { useState, useContext } from 'react';
 import PropTypes from 'prop-types';
 import ButtonGroup from '@material-ui/core/ButtonGroup';
 import Typography from '@material-ui/core/Typography';
@@ -49,15 +49,11 @@ import {
 const Toolbar = (props) => {
   const { handleToolboxOpen, handleToolbarInsertClick, isToolboxOpen } = props;
 
-  const [pipelineAnchorEl, setPipelineAnchorEl] = React.useState(null);
-  const [zoomAnchorEl, setZoomAnchorEl] = React.useState(null);
-  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = React.useState(false);
-  const pipelineDispatch = React.useContext(
-    pipelineContext.PipelineDispatchContext,
-  );
-  const { isMetricsOn } = React.useContext(
-    pipelineContext.PipelineStateContext,
-  );
+  const [pipelineAnchorEl, setPipelineAnchorEl] = useState(null);
+  const [zoomAnchorEl, setZoomAnchorEl] = useState(null);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const pipelineDispatch = useContext(pipelineContext.PipelineDispatchContext);
+  const { isMetricsOn } = useContext(pipelineContext.PipelineStateContext);
 
   const currentPipeline = hooks.usePipeline();
   const isDeleting = hooks.useIsPipelineDeleting();
@@ -69,7 +65,7 @@ const Toolbar = (props) => {
   const startUpdateMetrics = hooks.useStartUpdateMetricsAction();
   const stopUpdateMetrics = hooks.useStopUpdateMetricsAction();
 
-  const paperApi = React.useContext(pipelineContext.PaperContext);
+  const paperApi = useContext(pipelineContext.PaperContext);
   const runningElements = useRunningElements();
   const deleteDialogContent = useRenderDeleteDialogContent();
   const makeRequest = useMakeRequest();

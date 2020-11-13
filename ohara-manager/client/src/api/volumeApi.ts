@@ -51,7 +51,7 @@ export const get = (objectKey: ObjectKey) => {
   });
 };
 
-export const getAll = (queryParams?: object) => {
+export const getAll = (queryParams?: Record<string, unknown>) => {
   return volumeApi.get<VolumeResponseList>({ queryParams });
 };
 

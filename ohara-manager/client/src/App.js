@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import { useState } from 'react';
 import PropTypes from 'prop-types';
 import { get, find, map, noop, toString } from 'lodash';
 
@@ -36,8 +36,8 @@ import Wrapper from './AutofillSelectorStyles';
 
 const AutofillSelector = (props) => {
   const { isOpen, onClose, onSubmit } = props;
-  const [expanded, setExpanded] = React.useState(false);
-  const [selected, setSelected] = React.useState(null);
+  const [expanded, setExpanded] = useState(false);
+  const [selected, setSelected] = useState(null);
 
   const currentWorkspace = hooks.useWorkspace();
   const settingFillings = get(currentWorkspace, 'settingFillings', []);

@@ -15,7 +15,6 @@
  */
 
 import { noop } from 'lodash';
-import React from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import Snackbar from '@material-ui/core/Snackbar';
@@ -37,6 +36,7 @@ const SnackBar = (props) => {
 
   return (
     <Snackbar
+      TransitionComponent={Fade}
       anchorOrigin={{
         vertical: 'top',
         horizontal: 'right',
@@ -45,7 +45,6 @@ const SnackBar = (props) => {
       data-testid="snackbar"
       onClose={handleClose}
       open={props.isOpen}
-      TransitionComponent={Fade}
     >
       <SnackbarContent
         action={[

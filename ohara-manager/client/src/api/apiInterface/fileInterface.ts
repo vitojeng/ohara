@@ -21,7 +21,7 @@ export interface FileRequest {
   name: string;
   group: string;
   file: Blob;
-  tags?: object;
+  tags?: Record<string, any>;
 }
 
 export interface Data {

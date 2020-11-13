@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import cx from 'classnames';
 import PlayArrowIcon from '@material-ui/icons/PlayArrow';
 import StopIcon from '@material-ui/icons/Stop';

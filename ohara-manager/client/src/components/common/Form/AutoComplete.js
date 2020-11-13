@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import PropTypes from 'prop-types';
 import { forEach, isEmpty } from 'lodash';
 import TextField from '@material-ui/core/TextField';

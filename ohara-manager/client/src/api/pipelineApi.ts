@@ -53,7 +53,7 @@ export const get = (objectKey: ObjectKey) => {
   });
 };
 
-export const getAll = (queryParams?: object) => {
+export const getAll = (queryParams?: Record<string, any>) => {
   return pipelineApi.get<PipelineResponseList>({ queryParams });
 };
 

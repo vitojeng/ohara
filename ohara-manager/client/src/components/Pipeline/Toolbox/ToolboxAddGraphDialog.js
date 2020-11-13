@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import PropTypes from 'prop-types';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import { capitalize } from 'lodash';

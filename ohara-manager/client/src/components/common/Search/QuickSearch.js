@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import { debounce, noop, trim } from 'lodash';
 import styled, { css } from 'styled-components';
@@ -57,7 +57,7 @@ const QuickSearch = ({
   const [searchText, setSearchText] = useState('');
   const prevSearchText = usePrevious(searchText);
 
-  const search = useCallback(createSearch(keys), [keys]);
+  const search = useCallback(() => createSearch(keys), [keys]);
 
   useEffect(() => {
     if (data === prevData && searchText === prevSearchText) return;

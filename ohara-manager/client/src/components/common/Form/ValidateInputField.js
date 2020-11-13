@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import PropTypes from 'prop-types';
 import { isObject } from 'lodash';
 import TextField from '@material-ui/core/TextField';
@@ -45,6 +44,7 @@ const ValidateInputField = (props) => {
     <InputWrap>
       <StyledTextField
         {...rest}
+        InputProps={restInput}
         disabled={disabled}
         error={hasError}
         helperText={
@@ -55,7 +55,6 @@ const ValidateInputField = (props) => {
             : helperText
         }
         id={name}
-        InputProps={restInput}
         name={name}
         onBlur={() => onBlur(value)}
         onChange={onChange}

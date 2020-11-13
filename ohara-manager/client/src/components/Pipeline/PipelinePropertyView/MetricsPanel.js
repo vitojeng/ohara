@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import { useState, useContext, Fragment } from 'react';
 import PropTypes from 'prop-types';
 import Typography from '@material-ui/core/Typography';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
@@ -30,8 +30,8 @@ import { PipelineStateContext } from '../Pipeline';
 
 const MetricsPanel = (props) => {
   const { isMetricsOn, currentCellName } = props;
-  const [isExpanded, setIsExpanded] = React.useState(false);
-  const { objects } = React.useContext(PipelineStateContext);
+  const [isExpanded, setIsExpanded] = useState(false);
+  const { objects } = useContext(PipelineStateContext);
 
   const findByCellName = ({ name }) => name === currentCellName;
   const metrics = objects.find(findByCellName)?.nodeMetrics || {};
@@ -65,7 +65,7 @@ const MetricsPanel = (props) => {
               if (isEmpty(metrics[key].meters)) return null;
 
               return (
-                <React.Fragment key={key}>
+                <Fragment key={key}>
                   <Typography variant="h6">{key}</Typography>
                   {metrics[key].meters.map((meter, index) => {
                     const { document, value, unit } = meter;
@@ -86,7 +86,7 @@ const MetricsPanel = (props) => {
                       />
                     );
                   })}
-                </React.Fragment>
+                </Fragment>
               );
             })}
         </AccordionDetails>

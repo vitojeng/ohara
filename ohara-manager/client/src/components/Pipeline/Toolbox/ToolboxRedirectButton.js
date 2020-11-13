@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { forwardRef } from 'react';
+import { forwardRef } from 'react';
 import PropTypes from 'prop-types';
 import IconButton from '@material-ui/core/IconButton';
 import AddIcon from '@material-ui/icons/Add';

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import { useState } from 'react';
 import { map, isString } from 'lodash';
 import PropTypes from 'prop-types';
 import Typography from '@material-ui/core/Typography';
@@ -38,7 +38,7 @@ const StyledInputBase = styled(InputBase)(
 );
 
 const Select = (props) => {
-  const [anchorEl, setAnchorEl] = React.useState(null);
+  const [anchorEl, setAnchorEl] = useState(null);
   const {
     value,
     onChange,
@@ -61,13 +61,13 @@ const Select = (props) => {
     <Typography component="div" data-testid={testId}>
       <FormControl disabled={disabled}>
         <MuiSelect
-          input={<StyledInputBase />}
           MenuProps={{
             getContentAnchorEl: null,
             anchorEl,
             anchorOrigin,
             transformOrigin,
           }}
+          input={<StyledInputBase />}
           onChange={onChange}
           onOpen={(event) => setAnchorEl(event.currentTarget)}
           value={value}

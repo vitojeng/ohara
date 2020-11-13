@@ -88,7 +88,7 @@
     }
   },
   "lint-staged": {
-    "*.{js,ts,tsx}": "yarn lint:client:fix",
+    "./client/{src,cypress}/**/*.{js,ts,tsx}": "yarn lint:client:fix",
     "*.{js,ts,tsx,md,html,css}": "yarn format"
   },
   "resolutions": {

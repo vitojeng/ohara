@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { get, map, reject, sortBy } from 'lodash';
 import Button from '@material-ui/core/Button';
 import List from '@material-ui/core/List';

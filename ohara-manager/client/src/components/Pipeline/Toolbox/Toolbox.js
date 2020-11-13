@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import { useState, useContext, useRef, useMemo, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import Draggable from 'react-draggable';
 import Typography from '@material-ui/core/Typography';
@@ -42,9 +42,9 @@ const Toolbox = (props) => {
 
   const currentWorker = hooks.useWorker();
   const eventLog = hooks.useEventLog();
-  const [isOpen, setIsOpen] = React.useState(false);
-  const [searchResults, setSearchResults] = React.useState(null);
-  const [cellInfo, setCellInfo] = React.useState({
+  const [isOpen, setIsOpen] = useState(false);
+  const [searchResults, setSearchResults] = useState(null);
+  const [cellInfo, setCellInfo] = useState({
     kind: '',
     className: '',
     position: {
@@ -53,19 +53,21 @@ const Toolbox = (props) => {
       y: 0,
     },
   });
-  const paperApi = React.useContext(PaperContext);
+  const paperApi = useContext(PaperContext);
   const streams = useStreams();
   const [sources, sinks] = utils.getConnectorInfo(currentWorker);
   const [topics] = useTopics();
-  const toolboxBodyRef = React.useRef(null);
-  const scrollRef = React.useRef(0);
+  const toolboxBodyRef = useRef(null);
+  const scrollRef = useRef(0);
 
-  const connectors = {
-    sources,
-    topics,
-    streams,
-    sinks,
-  };
+  const connectors = useMemo(() => {
+    return {
+      sources,
+      topics,
+      streams,
+      sinks,
+    };
+  }, [sources, topics, streams, sinks]);
 
   const {
     toolboxHeight,
@@ -111,12 +113,12 @@ const Toolbox = (props) => {
     setIsOpen(false);
   };
 
-  const sourceGraph = React.useRef(null);
-  const sinkGraph = React.useRef(null);
-  const topicGraph = React.useRef(null);
-  const streamGraph = React.useRef(null);
+  const sourceGraph = useRef(null);
+  const sinkGraph = useRef(null);
+  const topicGraph = useRef(null);
+  const streamGraph = useRef(null);
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (!connectors.sources || !connectors.sinks) return;
 
     const renderToolbox = () => {

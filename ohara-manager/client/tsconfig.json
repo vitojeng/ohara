@@ -21,7 +21,8 @@
     "noImplicitReturns": true,
     "strictNullChecks": true,
     "noImplicitThis": true,
-    "isolatedModules": true
+    "isolatedModules": true,
+    "noFallthroughCasesInSwitch": true
   },
   "exclude": ["node_modules", "build"],
   "include": ["src"]

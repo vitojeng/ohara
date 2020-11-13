@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useEffect, useState } from 'react';
+import { forwardRef, useImperativeHandle, useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { useMachine } from '@xstate/react';
 
@@ -35,7 +35,7 @@ import stepperMachine, {
 import { STEP_STAGES } from './const';
 import Styles from './Styles';
 
-const FSMStepper = React.forwardRef((props, ref) => {
+const FSMStepper = forwardRef((props, ref) => {
   const {
     forceCloseAfterFinish,
     onClose,
@@ -63,7 +63,7 @@ const FSMStepper = React.forwardRef((props, ref) => {
   }, [closeChecked, onClose, isFinish]);
 
   // Apis
-  React.useImperativeHandle(ref, () => ({
+  useImperativeHandle(ref, () => ({
     getErrorLogs: () =>
       state?.context?.logs?.filter(
         (log) => log?.stepStage === STEP_STAGES.FAILURE,
@@ -91,8 +91,8 @@ const FSMStepper = React.forwardRef((props, ref) => {
         {showController && (
           <Grid item xs={12}>
             <Controller
-              revertible={revertible}
               revertText={revertText}
+              revertible={revertible}
               send={send}
               state={state}
             />

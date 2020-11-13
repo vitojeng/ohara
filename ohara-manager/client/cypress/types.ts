@@ -16,14 +16,6 @@
 
 import { KIND } from '../src/const';
 
-export interface FixtureResponse {
-  name: string;
-  fileList: FileList;
-  file: File;
-  group: string;
-  tags?: object;
-}
-
 export interface ElementParameters {
   name: string;
   kind: KIND.stream | KIND.topic | KIND.source | KIND.sink | KIND.shabondi;

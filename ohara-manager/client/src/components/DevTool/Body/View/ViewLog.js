@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import * as hooks from 'hooks';
 import LogViewer from 'components/common/LogViewer';
 import { useCurrentLogs } from 'components/DevTool/hooks';

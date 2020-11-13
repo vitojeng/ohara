@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import { omit } from 'lodash';
 import PropTypes from 'prop-types';
 import FormControlLabel from '@material-ui/core/FormControlLabel';

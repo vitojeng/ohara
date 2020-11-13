@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import { Fragment } from 'react';
 import PropTypes from 'prop-types';
 import { size } from 'lodash';
 import Checkbox from '@material-ui/core/Checkbox';
@@ -83,7 +83,7 @@ const ArrayField = (props) => {
           />
         )}
         renderOption={(option, { selected }) => (
-          <React.Fragment>
+          <Fragment>
             {multipleChoice && (
               <Checkbox
                 checked={selected}
@@ -93,7 +93,7 @@ const ArrayField = (props) => {
               />
             )}
             {getOptionLabel(option)}
-          </React.Fragment>
+          </Fragment>
         )}
         value={value}
       />

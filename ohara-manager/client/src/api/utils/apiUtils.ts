@@ -65,7 +65,7 @@ interface AxiosData {
 }
 
 const replaceKeyInObject = (
-  obj: object,
+  obj: Record<string, unknown>,
   originStr: string,
   changeStr: string,
 ) => {
@@ -97,14 +97,14 @@ const createAxios = ({ timeout = 20000 }: { timeout?: number } = {}) => {
     // set an acceptable default timeout (20 seconds) to avoid infinite request
     timeout,
     transformRequest: [
-      (data: object) => replaceKeyInObject(data, '__', '.'),
+      (data: Record<string, unknown>) => replaceKeyInObject(data, '__', '.'),
       // axios transform request as "string", we need to add the default JSON transformer from axios
       // https://medium.com/itsoktomakemistakes/axios-transform-request-issue-5410d73ba5f2
       ...(axios.defaults.transformRequest as AxiosTransformer[]),
     ],
     transformResponse: [
       ...(axios.defaults.transformResponse as AxiosTransformer[]),
-      (data: object) => replaceKeyInObject(data, '.', '__'),
+      (data: Record<string, unknown>) => replaceKeyInObject(data, '.', '__'),
     ],
   });
 
@@ -162,7 +162,7 @@ const createAxios = ({ timeout = 20000 }: { timeout?: number } = {}) => {
           statusText,
           config,
           data: errorMessage,
-        } = error.response as AxiosResponse<object>;
+        } = error.response as AxiosResponse<Record<string, unknown>>;
         errorRes.status = status;
         errorRes.statusText = statusText;
         errorRes.headers = headers;
@@ -227,6 +227,7 @@ export class API {
       error.message = res.data.result;
     }
 
+    // @ts-ignore
     return {
       status: res.status,
       data: { error },
@@ -241,8 +242,8 @@ export class API {
     options = {},
   }: {
     name: string;
-    body?: object;
-    queryParams?: object;
+    body?: Record<string, any>;
+    queryParams?: Record<string, any>;
     options?: { [k: string]: any };
   }): Promise<T> {
     try {
@@ -267,7 +268,7 @@ export class API {
     options = {},
   }: {
     name?: string;
-    queryParams?: object;
+    queryParams?: Record<string, any>;
     options?: { [k: string]: any };
   }): Promise<T> {
     try {
@@ -298,10 +299,10 @@ export class API {
   }: {
     name?: string;
     group?: string;
-    body?: object;
+    body?: Record<string, any>;
     options?: { [k: string]: any };
   }) {
-    let finalParams: object = {};
+    let finalParams: Record<string, any> = {};
     let url: string = this.resource;
     if (name) {
       url = `${this.resource}/${name}`;
@@ -359,7 +360,7 @@ export class API {
     options = {},
   }: {
     name?: string;
-    queryParams?: object;
+    queryParams?: Record<string, any>;
     options?: { [k: string]: any };
   } = {}) {
     let url: string = this.resource;
@@ -390,7 +391,7 @@ export class API {
   }: {
     objectKey: ObjectKey;
     action: COMMAND;
-    queryParams?: object;
+    queryParams?: Record<string, any>;
     options?: { [k: string]: any };
   }): Promise<T> {
     const finalParams = objectKey
@@ -426,7 +427,7 @@ export class API {
   }: {
     objectKey: ObjectKey;
     nodeName: string;
-    queryParams?: object;
+    queryParams?: Record<string, any>;
     options?: { [k: string]: any };
   }): Promise<T> {
     const finalParams = objectKey
@@ -460,7 +461,7 @@ export class API {
   }: {
     objectKey: ObjectKey;
     nodeName: string;
-    queryParams?: object;
+    queryParams?: Record<string, any>;
     options?: { [k: string]: any };
   }) {
     const finalParams = objectKey

@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
-
 import Header from './Header';
 import Body from './Body';
 import { useStatusText } from './hooks';

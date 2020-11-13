@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import { useState, forwardRef } from 'react';
+
 import PropTypes from 'prop-types';
 import MaterialTable from 'material-table';
-import { forwardRef } from 'react';
 import AddBox from '@material-ui/icons/AddBox';
 import ArrowDownward from '@material-ui/icons/ArrowDownward';
 import Check from '@material-ui/icons/Check';
@@ -67,7 +67,7 @@ const ObjectKeys = (props) => {
     label,
     refs,
   } = props;
-  const [state, setState] = React.useState({
+  const [state, setState] = useState({
     columns: [
       {
         title: 'name',

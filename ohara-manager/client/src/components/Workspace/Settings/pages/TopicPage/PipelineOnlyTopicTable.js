@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
-
 import { TopicTable } from 'components/Topic';
 import * as hooks from 'hooks';
 

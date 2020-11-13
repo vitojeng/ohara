@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import { useState, useRef, useEffect } from 'react';
 
 import * as hooks from 'hooks';
 import SettingsMain from './SettingsMain';
@@ -28,20 +28,18 @@ import { Dialog } from 'components/common/Dialog';
 const Settings = () => {
   const settingsDialog = hooks.useWorkspaceSettingsDialog();
   const pageName = settingsDialog?.data?.pageName;
-  const [selectedMenu, setSelectedMenu] = React.useState('');
-  const [selectedComponent, setSelectedComponent] = React.useState(null);
-  const [isConfirmDialogOpen, setIsConfirmDialogOpen] = React.useState(false);
-  const scrollRef = React.useRef(null);
+  const [selectedMenu, setSelectedMenu] = useState('');
+  const [selectedComponent, setSelectedComponent] = useState(null);
+  const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
+  const scrollRef = useRef(null);
 
   const hasRunningServices = hooks.useHasRunningServices();
   const workspace = hooks.useWorkspace();
   const { shouldBeRestartWorkspace } = hooks.useShouldBeRestartWorkspace();
 
   const workspaceDeleteDialog = hooks.useWorkspaceDeleteDialog();
-  const [isWorkspaceRestarting, setIsWorkspaceRestarting] = React.useState(
-    false,
-  );
-  const [restartService, setRestartService] = React.useState(KIND.workspace);
+  const [isWorkspaceRestarting, setIsWorkspaceRestarting] = useState(false);
+  const [restartService, setRestartService] = useState(KIND.workspace);
 
   const deleteWorkspace = () => workspaceDeleteDialog.open();
   const restartWorkspace = () => setIsWorkspaceRestarting(true);
@@ -91,13 +89,13 @@ const Settings = () => {
     !!selectedComponent?.name &&
     selectedComponent?.type === SETTINGS_COMPONENT_TYPE.PAGE;
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (!isPageComponent && scrollRef?.current) {
       scrollRef.current.scrollIntoView();
     }
   }, [isPageComponent]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (pageName && pageName !== 'settings') {
       handleComponentChange({
         name: pageName,

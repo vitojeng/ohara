@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { get, isEmpty } from 'lodash';
 import clx from 'classnames';
 import AppsIcon from '@material-ui/icons/Apps';

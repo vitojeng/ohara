@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import { useState } from 'react';
 import _ from 'lodash';
 import PropTypes from 'prop-types';
 import CloseIcon from '@material-ui/icons/Close';
@@ -36,8 +36,8 @@ const PipelinePropertyView = (props) => {
   const streams = hooks.useStreams();
   const connectors = [...hooks.useConnectors(), ...hooks.useShabondis()];
 
-  const [isOpen, setIsOpen] = React.useState(false);
-  const [tags, setTags] = React.useState({
+  const [isOpen, setIsOpen] = useState(false);
+  const [tags, setTags] = useState({
     json: null,
     name: '',
   });

@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import WavesIcon from '@material-ui/icons/Waves';
 import FlightLandIcon from '@material-ui/icons/FlightLand';
 import FlightTakeoffIcon from '@material-ui/icons/FlightTakeoff';

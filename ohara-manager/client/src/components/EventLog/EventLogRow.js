@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import PropTypes from 'prop-types';
 import cx from 'classnames';
 import Link from '@material-ui/core/Link';

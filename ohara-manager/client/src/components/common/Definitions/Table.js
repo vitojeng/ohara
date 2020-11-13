@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import { useRef, forwardRef } from 'react';
+
 import PropTypes from 'prop-types';
 import MaterialTable from 'material-table';
-import { forwardRef } from 'react';
 import AddBox from '@material-ui/icons/AddBox';
 import ArrowDownward from '@material-ui/icons/ArrowDownward';
 import Check from '@material-ui/icons/Check';
@@ -71,7 +71,7 @@ const Table = (props) => {
     refs,
   } = props;
 
-  const stateRef = React.useRef({});
+  const stateRef = useRef({});
   const showMessage = useShowMessage();
 
   stateRef.current = {

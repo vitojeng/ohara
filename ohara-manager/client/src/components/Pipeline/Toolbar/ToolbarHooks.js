@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import { useContext, useState, useEffect } from 'react';
 
 import * as hooks from 'hooks';
 import * as pipelineApiHelper from '../PipelineApiHelper';
@@ -23,7 +23,7 @@ import { KIND, CELL_STATUS, CELL_TYPE } from 'const';
 import { usePrevious } from 'utils/hooks';
 
 export const useRunningElements = () => {
-  const paperApi = React.useContext(PaperContext);
+  const paperApi = useContext(PaperContext);
   return paperApi
     .getCells()
     .filter((cell) => cell.kind !== KIND.topic)
@@ -48,13 +48,11 @@ export const useRenderDeleteDialogContent = () => {
 };
 
 export const useZoom = () => {
-  const paperApi = React.useContext(PaperContext);
-  const [paperScale, setPaperScale] = React.useState(
-    () => paperApi.getScale().sx,
-  );
+  const paperApi = useContext(PaperContext);
+  const [paperScale, setPaperScale] = useState(() => paperApi.getScale().sx);
 
   const currentPaperApi = usePrevious(paperApi);
-  React.useEffect(() => {
+  useEffect(() => {
     if (paperApi) setPaperScale(paperApi.getScale().sx);
   }, [currentPaperApi, paperApi]);
 
@@ -138,7 +136,7 @@ export const useZoom = () => {
 };
 
 export const useMakeRequest = () => {
-  const paperApi = React.useContext(PaperContext);
+  const paperApi = useContext(PaperContext);
   const streamApiHelper = pipelineApiHelper.stream();
   const connectorApiHelper = pipelineApiHelper.connector();
 

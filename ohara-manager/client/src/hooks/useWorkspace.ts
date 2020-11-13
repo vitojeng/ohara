@@ -18,7 +18,10 @@ import { useQuery, QueryResult } from 'react-query';
 import { get } from 'api/objectApi';
 import { Workspace, Key } from 'types';
 
-function getWorkspace(_: object, name: string): Promise<Workspace> {
+function getWorkspace(
+  _: Record<string, unknown>,
+  name: string,
+): Promise<Workspace> {
   const key: Key = {
     name,
     group: 'workspace',

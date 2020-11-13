@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import PropTypes from 'prop-types';
 import { filter, map, noop, some, values } from 'lodash';
 import { v4 as uuid } from 'uuid';

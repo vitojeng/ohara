@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import { forwardRef } from 'react';
 import PropTypes from 'prop-types';
 import styled, { css } from 'styled-components';
 import Dialog from '@material-ui/core/Dialog';
@@ -31,7 +31,7 @@ import DrabblePaper from 'components/common/Dialog/DrabblePaper';
 import { ReactComponent as Logo } from 'images/logo.svg';
 import * as hooks from 'hooks';
 
-const Transition = React.forwardRef((props, ref) => {
+const Transition = forwardRef((props, ref) => {
   return <Slide direction="up" ref={ref} {...props} />;
 });
 
@@ -85,13 +85,13 @@ const IntroDialog = ({ isOpen, onClose, quickModeText }) => {
 
   return (
     <Dialog
+      PaperComponent={DrabblePaper}
+      TransitionComponent={Transition}
       data-testid="intro-dialog"
       fullWidth
       maxWidth="sm"
       onClose={onClose}
       open={isOpen}
-      PaperComponent={DrabblePaper}
-      TransitionComponent={Transition}
     >
       <StyledDialogTitle disableTypography>
         <div className="brand">

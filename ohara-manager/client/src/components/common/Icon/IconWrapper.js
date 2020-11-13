@@ -14,23 +14,23 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import { cloneElement, forwardRef } from 'react';
 import PropTypes from 'prop-types';
 import styled, { css } from 'styled-components';
 
 const StyledIcon = styled(({ children, ...props }) =>
-  React.cloneElement(children, props),
+  cloneElement(children, props),
 )(
   ({ theme, severity }) => css`
     color: ${theme.palette[severity].main};
   `,
 );
 
-export const IconWrapper = React.forwardRef(({ children, severity }, ref) => {
+export const IconWrapper = forwardRef(({ children, severity }, ref) => {
   if (severity) {
     return <StyledIcon children={children} severity={severity} />;
   }
-  return React.cloneElement(children, { ref });
+  return cloneElement(children, { ref });
 });
 
 IconWrapper.propTypes = {

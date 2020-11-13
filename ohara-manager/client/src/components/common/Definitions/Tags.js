@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import { omit, isObject } from 'lodash';
 import PropTypes from 'prop-types';
 import TextField from '@material-ui/core/TextField';
@@ -45,11 +44,11 @@ const Tags = (props) => {
   return (
     <TextField
       {...rest}
+      InputProps={restInput}
       error={hasError}
       fullWidth
       helperText={hasError ? meta.error : helperText}
       id={name}
-      InputProps={restInput}
       multiline
       name={name}
       onChange={onChange}

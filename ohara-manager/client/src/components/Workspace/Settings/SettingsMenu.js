@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import { memo } from 'react';
 import PropTypes from 'prop-types';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
@@ -94,4 +94,4 @@ SettingsMenu.propTypes = {
   closePageComponent: PropTypes.func.isRequired,
 };
 
-export default React.memo(SettingsMenu);
+export default memo(SettingsMenu);

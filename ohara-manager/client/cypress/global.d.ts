@@ -21,14 +21,23 @@ declare namespace Cypress {
     CreateWorkspaceOption,
     CreateWorkspaceByApiOption,
   } from './support/customCommands';
+
   interface FixtureRequest {
     fixturePath: string;
     name: string;
     group: string;
-    tags?: object;
+    tags?: Record<string, unknown>;
   }
 
-  interface Chainable {
+  interface FixtureResponse {
+    name: string;
+    fileList: FileList;
+    file: File;
+    group: string;
+    tags?: Record<string, unknown>;
+  }
+
+  export interface Chainable {
     createJar: (file: FixtureRequest) => Promise<FixtureResponse>;
     createNode: (node?: NodeRequest) => Chainable<NodeRequest>;
     createNodeIfNotExists: (node: NodeRequest) => Chainable<NodeResponse>;

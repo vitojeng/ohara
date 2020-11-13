@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import { useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { map } from 'lodash';
 import { Field, reduxForm } from 'redux-form';
@@ -43,7 +43,7 @@ const SetupWorkspaceForm = (props) => {
   const formValues = hooks.useReduxFormValues(Form.CREATE_WORKSPACE);
   const workspaces = hooks.useAllWorkspaces();
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (!formValues?.workspace?.name && !anyTouched) {
       change(Form.CREATE_WORKSPACE, 'workspace.name', defaultWorkspaceName);
       // Reset `anyTouched` so we won't run it again when users are editing the form

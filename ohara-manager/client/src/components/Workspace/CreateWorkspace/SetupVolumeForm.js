@@ -15,7 +15,6 @@
  */
 
 /* eslint-disable no-throw-literal */
-import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Field, reduxForm, formValueSelector, change } from 'redux-form';

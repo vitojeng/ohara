@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import { useState } from 'react';
 import PropTypes from 'prop-types';
 import _ from 'lodash';
 import TuneIcon from '@material-ui/icons/Tune';
@@ -30,7 +30,7 @@ import * as hooks from 'hooks';
 
 const SettingsPanel = (props) => {
   const { settings, setTags, setFullTagViewDialogOpen } = props;
-  const [isSettingsExpanded, setIsSettingsExpanded] = React.useState(true);
+  const [isSettingsExpanded, setIsSettingsExpanded] = useState(true);
   const topics = hooks.useTopicsInPipeline();
 
   const getIgnoreDefs = (settings) => {

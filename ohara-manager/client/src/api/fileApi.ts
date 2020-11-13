@@ -50,6 +50,6 @@ export const get = (objectKey: ObjectKey) => {
   });
 };
 
-export const getAll = (queryParams?: object) => {
+export const getAll = (queryParams?: Record<string, unknown>) => {
   return fileApi.get<FileResponseList>({ queryParams });
 };

@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import CancelIcon from '@material-ui/icons/Cancel';
 import TrendingUpIcon from '@material-ui/icons/TrendingUp';
 import { renderToString } from 'react-dom/server';

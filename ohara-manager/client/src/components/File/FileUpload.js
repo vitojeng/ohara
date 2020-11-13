@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useRef, cloneElement, useImperativeHandle } from 'react';
+import { forwardRef, useRef, cloneElement, useImperativeHandle } from 'react';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
 import { isFunction } from 'lodash';
@@ -25,7 +25,7 @@ const Wrapper = styled.div`
   }
 `;
 
-const FileUpload = React.forwardRef(({ accept, children, onUpload }, ref) => {
+const FileUpload = forwardRef(({ accept, children, onUpload }, ref) => {
   const inputEl = useRef(null);
 
   const Trigger = () => {

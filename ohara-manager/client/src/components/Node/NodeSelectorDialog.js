@@ -14,17 +14,19 @@
  * limitations under the License.
  */
 
-import React, { useMemo, useState, useImperativeHandle } from 'react';
+import { forwardRef, useMemo, useState, useImperativeHandle } from 'react';
 import PropTypes from 'prop-types';
 import { isEmpty, xorBy } from 'lodash';
 
 import { Dialog } from 'components/common/Dialog';
 import NodeTable from './NodeTable';
 
-const NodeSelectorDialog = React.forwardRef((props, ref) => {
+const NodeSelectorDialog = forwardRef((props, ref) => {
   const { isOpen, onClose, onConfirm, tableProps, testId, title } = props;
 
-  const initialSelectedNodes = tableProps?.options?.selectedNodes || [];
+  const initialSelectedNodes = useMemo(() => {
+    return tableProps?.options?.selectedNodes || [];
+  }, [tableProps?.options?.selectedNodes]);
 
   const [selectedNodes, setSelectedNodes] = useState(initialSelectedNodes);
 

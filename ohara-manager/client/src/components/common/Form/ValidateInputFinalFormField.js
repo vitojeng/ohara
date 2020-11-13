@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import PropTypes from 'prop-types';
 import TextField from '@material-ui/core/TextField';
 import styled from 'styled-components';
@@ -44,8 +43,6 @@ const ValidateInputFinalFormField = (props) => {
     <InputWrap>
       <StyledTextField
         {...rest}
-        error={hasError}
-        helperText={helperText}
         InputProps={{
           ...restInput,
           endAdornment: (
@@ -54,6 +51,8 @@ const ValidateInputFinalFormField = (props) => {
             </InputAdornment>
           ),
         }}
+        error={hasError}
+        helperText={helperText}
         name={name}
         onBlur={onBlur}
         onChange={onChange}

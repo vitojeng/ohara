@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import PropTypes from 'prop-types';
 import TextField from '@material-ui/core/TextField';
 import styled from 'styled-components';
@@ -44,10 +43,10 @@ const InputField = (props) => {
     <InputWrap>
       <StyledTextField
         {...rest}
+        InputProps={restInput}
         error={hasError}
         helperText={hasError ? meta.error : helperText}
         id={name}
-        InputProps={restInput}
         name={name}
         onChange={onChange}
         value={value ?? defaultValue}

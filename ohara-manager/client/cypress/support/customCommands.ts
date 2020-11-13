@@ -28,7 +28,7 @@ import {
   generateNodeIfNeeded,
   createServicesInNodes,
 } from '../utils';
-import { FixtureResponse, SettingSection } from '../types';
+import { SettingSection } from '../types';
 
 export interface CreateWorkspaceOption {
   workspaceName?: string;
@@ -53,7 +53,7 @@ Cypress.Commands.add('createJar', (file: Cypress.FixtureRequest) => {
       const dataTransfer = new DataTransfer();
       dataTransfer.items.add(testFile);
       const fileList = dataTransfer.files;
-      const params: FixtureResponse = {
+      const params: Cypress.FixtureResponse = {
         name,
         fileList,
         file: fileList[0],
@@ -183,7 +183,7 @@ Cypress.Commands.add(
     cy.visit('/');
 
     // Wait until page is loaded
-    cy.wait(1000);
+    cy.wait(2000);
     cy.closeIntroDialog();
 
     cy.findByTitle('Create a new workspace').click();

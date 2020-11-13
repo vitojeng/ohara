@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import { isEmpty } from 'lodash';
 import IconButton from '@material-ui/core/IconButton';
 import RefreshIcon from '@material-ui/icons/Refresh';

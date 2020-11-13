@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import { memo } from 'react';
 import cx from 'classnames';
 import PropTypes from 'prop-types';
 import { isEmpty } from 'lodash';
@@ -150,4 +150,4 @@ SettingsMain.defaultProps = {
   openRestartProgressDialog: () => {},
 };
 
-export default React.memo(SettingsMain);
+export default memo(SettingsMain);

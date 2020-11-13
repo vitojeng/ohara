@@ -44,10 +44,14 @@ export const useStreamGroup = () => {
 export const useCreateStreamAction = () => {
   const dispatch = useDispatch();
   const group = useStreamGroup();
-  const brokerClusterKey = {
-    group: hooks.useBrokerGroup(),
-    name: hooks.useWorkspaceName(),
-  };
+  const brokerGroup = hooks.useBrokerGroup();
+  const workspaceName = hooks.useWorkspaceName();
+  const brokerClusterKey = useMemo(() => {
+    return {
+      group: brokerGroup,
+      name: workspaceName,
+    };
+  }, [brokerGroup, workspaceName]);
 
   return useCallback(
     (values, options) => {

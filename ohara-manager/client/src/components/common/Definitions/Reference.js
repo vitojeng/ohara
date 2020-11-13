@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import { omit, has, isPlainObject, isArray } from 'lodash';
 import PropTypes from 'prop-types';
 import MenuItem from '@material-ui/core/MenuItem';
@@ -69,11 +68,11 @@ const Reference = (props) => {
   return (
     <TextField
       {...rest}
+      InputProps={restInput}
       error={hasError}
       fullWidth
       helperText={hasError ? meta.error : helperText}
       id={name}
-      InputProps={restInput}
       name={name}
       onChange={onChange}
       ref={refs}

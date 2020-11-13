@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useState, useRef } from 'react';
+import { useState, useRef } from 'react';
 import PropTypes from 'prop-types';
 import { find, isFunction, sortBy, unionBy } from 'lodash';
 import moment from 'moment';

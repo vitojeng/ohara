@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useState, useRef } from 'react';
+import { useState, useRef } from 'react';
 import { capitalize, includes, join, map, reject, some, toUpper } from 'lodash';
 
 import { NodeSelectorDialog, NodeTable } from 'components/Node';

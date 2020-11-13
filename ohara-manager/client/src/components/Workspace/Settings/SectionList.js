@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import { memo } from 'react';
 import PropTypes from 'prop-types';
 
 import List from '@material-ui/core/List';
@@ -107,4 +107,4 @@ SectionList.propTypes = {
   sectionRef: PropTypes.object,
 };
 
-export default React.memo(SectionList);
+export default memo(SectionList);

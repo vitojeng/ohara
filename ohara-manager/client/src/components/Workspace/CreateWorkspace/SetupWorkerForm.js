@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import PropTypes from 'prop-types';
 import { reduxForm } from 'redux-form';
 import Button from '@material-ui/core/Button';

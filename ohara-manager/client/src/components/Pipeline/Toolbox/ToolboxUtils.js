@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import { renderToString } from 'react-dom/server';
 import { isNull } from 'lodash';
 import FlightTakeoffIcon from '@material-ui/icons/FlightTakeoff';

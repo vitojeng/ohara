@@ -90,6 +90,14 @@ it('create multiple files should be worked correctly', () => {
     const subs = '    ^-----------------------------------';
     const anotherFileEntity = { ...fileEntity, name: 'app.jar' };
 
+    jest.spyOn(fileApi, 'getAll').mockReturnValue(
+      of({
+        status: 200,
+        title: 'Get file mock',
+        data: [],
+      }).pipe(delay(100)),
+    );
+
     const action$ = hot(input, {
       a: {
         type: actions.createFile.TRIGGER,

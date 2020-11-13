@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import PropTypes from 'prop-types';
 import styled, { css } from 'styled-components';
 
@@ -83,12 +82,12 @@ const Dialog = ({
   scroll,
 }) => (
   <MuiDialog
+    PaperComponent={DrabblePaper}
     data-testid={testId}
     fullWidth
     maxWidth={maxWidth}
     onClose={onClose}
     open={open}
-    PaperComponent={DrabblePaper}
     scroll={scroll}
   >
     <StyledDialogTitle disableTypography>

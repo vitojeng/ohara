@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import { useState } from 'react';
 import PropTypes from 'prop-types';
 import StorageIcon from '@material-ui/icons/Storage';
 import Typography from '@material-ui/core/Typography';
@@ -29,9 +29,9 @@ import NodeErrorDialog from './NodeErrorDialog';
 
 const NodePanel = (props) => {
   const { tasksStatus = [] } = props;
-  const [isExpanded, setIsExpanded] = React.useState(false);
-  const [isOpen, setIsOpen] = React.useState(false);
-  const [currentError, setCurrentError] = React.useState(null);
+  const [isExpanded, setIsExpanded] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
+  const [currentError, setCurrentError] = useState(null);
   const [coordinatorNodes, followerNodes] = partition(
     tasksStatus,
     (node) => node.coordinator,

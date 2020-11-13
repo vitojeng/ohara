@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 import { capitalize, isEmpty, compact, flatten } from 'lodash';
 import Dialog from '@material-ui/core/Dialog';
 import DialogTitle from '@material-ui/core/DialogTitle';
@@ -195,8 +195,8 @@ export default () => {
             <Stepper
               onClose={handleClose}
               ref={stepperRef}
-              revertible
               revertText="Cancel"
+              revertible
               steps={steps}
             />
           </DialogContent>

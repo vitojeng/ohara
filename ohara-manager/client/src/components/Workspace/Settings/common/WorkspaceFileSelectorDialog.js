@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-import React, { useState, useImperativeHandle } from 'react';
+import { forwardRef, useState, useImperativeHandle } from 'react';
 import PropTypes from 'prop-types';
 import { isEqual, sortedUniq } from 'lodash';
 
 import { Dialog } from 'components/common/Dialog';
 import WorkspaceFileTable from './WorkspaceFileTable';
 
-const WorkspaceFileSelectorDialog = React.forwardRef((props, ref) => {
+const WorkspaceFileSelectorDialog = forwardRef((props, ref) => {
   const { isOpen, onClose, onConfirm, tableProps, title } = props;
   const [selectedFiles, setSelectedFiles] = useState(
     tableProps?.options?.selectedFiles,

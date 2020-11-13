@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import { forwardRef, useState, useImperativeHandle, cloneElement } from 'react';
 import PropTypes from 'prop-types';
 import { noop } from 'lodash';
 
 import MuiPopover from '@material-ui/core/Popover';
 import { Tooltip } from 'components/common/Tooltip';
 
-const Popover = React.forwardRef((props, ref) => {
-  const [anchorEl, setAnchorEl] = React.useState(null);
+const Popover = forwardRef((props, ref) => {
+  const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
   const id = open ? props.id : undefined;
 
@@ -39,9 +39,9 @@ const Popover = React.forwardRef((props, ref) => {
   // Apis
   const apis = { close: handleClose };
 
-  React.useImperativeHandle(ref, () => apis);
+  useImperativeHandle(ref, () => apis);
 
-  const Trigger = React.cloneElement(props.trigger, {
+  const Trigger = cloneElement(props.trigger, {
     'aria-describedby': id,
     onClick: handleClick,
   });

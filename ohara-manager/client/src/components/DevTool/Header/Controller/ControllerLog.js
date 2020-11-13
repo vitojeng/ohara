@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import moment from 'moment';
 import { get, isEmpty } from 'lodash';
 import IconButton from '@material-ui/core/IconButton';
@@ -194,6 +193,9 @@ const ControllerLog = () => {
               value={LOG_TIME_GROUP.customize}
             />
             <StyledTextField
+              InputLabelProps={{
+                shrink: true,
+              }}
               defaultValue={
                 startTime ||
                 moment().subtract(10, 'minutes').format('YYYY-MM-DD[T]hh:mm')
@@ -202,9 +204,6 @@ const ControllerLog = () => {
                 isEmpty(logType) || timeGroup !== LOG_TIME_GROUP.customize
               }
               id="start-date"
-              InputLabelProps={{
-                shrink: true,
-              }}
               inputProps={{
                 max: endTime,
               }}
@@ -215,12 +214,12 @@ const ControllerLog = () => {
               type="datetime-local"
             />
             <StyledTextField
-              defaultValue={endTime || moment().format('YYYY-MM-DD[T]hh:mm')}
-              disabled
-              id="end-date"
               InputLabelProps={{
                 shrink: true,
               }}
+              defaultValue={endTime || moment().format('YYYY-MM-DD[T]hh:mm')}
+              disabled
+              id="end-date"
               label="End date"
               onChange={(event) =>
                 setLogQueryParams({ endTime: event.target.value })

@@ -14,14 +14,20 @@
  * limitations under the License.
  */
 
-import AutofillList from 'components/Autofill/AutofillList';
-
-function AutofillPage() {
-  return (
-    <>
-      <AutofillList />
-    </>
-  );
-}
-
-export default AutofillPage;
+module.exports = {
+  extends: ['eslint:recommended', 'plugin:node/recommended'],
+  parser: 'babel-eslint',
+  parserOptions: {
+    ecmaVersion: 6,
+  },
+  env: {
+    es6: true,
+    node: true,
+    jest: true,
+  },
+  rules: {
+    'no-console': 'warn',
+    'no-debugger': 'warn',
+    'node/no-unpublished-require': 'off',
+  },
+};

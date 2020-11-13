@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useEffect, useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import SplitPane from 'react-split-pane';
 import { useParams } from 'react-router-dom';
 import { isEmpty } from 'lodash';

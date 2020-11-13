@@ -73,19 +73,19 @@ export const useIsEventLogFetching = () => {
 };
 
 export const useEventLogs = () => {
-  const getEventLogs = useMemo(selectors.makeGetEventLogs, []);
+  const getEventLogs = useMemo(() => selectors.makeGetEventLogs(), []);
   return useSelector(
     useCallback((state) => getEventLogs(state), [getEventLogs]),
   );
 };
 export const useEventNotifications = () => {
-  const getNotifications = useMemo(selectors.makeGetNotifications, []);
+  const getNotifications = useMemo(() => selectors.makeGetNotifications(), []);
   return useSelector(
     useCallback((state) => getNotifications(state), [getNotifications]),
   );
 };
 export const useEventSettings = () => {
-  const getSettings = useMemo(selectors.makeGetSettings, []);
+  const getSettings = useMemo(() => selectors.makeGetSettings(), []);
   return useSelector(useCallback((state) => getSettings(state), [getSettings]));
 };
 

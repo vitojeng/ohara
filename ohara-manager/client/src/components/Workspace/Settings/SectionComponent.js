@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import { memo } from 'react';
 import PropTypes from 'prop-types';
 import KeyboardBackspaceIcon from '@material-ui/icons/KeyboardBackspace';
 import Typography from '@material-ui/core/Typography';
@@ -108,4 +108,4 @@ SectionComponent.propTypes = {
   }),
 };
 
-export default React.memo(SectionComponent);
+export default memo(SectionComponent);

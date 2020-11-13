@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import PropTypes from 'prop-types';
 import Chip from '@material-ui/core/Chip';
 import LockIcon from '@material-ui/icons/LockOutlined';

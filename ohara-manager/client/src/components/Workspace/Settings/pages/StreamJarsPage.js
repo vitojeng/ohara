@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useMemo, useState, useRef } from 'react';
+import { useMemo, useState, useRef } from 'react';
 import {
   every,
   filter,

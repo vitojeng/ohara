@@ -18,7 +18,7 @@ import { useQuery, QueryResult } from 'react-query';
 import { get } from 'api/brokerApi';
 import { Broker, Key } from 'types';
 
-function getBroker(_: object, name: string): Promise<Broker> {
+function getBroker(_: Record<string, unknown>, name: string): Promise<Broker> {
   const key: Key = {
     name,
     group: 'broker',
