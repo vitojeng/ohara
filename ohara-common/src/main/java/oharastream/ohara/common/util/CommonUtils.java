@@ -673,6 +673,13 @@ public final class CommonUtils {
         .collect(Collectors.toUnmodifiableMap(Map.Entry::getKey, Map.Entry::getValue));
   }
 
+  public static boolean isAlphanumeric(final CharSequence cs) {
+    if (cs == null || cs.length() == 0) return false;
+    final int sz = cs.length();
+    for (int i = 0; i < sz; i++) if (!Character.isLetterOrDigit(cs.charAt(i))) return false;
+    return true;
+  }
+
   /** disable to instantiate CommonUtils. */
   private CommonUtils() {}
 }

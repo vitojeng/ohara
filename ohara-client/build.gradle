@@ -26,7 +26,6 @@ dependencies {
   implementation libs.scalaReflect
   implementation libs.scalaLogging
   implementation libs.commonsNet
-  implementation libs.commonsLang
   implementation libs.slf4jApi
   implementation libs.slf4jLog4j
   implementation libs.akkaStream

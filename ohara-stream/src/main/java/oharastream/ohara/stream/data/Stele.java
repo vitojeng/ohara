@@ -17,9 +17,8 @@
 package oharastream.ohara.stream.data;
 
 import java.io.Serializable;
-import oharastream.ohara.common.data.BasicObject;
-import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.apache.commons.lang3.builder.ToStringStyle;
+import java.util.Arrays;
+import java.util.Objects;
 
 /**
  * The {@code Stele} represents a operation in the stream. This object contains the basic
@@ -37,7 +36,7 @@ import org.apache.commons.lang3.builder.ToStringStyle;
  *
  * @see org.apache.kafka.streams.Topology
  */
-public final class Stele extends BasicObject implements Serializable {
+public final class Stele implements Serializable {
   private static final long serialVersionUID = 1L;
   /**
    * The type of this {@code stele}. Should be one of the following : <b>Source</b>, <b>Sink</b>, or
@@ -71,10 +70,6 @@ public final class Stele extends BasicObject implements Serializable {
    */
   private final String[] to;
 
-  static {
-    ToStringBuilder.setDefaultStyle(ToStringStyle.JSON_STYLE);
-  }
-
   public Stele(String kind, String key, String name, String[] from, String[] to) {
     this.kind = kind;
     this.key = key;
@@ -101,5 +96,44 @@ public final class Stele extends BasicObject implements Serializable {
 
   public String[] getTo() {
     return to;
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+    Stele stele = (Stele) o;
+    return Objects.equals(kind, stele.kind)
+        && Objects.equals(key, stele.key)
+        && Objects.equals(name, stele.name)
+        && Arrays.equals(from, stele.from)
+        && Arrays.equals(to, stele.to);
+  }
+
+  @Override
+  public int hashCode() {
+    int result = Objects.hash(super.hashCode(), kind, key, name);
+    result = 31 * result + Arrays.hashCode(from);
+    result = 31 * result + Arrays.hashCode(to);
+    return result;
+  }
+
+  @Override
+  public String toString() {
+    return "Stele{"
+        + "kind='"
+        + kind
+        + '\''
+        + ", key='"
+        + key
+        + '\''
+        + ", name='"
+        + name
+        + '\''
+        + ", from="
+        + Arrays.toString(from)
+        + ", to="
+        + Arrays.toString(to)
+        + '}';
   }
 }

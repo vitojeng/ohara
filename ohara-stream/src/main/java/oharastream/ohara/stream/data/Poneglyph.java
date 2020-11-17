@@ -18,15 +18,14 @@ package oharastream.ohara.stream.data;
 
 import java.io.Serializable;
 import java.util.HashSet;
-import oharastream.ohara.common.data.BasicObject;
+import java.util.Objects;
 
 /**
  * The {@code Poneglyph} represents the overall logic flow in this stream. User can recognize the
  * from-and-to view in each operation {@link Stele}. A {@code Poneglyph} is represent a complete
- * flow from data in to data out, there may have multiple {@code Poneglyph} in a stream. We extend
- * this class from {@link BasicObject} to use the JSON string function.
+ * flow from data in to data out, there may have multiple {@code Poneglyph} in a stream.
  */
-public final class Poneglyph extends BasicObject implements Serializable {
+public final class Poneglyph implements Serializable {
   private static final long serialVersionUID = 1L;
   private final HashSet<Stele> steles = new HashSet<>();
 
@@ -36,5 +35,23 @@ public final class Poneglyph extends BasicObject implements Serializable {
 
   public HashSet<Stele> getSteles() {
     return this.steles;
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+    Poneglyph poneglyph = (Poneglyph) o;
+    return Objects.equals(steles, poneglyph.steles);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(steles);
+  }
+
+  @Override
+  public String toString() {
+    return "Poneglyph{" + "steles=" + steles + '}';
   }
 }

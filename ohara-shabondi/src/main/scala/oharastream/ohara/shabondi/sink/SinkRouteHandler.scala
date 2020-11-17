@@ -20,20 +20,19 @@ import java.time.{Duration => JDuration}
 import java.util.concurrent.TimeUnit
 
 import akka.actor.ActorSystem
+import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport._
 import akka.http.scaladsl.model.{ContentTypes, HttpEntity, StatusCodes}
 import akka.http.scaladsl.server.{ExceptionHandler, Route}
 import com.typesafe.scalalogging.Logger
 import oharastream.ohara.common.data.Row
-import oharastream.ohara.common.util.Releasable
+import oharastream.ohara.common.util.{CommonUtils, Releasable}
 import oharastream.ohara.shabondi.common.{JsonSupport, RouteHandler, ShabondiUtils}
-import org.apache.commons.lang3.StringUtils
+import spray.json.DefaultJsonProtocol._
 
 import scala.collection.mutable.ArrayBuffer
 import scala.compat.java8.DurationConverters._
 import scala.concurrent.ExecutionContextExecutor
 import scala.concurrent.duration.Duration
-import spray.json.DefaultJsonProtocol._
-import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport._
 
 private[shabondi] object SinkRouteHandler {
   def apply(config: SinkConfig)(implicit actorSystem: ActorSystem) =
@@ -75,7 +74,7 @@ private[shabondi] class SinkRouteHandler(config: SinkConfig)(implicit actorSyste
   def route(): Route = handleExceptions(exceptionHandler) {
     path("groups" / Segment) { groupId =>
       get {
-        if (StringUtils.isAlphanumeric(groupId)) {
+        if (CommonUtils.isAlphanumeric(groupId)) {
           val group  = dataGroups.createIfAbsent(groupId)
           val result = fullyPollQueue(group.queue).map(row => JsonSupport.toRowData(row))
           complete(result)

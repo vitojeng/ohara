@@ -18,7 +18,6 @@ apply from: "$rootDir/gradle/dependencies.gradle"
 
 dependencies {
   implementation libs.commonsNet
-  implementation libs.commonsLang
   implementation libs.slf4jApi
   implementation libs.slf4jLog4j
   implementation libs.guava

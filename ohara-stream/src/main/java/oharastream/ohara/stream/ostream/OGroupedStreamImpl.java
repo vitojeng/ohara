@@ -21,7 +21,6 @@ import oharastream.ohara.common.data.Cell;
 import oharastream.ohara.common.data.Row;
 import oharastream.ohara.stream.OGroupedStream;
 import oharastream.ohara.stream.OStream;
-import org.apache.commons.lang3.ArrayUtils;
 import org.apache.kafka.streams.KeyValue;
 import org.apache.kafka.streams.StreamsBuilder;
 import org.apache.kafka.streams.kstream.KGroupedStream;
@@ -47,9 +46,8 @@ public class OGroupedStreamImpl extends AbstractStream<Row, Row> implements OGro
                     KeyValue.pair(
                         key,
                         Row.of(
-                            ArrayUtils.addAll(
-                                key.cells().toArray(new Cell[0]),
-                                value.cells().toArray(new Cell[0])))))),
+                            Stream.concat(key.cells().stream(), value.cells().stream())
+                                .toArray(Cell[]::new))))),
         innerBuilder);
   }
 

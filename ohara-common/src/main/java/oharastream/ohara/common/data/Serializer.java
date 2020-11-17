@@ -16,16 +16,11 @@
 
 package oharastream.ohara.common.data;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
+import java.io.*;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import oharastream.ohara.common.util.ByteUtils;
-import org.apache.commons.lang3.ArrayUtils;
 
 /**
  * Used to convert a T object to V NOTED: the impl should not be an inner/anonymous class since
@@ -450,7 +445,7 @@ public interface Serializer<T> {
       };
 
   static byte[] forceRead(InputStream input, int len) {
-    if (len == 0) return ArrayUtils.EMPTY_BYTE_ARRAY;
+    if (len == 0) return new byte[0];
     else if (len < 0) throw new IllegalStateException(len + " should be bigger than zero");
     else {
       int remaining = len;

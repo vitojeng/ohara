@@ -22,7 +22,7 @@ import oharastream.ohara.common.annotations.Optional;
 import oharastream.ohara.common.util.CommonUtils;
 
 /** implements Serializable ,because akka unmashaller throws java.io.NotSerializableException */
-public final class Column extends BasicObject implements Serializable {
+public final class Column implements Serializable {
 
   private static final long serialVersionUID = 1L;
 
@@ -52,6 +52,38 @@ public final class Column extends BasicObject implements Serializable {
 
   public int order() {
     return order;
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+    Column column = (Column) o;
+    return order == column.order
+        && Objects.equals(name, column.name)
+        && Objects.equals(newName, column.newName)
+        && dataType == column.dataType;
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(name, newName, dataType, order);
+  }
+
+  @Override
+  public String toString() {
+    return "Column{"
+        + "name='"
+        + name
+        + '\''
+        + ", newName='"
+        + newName
+        + '\''
+        + ", dataType="
+        + dataType
+        + ", order="
+        + order
+        + '}';
   }
 
   public static Builder builder() {
