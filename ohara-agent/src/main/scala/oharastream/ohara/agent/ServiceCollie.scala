@@ -31,7 +31,7 @@ import oharastream.ohara.client.configurator.VolumeApi.VolumeState
 import oharastream.ohara.common.annotations.Optional
 import oharastream.ohara.common.pattern.Builder
 import oharastream.ohara.common.setting.{ObjectKey, WithDefinitions}
-import oharastream.ohara.common.util.Releasable
+import oharastream.ohara.common.util.{CommonUtils, Releasable}
 import oharastream.ohara.kafka.RowPartitioner
 import oharastream.ohara.kafka.connector.{RowSinkConnector, RowSourceConnector}
 import oharastream.ohara.stream.Stream
@@ -205,7 +205,7 @@ abstract class ServiceCollie extends Releasable {
     implicit executionContext: ExecutionContext
   ): Future[Unit] = {
     containerClient
-      .volumes(key.toPlain)
+      .volumes()
       .flatMap { cvs =>
         Future
           .traverse(nodeNames.diff(cvs.map(_.nodeName).toSet))(
@@ -213,7 +213,7 @@ abstract class ServiceCollie extends Releasable {
               containerClient.volumeCreator
                 .nodeName(nodeName)
                 .path(path)
-                .name(key.toPlain)
+                .name(hashVolumeName(key))
                 .create()
           )
           .map(_ => ())
@@ -229,7 +229,7 @@ abstract class ServiceCollie extends Releasable {
     containerClient
       .volumes()
       .map(_.flatMap { volume =>
-        ObjectKey.ofPlain(volume.name).asScala match {
+        ObjectKey.ofPlain(clusterVolumeName(volume.name)).asScala match {
           case None => None
           case Some(key) =>
             Some(
@@ -274,20 +274,25 @@ abstract class ServiceCollie extends Releasable {
     */
   final def removeVolumes(key: ObjectKey)(implicit executionContext: ExecutionContext): Future[Unit] =
     containerClient
-      .volumes(key.toPlain)
+      .volumes()
       .map(
-        _.filter(
-          volume =>
-            ObjectKey.ofPlain(volume.name).asScala match {
-              case None            => false
-              case Some(volumeKey) => volumeKey == key
-            }
-        )
+        _.filter { volume =>
+          ObjectKey.ofPlain(volume.name).asScala match {
+            case None            => false
+            case Some(volumeKey) => volumeKey.name().startsWith(key.name())
+          }
+        }
       )
-      .map(volumes => volumes.map(volume => volume.fullName))
+      .map(volumes => volumes.map(volume => volume.name))
       .map(_.toSet)
       .flatMap(Future.traverse(_)(containerClient.removeVolumes(_)))
       .map(_ => ())
+
+  private[this] def hashVolumeName(key: ObjectKey): String = s"${key.toPlain}-${CommonUtils.randomString(5)}"
+  private[this] def clusterVolumeName(name: String): String = {
+    val splits = name.split("-")
+    s"${splits(0)}-${splits(1)}" // The name variable value is ${group}-${name}-${hash} convert to ${group}-${name}
+  }
 }
 
 object ServiceCollie {
