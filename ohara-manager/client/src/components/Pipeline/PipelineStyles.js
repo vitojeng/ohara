@@ -17,12 +17,14 @@
 import styled, { css } from 'styled-components';
 import SplitPane from 'react-split-pane';
 
-export const PaperWrapper = styled.div`
-  position: relative;
+export const PaperWrapper = styled.div(
+  ({ hasToolbar }) => css`
+    position: relative;
 
-  /* Subtract the height of Toolbar  */
-  height: calc(100% - 72px);
-`;
+    /* Subtract the height of Toolbar when it's exist and using the full height When it's not exist */
+    height: ${hasToolbar ? 'calc(100% - 72px)' : '100%'};
+  `,
+);
 
 export const StyledSplitPane = styled(SplitPane)(
   () => css`

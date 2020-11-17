@@ -587,7 +587,7 @@ const Pipeline = React.forwardRef((props, ref) => {
             />
           )}
 
-          <PaperWrapper>
+          <PaperWrapper hasToolbar={paperApiRef.current && currentPipeline}>
             {selectedCell && (
               <>
                 <StyledSplitPane
