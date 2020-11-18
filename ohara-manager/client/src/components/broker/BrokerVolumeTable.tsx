@@ -22,7 +22,6 @@ import Chip from '@material-ui/core/Chip';
 import Typography from '@material-ui/core/Typography';
 import StorageIcon from '@material-ui/icons/Storage';
 
-import MuiTableIcons from 'components/common/Table/MuiTableIcons';
 import useBroker from 'hooks/useBroker';
 import useVolumes from 'hooks/useVolumes';
 import { Key, Volume } from 'types';
@@ -80,7 +79,6 @@ const BrokerVolumeTable: React.FC<BrokerVolumeTableProps> = ({
           },
         ]}
         data={brokerVolumes}
-        icons={MuiTableIcons}
         isLoading={isVolumesLoading || isBrokerLoading}
         options={{
           search: false,

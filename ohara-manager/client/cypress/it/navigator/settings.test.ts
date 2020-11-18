@@ -222,7 +222,10 @@ describe('Navigator', () => {
         cy.findAllByPlaceholderText('Search').filter(':visible').clear();
 
         // sort the topics by name
-        cy.get('thead tr th').first().find('svg').dblclick();
+        cy.get('thead tr th')
+          .first()
+          .find('.MuiTableSortLabel-root')
+          .dblclick();
 
         // the t2 topic should be first element in reverse order
         cy.get('tbody tr').first().contains('td', t2);

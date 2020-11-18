@@ -30,7 +30,6 @@ import {
 import Table from 'material-table';
 import Checkbox from '@material-ui/core/Checkbox';
 import Typography from '@material-ui/core/Typography';
-import MuiTableIcons from './MuiTableIcons';
 
 const Styles = styled.div(
   ({ theme }) => css`
@@ -138,7 +137,6 @@ const MuiTable = (props) => {
         {...restProps}
         columns={[renderSelectionColumn(), ...columns]}
         data={data}
-        icons={MuiTableIcons}
         options={{ ...restOptions, paging: dataCount > 5 }}
       />
       {options?.prompt && (

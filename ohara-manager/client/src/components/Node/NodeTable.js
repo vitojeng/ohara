@@ -35,9 +35,6 @@ import Link from '@material-ui/core/Link';
 import Tooltip from '@material-ui/core/Tooltip';
 import Typography from '@material-ui/core/Typography';
 
-import AddIcon from '@material-ui/icons/Add';
-import RefreshOutlinedIcon from '@material-ui/icons/RefreshOutlined';
-
 import { Actions, MuiTable as Table } from 'components/common/Table';
 import { KIND } from 'const';
 import NodeCreateDialog from './NodeCreateDialog';
@@ -329,21 +326,21 @@ function NodeTable(props) {
         actions={[
           {
             hidden: !options?.showAddIcon,
-            icon: () => <AddIcon />,
+            icon: 'add',
             isFreeAction: true,
             onClick: handleAddIconClick,
             tooltip: 'Add Node',
           },
           {
             hidden: !options?.showCreateIcon,
-            icon: () => <AddIcon />,
+            icon: 'add',
             isFreeAction: true,
             onClick: handleCreateIconClick,
             tooltip: 'Create Node',
           },
           {
             hidden: !options?.showRefreshIcon,
-            icon: () => <RefreshOutlinedIcon />,
+            icon: 'refresh',
             isFreeAction: true,
             onClick: handleRefreshIconClick,
             tooltip: 'Refresh Nodes',

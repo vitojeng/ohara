@@ -20,7 +20,6 @@ import { join, map, includes, isEmpty, isFunction, toUpper } from 'lodash';
 
 import Link from '@material-ui/core/Link';
 import Tooltip from '@material-ui/core/Tooltip';
-import AddIcon from '@material-ui/icons/Add';
 
 import { State } from 'api/apiInterface/topicInterface';
 import { Actions, MuiTable as Table } from 'components/common/Table';
@@ -131,7 +130,7 @@ function TopicTable(props) {
           {
             disabled: broker?.state !== State.RUNNING,
             hidden: !options?.showCreateIcon,
-            icon: () => <AddIcon />,
+            icon: 'add',
             isFreeAction: true,
             onClick: handleCreateIconClick,
             tooltip: 'Create Topic',

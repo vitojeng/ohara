@@ -23,9 +23,6 @@ import NumberFormat from 'react-number-format';
 import Tooltip from '@material-ui/core/Tooltip';
 import Typography from '@material-ui/core/Typography';
 
-import AddIcon from '@material-ui/icons/Add';
-import CloudUploadIcon from '@material-ui/icons/CloudUpload';
-
 import { Actions, MuiTable as Table } from 'components/common/Table';
 import FileClassInfoDialog from './FileClassInfoDialog';
 import FileDeleteDialog from './FileDeleteDialog';
@@ -253,14 +250,14 @@ function FileTable(props) {
       <Table
         actions={[
           {
-            icon: () => <AddIcon />,
+            icon: 'add',
             tooltip: 'Add File',
             hidden: !options?.showAddIcon,
             isFreeAction: true,
             onClick: handleAddIconClick,
           },
           {
-            icon: () => <CloudUploadIcon />,
+            icon: 'cloud_upload',
             tooltip: 'Upload File',
             hidden: !options?.showUploadIcon,
             isFreeAction: true,

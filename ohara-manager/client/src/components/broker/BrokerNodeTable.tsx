@@ -23,7 +23,6 @@ import Button from '@material-ui/core/Button';
 import Tooltip from '@material-ui/core/Tooltip';
 import Typography from '@material-ui/core/Typography';
 
-import MuiTableIcons from 'components/common/Table/MuiTableIcons';
 import useBroker from 'hooks/useBroker';
 import useNodes from 'hooks/useNodes';
 import { Node } from 'types';
@@ -92,6 +91,9 @@ const BrokerNodeTable: React.FC<BrokerNodeTableProps> = ({
           {
             icon: 'visibility',
             tooltip: 'View node',
+            iconProps: {
+              color: 'action',
+            },
             onClick: (_, data: Node | Node[]): void => {
               if (onViewIconClick) {
                 if (isArray(data)) {
@@ -142,7 +144,6 @@ const BrokerNodeTable: React.FC<BrokerNodeTableProps> = ({
           },
         ]}
         data={brokerNodes}
-        icons={MuiTableIcons}
         isLoading={isNodesLoading || isBrokerLoading}
         options={{
           actionsColumnIndex: -1,

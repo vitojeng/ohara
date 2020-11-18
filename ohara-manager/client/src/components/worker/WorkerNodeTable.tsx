@@ -21,7 +21,6 @@ import { filter, includes, map, isArray } from 'lodash';
 import Button from '@material-ui/core/Button';
 import Tooltip from '@material-ui/core/Tooltip';
 
-import MuiTableIcons from 'components/common/Table/MuiTableIcons';
 import useWorker from 'hooks/useWorker';
 import useNodes from 'hooks/useNodes';
 import { Node } from 'types';
@@ -83,6 +82,9 @@ const WorkerNodeTable: React.FC<WorkerNodeTableProps> = (props) => {
         },
         {
           icon: 'visibility',
+          iconProps: {
+            color: 'action',
+          },
           tooltip: 'View node',
           onClick: (_, data: Node | Node[]): void => {
             if (props.onViewIconClick) {
@@ -134,7 +136,6 @@ const WorkerNodeTable: React.FC<WorkerNodeTableProps> = (props) => {
         },
       ]}
       data={workerNodes}
-      icons={MuiTableIcons}
       isLoading={isNodesLoading || isWorkerLoading}
       options={{
         actionsColumnIndex: -1,
